@@ -574,7 +574,7 @@
             padding: 0;
             background: transparent;
             border: 1px dashed rgba(255,255,255,0.28);
-            border-radius: 0.9rem;
+            border-radius: 0;
             color: rgba(255,255,255,0.72);
             cursor: pointer;
             transition: all 0.2s ease;
@@ -616,12 +616,11 @@
             line-height: 1;
         }
 
-        /* Audio box: make editable texts 50% larger visually */
         #cuadro-de-audio .text-preview,
         #cuadro-de-audio .text-placeholder,
         #cuadro-de-audio .marquee-track span {
-            transform: scale(1.5);
-            transform-origin: left center;
+            transform: none;
+            transform-origin: initial;
             display: inline-block;
         }
 
