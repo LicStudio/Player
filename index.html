@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>App Neumórfica</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     
     <style>
         :root {
@@ -105,46 +104,6 @@
 
         .neu-btn:active {
             box-shadow: inset 0 0 10px 2px var(--shadow-color);
-        }
-
-        #audioVisualizer {
-            position: fixed;
-            left: 24px;
-            bottom: 84px;
-            z-index: 45;
-            width: 320px;
-            height: 120px;
-            background: transparent;
-            border: none;
-            box-shadow: none;
-            overflow: visible;
-            cursor: grab;
-            transition: transform 0.2s ease, opacity 0.2s ease, left 0.2s ease, top 0.2s ease;
-        }
-
-        #audioVisualizer.dragging {
-            cursor: grabbing;
-        }
-
-        #visualizerBars {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            gap: 6px;
-            height: 100%;
-            padding: 10px 14px;
-            box-sizing: border-box;
-        }
-
-        .visualizer-bar {
-            flex: 1 1 0;
-            min-width: 6px;
-            background: linear-gradient(180deg, #22c55e, #0ea5e9);
-            border-radius: 999px;
-            min-height: 10px;
-        
-            height: 12%;
-            transition: height 0.08s ease;
         }
 
         #playPauseBtn {
@@ -285,8 +244,7 @@
             padding: 0.28em 0.58em;
             margin: 0.12em 0.2em;
             border-radius: 0.32em;
-            border: 1px solid rgba(255,255,255,0.72);
-            box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 0 24px var(--tag-shadow-color, rgba(0,0,0,0.65)), 0 10px 28px rgba(0,0,0,0.42);
+            border: 1px solid var(--tag-border, rgba(255,255,255,0.72));
             background: var(--tag-bg, #4b5563);
             color: var(--tag-text, #ffffff);
             font-family: "Trebuchet MS", "Segoe UI", "Arial Rounded MT Bold", sans-serif;
@@ -303,13 +261,13 @@
             cursor: pointer;
             pointer-events: auto;
             position: relative;
-            transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease, background-color 0.2s ease;
-            text-shadow: 0 1px 0 rgba(0,0,0,0.16);
+            transition: transform 0.12s ease, filter 0.12s ease, background-color 0.2s ease;
+            text-shadow: none;
         }
 
         .letter-box-tag:hover {
             transform: translateY(-0.04em) scale(1.01);
-            box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 0 30px var(--tag-shadow-color, rgba(0,0,0,0.74)), 0 14px 34px rgba(0,0,0,0.48);
+            box-shadow: none;
             filter: brightness(1.03);
         }
 
@@ -317,20 +275,19 @@
             background: #000000;
             color: #ffffff;
             border-color: rgba(255,255,255,0.22);
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 0 0 1px rgba(0,0,0,0.14), 0 8px 22px rgba(0,0,0,0.25);
             opacity: var(--parenthetical-tag-opacity, 0.5);
             font-style: italic;
-            font-weight: 700;
+            font-weight: 400;
             pointer-events: auto;
             text-transform: none;
             transform: none;
             cursor: pointer;
-            transition: opacity 0.2s ease, transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+            transition: opacity 0.2s ease, transform 0.12s ease, filter 0.12s ease;
         }
 
         .letter-box-parenthetical-tag:hover {
             transform: none;
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 0 0 1px rgba(0,0,0,0.14), 0 8px 22px rgba(0,0,0,0.25);
+            box-shadow: none;
             filter: none;
         }
 
@@ -640,6 +597,12 @@
             pointer-events: none;
         }
 
+        /* Ensure Tailwind's .hidden (or similar) actually hides placeholders
+           even when .text-placeholder sets display later in the stylesheet. */
+        .text-placeholder.hidden {
+            display: none !important;
+        }
+
         .text-preview {
             display: inline-block;
             white-space: nowrap;
@@ -651,6 +614,15 @@
             font-size: clamp(14px, 1.6vw, 32px);
             font-size: 85cqh;
             line-height: 1;
+        }
+
+        /* Audio box: make editable texts 50% larger visually */
+        #cuadro-de-audio .text-preview,
+        #cuadro-de-audio .text-placeholder,
+        #cuadro-de-audio .marquee-track span {
+            transform: scale(1.5);
+            transform-origin: left center;
+            display: inline-block;
         }
 
         @keyframes scroll-marquee {
@@ -710,7 +682,7 @@
                 </button>
 
                 <div id="customSlider" class="absolute bottom-[31px] left-1/2 -translate-x-1/2 w-[1019px] max-w-[90vw] h-[7px] z-20 cursor-pointer" aria-label="Progreso de la canción" style="width: calc(1019px * var(--player-layout-scale)); max-width: calc(90vw * var(--player-layout-scale)); height: calc(7px * var(--player-layout-scale));">
-                    <div id="customSliderBg" class="absolute inset-0 w-full h-full rounded-full" style="background: #000000; box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);"></div>
+                    <div id="customSliderBg" class="absolute inset-0 w-full h-full rounded-full" style="background: #000000;"></div>
                     <div id="customSliderFill" class="absolute left-0 top-0 h-full rounded-full pointer-events-none" style="width: 0%; background: #e5e5e5;"></div>
                     <div id="customSliderThumb" class="absolute top-1/2 rounded-full bg-[#e5e5e5] pointer-events-none transition-shadow" style="left: 0%; width: 20px; height: 20px; transform: translate(-50%, -50%); box-shadow: 0 0 5px 2px rgba(0,0,0,0.5);"></div>
                 </div>
@@ -748,16 +720,6 @@
             <path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.4.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.4-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
         </svg>
     </button>
-
-    <button id="visualizerToggleBtn" type="button" class="fixed bottom-6 left-6 p-4 neu-btn rounded-2xl flex items-center justify-center z-40" title="Mostrar/ocultar visualizador de audio">
-        <svg id="visualizerToggleIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 5v14"></path>
-            <path d="M5 12h14"></path>
-        </svg>
-    </button>
-    <div id="audioVisualizer" class="hidden">
-        <div id="visualizerBars"></div>
-    </div>
 
     <button id="imagePickerBtn" class="image-picker-btn neu-btn fixed top-6 left-24 px-4 py-3 rounded-2xl flex items-center justify-center z-40 text-sm font-semibold">
         Elegir imagen
@@ -860,16 +822,13 @@
         </div>
     </div>
 
-    <div id="playerCardSnapshotWrapper" class="hidden absolute pointer-events-none z-20"></div>
-    <div id="linkedVinylSnapshotWrapper" class="hidden absolute pointer-events-none z-30"></div>
-
     <div id="imagePreviewContainer" class="hidden fixed top-6 left-6 z-35">
         <div id="imagePreviewBox" class="image-preview-box relative">
             <img id="selectedImage" src="" alt="Imagen seleccionada">
         </div>
     </div>
 
-    <div id="configGhostTrigger" class="fixed top-0 left-0 w-20 h-20 z-50 cursor-pointer hidden" onclick="modalOverlay.classList.remove('hidden')" title="Abrir configuración"></div>
+    <div id="configGhostTrigger" class="fixed top-0 left-0 w-20 h-20 z-50 cursor-pointer hidden" title="Abrir configuración"></div>
 
     <div id="modalOverlay" class="fixed inset-0 bg-black/30 hidden flex items-center justify-center p-6 backdrop-blur-sm z-50">
         <div class="neu-card w-full max-w-4xl h-3/4 p-12 relative overflow-y-auto">
@@ -1196,63 +1155,6 @@
                     </div>
                 </li>
 
-                <li id="visualizerOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                    <div class="flex flex-col space-y-4">
-                        <span class="font-semibold text-xl">Visualizador de audio</span>
-                        <div class="border border-gray-700/50 rounded-xl p-5 bg-black/10 flex flex-col gap-4 mb-2 shadow-inner">
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Estilo</span>
-                                <div class="flex items-center gap-3">
-                                    <label class="flex items-center gap-2 text-sm">
-                                        <input type="radio" name="visualizerType" value="color" checked onchange="applyVisualizerSettings(); toggleVisualizerType()">
-                                        Color
-                                    </label>
-                                    <label class="flex items-center gap-2 text-sm">
-                                        <input type="radio" name="visualizerType" value="gradient" onchange="applyVisualizerSettings(); toggleVisualizerType()">
-                                        Gradiente
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Color 1</span>
-                                <input type="color" id="visualizerColor1" value="#22c55e" class="w-12 h-12 rounded cursor-pointer" oninput="applyVisualizerSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Color 2</span>
-                                <input type="color" id="visualizerColor2" value="#06b6d4" class="w-12 h-12 rounded cursor-pointer hidden" oninput="applyVisualizerSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Modo</span>
-                                <div class="flex items-center gap-3">
-                                    <label class="flex items-center gap-2 text-sm">
-                                        <input type="radio" name="visualizerStyleMode" value="simple" checked onchange="applyVisualizerSettings()">
-                                        Simple
-                                    </label>
-                                    <label class="flex items-center gap-2 text-sm">
-                                        <input type="radio" name="visualizerStyleMode" value="symmetric" onchange="applyVisualizerSettings()">
-                                        Simétrico
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Largo</span>
-                                <input type="range" id="visualizerLength" min="8" max="32" step="1" value="16" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyVisualizerSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Alto</span>
-                                <input type="range" id="visualizerHeight" min="60" max="240" step="1" value="120" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyVisualizerSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Escala</span>
-                                <input type="range" id="visualizerScale" min="0.5" max="2" step="0.05" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyVisualizerSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Opacidad</span>
-                                <input type="range" id="visualizerOpacity" min="0.2" max="1" step="0.05" value="0.9" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyVisualizerSettings()">
-                            </div>
-                        </div>
-                    </div>
-                </li>
 
                 <li id="progressOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
                     <div class="flex flex-col space-y-4">
@@ -1433,10 +1335,7 @@
             letterBoxCancelBtn: document.getElementById('letterBoxCancelBtn'),
             letterBoxClearBtn: document.getElementById('letterBoxClearBtn'),
             letterBoxAcceptBtn: document.getElementById('letterBoxAcceptBtn'),
-            visualizerToggleBtn: document.getElementById('visualizerToggleBtn'),
-            visualizerToggleIcon: document.getElementById('visualizerToggleIcon'),
-            audioVisualizer: document.getElementById('audioVisualizer'),
-            visualizerBars: document.getElementById('visualizerBars')
+            configGhostTrigger: document.getElementById('configGhostTrigger')
         };
 
         const configBtn = refs.configBtn;
@@ -1476,6 +1375,7 @@
         const letterBoxCancelBtn = refs.letterBoxCancelBtn;
         const letterBoxClearBtn = refs.letterBoxClearBtn;
         const letterBoxAcceptBtn = refs.letterBoxAcceptBtn;
+        const configGhostTrigger = refs.configGhostTrigger;
 
         const letterBoxTextState = {
             value: '',
@@ -1488,20 +1388,6 @@
         const letterBoxCutState = {
             cuts: []
         };
-
-        let visualizerActive = false;
-        let visualizerAudioContext = null;
-        let visualizerAnalyser = null;
-        let visualizerDataArray = null;
-        let visualizerAnimationFrame = null;
-        let visualizerDragState = {
-            active: false,
-            startX: 0,
-            startY: 0,
-            startLeft: 0,
-            startTop: 0
-        };
-        let visualizerBarCount = 16;
 
         function getCheckedRadioValue(name) {
             return document.querySelector(`input[name="${name}"]:checked`)?.value ?? null;
@@ -1523,11 +1409,15 @@
         }
 
         function hexToRgbValues(hex) {
-            const normalized = hex.startsWith('#') ? hex : `#${hex}`;
+            const normalized = String(hex || '').trim();
+            const cleanHex = normalized.startsWith('#') ? normalized.slice(1) : normalized;
+            if (!/^[0-9a-fA-F]{6}$/.test(cleanHex)) {
+                return { r: 255, g: 255, b: 255 };
+            }
             return {
-                r: parseInt(normalized.slice(1, 3), 16),
-                g: parseInt(normalized.slice(3, 5), 16),
-                b: parseInt(normalized.slice(5, 7), 16)
+                r: parseInt(cleanHex.slice(0, 2), 16),
+                g: parseInt(cleanHex.slice(2, 4), 16),
+                b: parseInt(cleanHex.slice(4, 6), 16)
             };
         }
 
@@ -1574,89 +1464,25 @@
             element.style.boxShadow = layers.join(', ');
         }
 
-        function setStaticSnapshotWrapper(wrapper, img) {
-            if (!wrapper || !img) return;
-            wrapper.classList.remove('hidden');
-            wrapper.innerHTML = '';
-            wrapper.appendChild(img);
-            img.style.width = '100%';
-            img.style.height = '100%';
-            img.style.display = 'block';
-            img.style.pointerEvents = 'none';
-            img.style.objectFit = 'contain';
-        }
 
-        function captureStaticSnapshotForElement(target, wrapperId) {
-            if (!target || !window.html2canvas) return;
-            const wrapper = document.getElementById(wrapperId);
-            if (!wrapper) return;
-
-            const snapshotImg = document.createElement('img');
-            snapshotImg.alt = 'snapshot estático';
-            snapshotImg.style.width = '100%';
-            snapshotImg.style.height = '100%';
-            snapshotImg.style.display = 'block';
-            snapshotImg.style.objectFit = 'contain';
-
-            const rect = target.getBoundingClientRect();
-            wrapper.style.left = `${rect.left}px`;
-            wrapper.style.top = `${rect.top}px`;
-            wrapper.style.width = `${Math.max(1, rect.width)}px`;
-            wrapper.style.height = `${Math.max(1, rect.height)}px`;
-            wrapper.style.position = 'absolute';
-            wrapper.classList.remove('hidden');
-
-            html2canvas(target, {
-                backgroundColor: null,
-                scale: 1,
-                useCORS: true,
-                logging: false
-            }).then((canvas) => {
-                snapshotImg.src = canvas.toDataURL('image/png');
-                setStaticSnapshotWrapper(wrapper, snapshotImg);
-                target.classList.add('hidden');
-            }).catch(() => {
-                target.classList.remove('hidden');
-            });
-        }
-
-        function restoreStaticSnapshots() {
-            const playerCardSnapshotWrapper = document.getElementById('playerCardSnapshotWrapper');
-            const linkedVinylSnapshotWrapper = document.getElementById('linkedVinylSnapshotWrapper');
-            const shouldShowLinkedVinyl = linkedVinylImageLoaded && linkedVinylOverlay?.getAttribute('src');
-            if (playerCardSnapshotWrapper) playerCardSnapshotWrapper.classList.add('hidden');
-            if (linkedVinylSnapshotWrapper) linkedVinylSnapshotWrapper.classList.add('hidden');
-            if (playerCard) playerCard.classList.remove('hidden');
-            if (linkedVinylContainer) {
-                linkedVinylContainer.classList.toggle('hidden', !shouldShowLinkedVinyl);
-            }
-        }
-
-        function freezeHeavyVisuals() {
-            if (playerCard && !playerCard.classList.contains('hidden')) {
-                captureStaticSnapshotForElement(playerCard, 'playerCardSnapshotWrapper');
-            }
-
-            if (linkedVinylContainer && !linkedVinylContainer.classList.contains('hidden')) {
-                captureStaticSnapshotForElement(linkedVinylContainer, 'linkedVinylSnapshotWrapper');
-            }
-        }
-
-        configBtn.addEventListener('click', () => {
+        function openConfig() {
             setConfigMode(true);
-            freezeHeavyVisuals();
             modalOverlay.classList.remove('hidden');
-        });
-        closeModal.addEventListener('click', () => {
+        }
+
+        function closeConfig() {
             modalOverlay.classList.add('hidden');
-            restoreStaticSnapshots();
             setConfigMode(false);
-        });
+        }
+
+        configBtn.addEventListener('click', openConfig);
+        if (configGhostTrigger) {
+            configGhostTrigger.addEventListener('click', openConfig);
+        }
+        closeModal.addEventListener('click', closeConfig);
         modalOverlay.addEventListener('click', (e) => {
             if (e.target === modalOverlay) {
-                modalOverlay.classList.add('hidden');
-                restoreStaticSnapshots();
-                setConfigMode(false);
+                closeConfig();
             }
         });
 
@@ -1923,8 +1749,9 @@
                     overlayHeight = overlayWidth / aspectRatio;
                 }
 
-                linkedVinylOverlay.style.width = `${Math.round(overlayWidth)}px`;
-                linkedVinylOverlay.style.height = `${Math.round(overlayHeight)}px`;
+                const overlayScale = 1.1;
+                linkedVinylOverlay.style.width = `${Math.round(overlayWidth * overlayScale)}px`;
+                linkedVinylOverlay.style.height = `${Math.round(overlayHeight * overlayScale)}px`;
                 linkedVinylOverlay.style.maxWidth = '100%';
                 linkedVinylOverlay.style.maxHeight = '100%';
                 linkedVinylOverlay.style.borderRadius = '9999px';
@@ -1958,7 +1785,6 @@
         function toggleConfigBtn() {
             const isVisible = document.getElementById('configVisibility').checked;
             configBtn.classList.toggle('hidden', !isVisible);
-            if (refs.visualizerToggleBtn) refs.visualizerToggleBtn.classList.toggle('hidden', !isVisible);
             const borrarBtn = document.getElementById('borrar-cancion');
             if (borrarBtn) borrarBtn.classList.toggle('hidden', !isVisible);
             if (letterBoxEditBtn) letterBoxEditBtn.classList.toggle('hidden', !isVisible);
@@ -1981,187 +1807,6 @@
             setTimeout(checkAllOverflows, 50);
             updateTimeDisplays();
         }
-
-        function toggleVisualizerType() {
-            const isGradient = getCheckedRadioValue('visualizerType') === 'gradient';
-            document.getElementById('visualizerColor2').classList.toggle('hidden', !isGradient);
-            applyVisualizerSettings();
-        }
-
-        function createVisualizerBars(count) {
-            if (!refs.visualizerBars) return;
-            refs.visualizerBars.innerHTML = '';
-            for (let i = 0; i < count; i += 1) {
-                const bar = document.createElement('div');
-                bar.className = 'visualizer-bar';
-                refs.visualizerBars.appendChild(bar);
-            }
-            visualizerBarCount = count;
-        }
-
-        function updateVisualizerLayout() {
-            const length = Number(document.getElementById('visualizerLength')?.value || 16);
-            const height = Number(document.getElementById('visualizerHeight')?.value || 120);
-            const scale = Number(document.getElementById('visualizerScale')?.value || 1);
-            if (refs.audioVisualizer) {
-                refs.audioVisualizer.style.height = `${height}px`;
-                refs.audioVisualizer.style.width = `${Math.max(180, length * 16 + (length - 1) * 6 + 28)}px`;
-                refs.audioVisualizer.style.transform = `scale(${scale})`;
-                refs.audioVisualizer.style.opacity = `${Number(document.getElementById('visualizerOpacity')?.value || 0.9)}`;
-            }
-            createVisualizerBars(length);
-            applyVisualizerSettings(true);
-        }
-
-        function applyVisualizerSettings(skipLayout = false) {
-            const isGradient = getCheckedRadioValue('visualizerType') === 'gradient';
-            const color1 = document.getElementById('visualizerColor1')?.value || '#22c55e';
-            const color2 = document.getElementById('visualizerColor2')?.value || '#06b6d4';
-            const styleMode = getCheckedRadioValue('visualizerStyleMode') || 'simple';
-            const barColor = isGradient ? `linear-gradient(180deg, ${color1}, ${color2})` : color1;
-            const visualizerBars = document.getElementById('visualizerBars');
-            if (visualizerBars) {
-                visualizerBars.style.alignItems = styleMode === 'symmetric' ? 'center' : 'flex-end';
-            }
-            document.querySelectorAll('#visualizerBars .visualizer-bar').forEach((bar) => {
-                bar.style.background = barColor;
-            });
-            if (!skipLayout) {
-                updateVisualizerLayout();
-            }
-        }
-
-        function updateVisualizerToggleButton() {
-            if (!refs.visualizerToggleIcon) return;
-            if (visualizerActive) {
-                refs.visualizerToggleIcon.innerHTML = '<path d="M6 6l12 12"></path><path d="M18 6L6 18"></path>';
-                refs.visualizerToggleBtn.title = 'Ocultar visualizador de audio';
-            } else {
-                refs.visualizerToggleIcon.innerHTML = '<path d="M12 5v14"></path><path d="M5 12h14"></path>';
-                refs.visualizerToggleBtn.title = 'Mostrar visualizador de audio';
-            }
-        }
-
-        function stopVisualizer() {
-            if (visualizerAnimationFrame) {
-                cancelAnimationFrame(visualizerAnimationFrame);
-                visualizerAnimationFrame = null;
-            }
-        }
-
-        function animateVisualizer() {
-            if (!visualizerActive || !visualizerAnalyser || !refs.visualizerBars) return;
-            const styleMode = getCheckedRadioValue('visualizerStyleMode') || 'simple';
-            visualizerAnalyser.getByteFrequencyData(visualizerDataArray);
-            const bars = Array.from(refs.visualizerBars.children);
-            const barCount = bars.length;
-            const step = Math.floor(visualizerDataArray.length / barCount) || 1;
-            bars.forEach((bar, index) => {
-                const start = index * step;
-                const end = Math.min(start + step, visualizerDataArray.length);
-                let sum = 0;
-                for (let i = start; i < end; i += 1) {
-                    sum += visualizerDataArray[i];
-                }
-                const average = end > start ? sum / (end - start) : 0;
-                const percent = average / 255;
-                const heightPercent = Math.max(10, percent * 100);
-                bar.style.height = `${heightPercent}%`;
-                if (styleMode === 'symmetric') {
-                    bar.style.borderRadius = '999px';
-                } else {
-                    bar.style.borderRadius = '999px 999px 0 0';
-                }
-            });
-            visualizerAnimationFrame = requestAnimationFrame(animateVisualizer);
-        }
-
-        function startVisualizer() {
-            if (!audio) return;
-            if (!visualizerAudioContext) {
-                try {
-                    visualizerAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    visualizerAnalyser = visualizerAudioContext.createAnalyser();
-                    visualizerAnalyser.fftSize = 256;
-                    const source = visualizerAudioContext.createMediaElementSource(audio);
-                    source.connect(visualizerAnalyser);
-                    visualizerAnalyser.connect(visualizerAudioContext.destination);
-                    visualizerDataArray = new Uint8Array(visualizerAnalyser.frequencyBinCount);
-                } catch (error) {
-                    console.warn('No se pudo crear el visualizador de audio:', error);
-                    return;
-                }
-            }
-            if (visualizerAudioContext.state === 'suspended') {
-                visualizerAudioContext.resume();
-            }
-            visualizerActive = true;
-            if (refs.audioVisualizer) refs.audioVisualizer.classList.remove('hidden');
-            updateVisualizerToggleButton();
-            animateVisualizer();
-        }
-
-        function toggleVisualizer() {
-            visualizerActive = !visualizerActive;
-            if (visualizerActive) {
-                if (refs.audioVisualizer) refs.audioVisualizer.classList.remove('hidden');
-                startVisualizer();
-            } else {
-                if (refs.audioVisualizer) refs.audioVisualizer.classList.add('hidden');
-                stopVisualizer();
-            }
-            updateVisualizerToggleButton();
-        }
-
-        function handleVisualizerPointerDown(event) {
-            if (!refs.audioVisualizer) return;
-            visualizerDragState.active = true;
-            refs.audioVisualizer.classList.add('dragging');
-            refs.audioVisualizer.style.bottom = 'auto';
-            const rect = refs.audioVisualizer.getBoundingClientRect();
-            const computedStyle = window.getComputedStyle(refs.audioVisualizer);
-            const currentLeft = parseFloat(computedStyle.left) || rect.left;
-            const currentTop = parseFloat(computedStyle.top) || rect.top;
-            refs.audioVisualizer.style.left = `${currentLeft}px`;
-            refs.audioVisualizer.style.top = `${currentTop}px`;
-            visualizerDragState.startX = event.clientX;
-            visualizerDragState.startY = event.clientY;
-            visualizerDragState.startLeft = currentLeft;
-            visualizerDragState.startTop = currentTop;
-            visualizerDragState.pointerOffsetX = event.clientX - rect.left;
-            visualizerDragState.pointerOffsetY = event.clientY - rect.top;
-            event.preventDefault();
-        }
-
-        function handleVisualizerPointerMove(event) {
-            if (!visualizerDragState.active || !refs.audioVisualizer) return;
-            const nextLeft = Math.max(0, Math.min(window.innerWidth - refs.audioVisualizer.offsetWidth, event.clientX - visualizerDragState.pointerOffsetX));
-            const nextTop = Math.max(0, Math.min(window.innerHeight - refs.audioVisualizer.offsetHeight, event.clientY - visualizerDragState.pointerOffsetY));
-            refs.audioVisualizer.style.left = `${nextLeft}px`;
-            refs.audioVisualizer.style.top = `${nextTop}px`;
-        }
-
-        function handleVisualizerPointerUp() {
-            if (!visualizerDragState.active || !refs.audioVisualizer) return;
-            visualizerDragState.active = false;
-            refs.audioVisualizer.classList.remove('dragging');
-        }
-
-        function initVisualizerControls() {
-            if (refs.visualizerToggleBtn) {
-                refs.visualizerToggleBtn.addEventListener('click', toggleVisualizer);
-            }
-            if (refs.audioVisualizer) {
-                refs.audioVisualizer.addEventListener('pointerdown', handleVisualizerPointerDown);
-            }
-            window.addEventListener('pointermove', handleVisualizerPointerMove);
-            window.addEventListener('pointerup', handleVisualizerPointerUp);
-            updateVisualizerToggleButton();
-            createVisualizerBars(visualizerBarCount);
-            applyVisualizerSettings();
-        }
-
-        initVisualizerControls();
 
         function formatTime(seconds) {
             const safeSeconds = Number.isFinite(seconds) ? Math.max(0, Math.floor(seconds)) : 0;
@@ -2353,6 +1998,34 @@
         let letterBoxTextManualDragActive = false;
         const letterBoxTagPalette = new Map();
         const letterBoxTagPaletteSeed = Math.floor(Math.random() * 360);
+        const letterBoxTagGlobalState = {
+            opacity: 0.4,
+            brightness: 0.2
+        };
+
+        const letterBoxTagDefaultColors = new Map([
+            ['intro', '#23D2EA'],
+            ['introduction', '#23D2EA'],
+            ['introduccion', '#23D2EA'],
+            ['introducción', '#23D2EA'],
+            ['coro', '#D35C97'],
+            ['coros', '#D35C97'],
+            ['chorus', '#D35C97'],
+            ['estribillo', '#D35C97'],
+            ['verso', '#876CE2'],
+            ['verse', '#876CE2'],
+            ['pre-chorus', '#B383E0'],
+            ['prechorus', '#B383E0'],
+            ['precoro', '#B383E0'],
+            ['pre-coro', '#B383E0'],
+            ['bridge', '#E0805A'],
+            ['puente', '#E0805A'],
+            ['oturo', '#A7E43A'],
+            ['final', '#A7E43A'],
+            ['end', '#A7E43A'],
+            ['ending', '#A7E43A'],
+            ['solo', '#DEAF39']
+        ]);
 
         function hashString(value) {
             let hash = 0;
@@ -2388,19 +2061,6 @@
             return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
         }
 
-        function hexToRgbValues(hex) {
-            const normalized = String(hex || '').trim();
-            const cleanHex = normalized.startsWith('#') ? normalized.slice(1) : normalized;
-            if (cleanHex.length !== 6) {
-                return { r: 255, g: 255, b: 255 };
-            }
-            return {
-                r: parseInt(cleanHex.slice(0, 2), 16),
-                g: parseInt(cleanHex.slice(2, 4), 16),
-                b: parseInt(cleanHex.slice(4, 6), 16)
-            };
-        }
-
         function getLetterBoxTagColor(text) {
             const safeText = String(text || '').trim();
             const hue = (hashString(safeText) + letterBoxTagPaletteSeed) % 360;
@@ -2421,14 +2081,19 @@
             return `#${[darken(r), darken(g), darken(b)].map((value) => value.toString(16).padStart(2, '0')).join('')}`;
         }
 
+        function extractLetterBoxTagKey(value) {
+            const safeText = String(value || '').trim();
+            return safeText.split(/\s+/)[0]?.toLowerCase() || '';
+        }
+
         function getLetterBoxTagPaletteState(text) {
-            const key = String(text || '').trim().toLowerCase();
+            const key = extractLetterBoxTagKey(text);
             if (!letterBoxTagPalette.has(key)) {
-                const backgroundColor = getLetterBoxTagColor(text);
+                const defaultColor = letterBoxTagDefaultColors.get(key);
+                const baseColor = defaultColor || getLetterBoxTagColor(key || text);
                 letterBoxTagPalette.set(key, {
-                    backgroundColor,
-                    textColor: getLetterBoxTagTextColor(backgroundColor),
-                    shadowColor: getLetterBoxTagShadowColor(backgroundColor)
+                    baseColor,
+                    color: baseColor
                 });
             }
             return letterBoxTagPalette.get(key);
@@ -2534,13 +2199,45 @@
             document.body.appendChild(menu);
         }
 
+        function rgbaFromHex(hex, alpha = 1) {
+            const { r, g, b } = hexToRgbValues(hex);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        function adjustColorBrightness(hex, brightness = 0.5, alpha = 1) {
+            const { r, g, b } = hexToRgbValues(hex);
+            const normalized = Math.max(0, Math.min(1, Number(brightness) || 0.5));
+            if (normalized <= 0.5) {
+                const factor = normalized / 0.5;
+                return `rgba(${Math.round(r * factor)}, ${Math.round(g * factor)}, ${Math.round(b * factor)}, ${alpha})`;
+            }
+            const factor = (normalized - 0.5) / 0.5;
+            return `rgba(${Math.round(r + (255 - r) * factor)}, ${Math.round(g + (255 - g) * factor)}, ${Math.round(b + (255 - b) * factor)}, ${alpha})`;
+        }
+
+        function updateAllLetterBoxTagStyles() {
+            document.querySelectorAll('.letter-box-tag').forEach((matchedTag) => {
+                const tagKey = matchedTag.dataset.tagKey || matchedTag.textContent;
+                const tagState = getLetterBoxTagPaletteState(tagKey);
+                const textColor = tagState.color;
+                const backgroundValue = adjustColorBrightness(textColor, letterBoxTagGlobalState.brightness, letterBoxTagGlobalState.opacity);
+                matchedTag.dataset.tagColor = textColor;
+                matchedTag.style.background = backgroundValue;
+                matchedTag.style.color = textColor;
+                matchedTag.style.borderColor = textColor;
+                matchedTag.style.setProperty('--tag-bg', backgroundValue);
+                matchedTag.style.setProperty('--tag-text', textColor);
+                matchedTag.style.setProperty('--tag-border', textColor);
+            });
+        }
+
         function toggleLetterBoxTagMenu(tag, event) {
             if (event) {
                 event.preventDefault();
                 event.stopPropagation();
             }
 
-            const existingMenu = tag.querySelector('.letter-box-tag-menu');
+            const existingMenu = document.querySelector('.letter-box-tag-menu');
             if (existingMenu) {
                 existingMenu.remove();
                 return;
@@ -2548,7 +2245,8 @@
 
             closeLetterBoxTagMenus(tag);
 
-            const state = getLetterBoxTagPaletteState(tag.dataset.tagKey || tag.textContent);
+            const key = extractLetterBoxTagKey(tag.dataset.tagKey || tag.textContent);
+            const state = getLetterBoxTagPaletteState(key || tag.textContent);
             const menu = document.createElement('div');
             menu.className = 'letter-box-tag-menu';
             menu.addEventListener('pointerdown', (menuEvent) => {
@@ -2565,58 +2263,66 @@
             });
 
             const rect = tag.getBoundingClientRect();
-            const menuWidth = 180;
+            const menuWidth = 240;
             const menuHeight = 200;
             menu.style.left = `${Math.min(rect.left, window.innerWidth - menuWidth - 12)}px`;
             menu.style.top = `${Math.min(rect.bottom + 8, window.innerHeight - menuHeight - 12)}px`;
 
-            const backgroundInput = document.createElement('input');
-            backgroundInput.type = 'color';
-            backgroundInput.value = state.backgroundColor;
-            const backgroundLabel = document.createElement('label');
-            backgroundLabel.innerHTML = '<span>Fondo</span>';
-            backgroundLabel.prepend(backgroundInput);
+            const colorInput = document.createElement('input');
+            colorInput.type = 'color';
+            colorInput.value = state.color;
+            const colorLabel = document.createElement('label');
+            colorLabel.innerHTML = '<span>Color</span>';
+            colorLabel.prepend(colorInput);
 
-            const textInput = document.createElement('input');
-            textInput.type = 'color';
-            textInput.value = state.textColor;
-            const textLabel = document.createElement('label');
-            textLabel.innerHTML = '<span>Texto</span>';
-            textLabel.prepend(textInput);
+            const opacityInput = document.createElement('input');
+            opacityInput.type = 'range';
+            opacityInput.min = '10';
+            opacityInput.max = '100';
+            opacityInput.value = String(Math.round(letterBoxTagGlobalState.opacity * 100));
+            opacityInput.style.width = '100%';
+            const opacityValue = document.createElement('span');
+            opacityValue.textContent = `${Math.round(letterBoxTagGlobalState.opacity * 100)}%`;
+            const opacityLabel = document.createElement('label');
+            opacityLabel.innerHTML = '<span>Opacidad</span>';
+            opacityLabel.appendChild(opacityValue);
+            opacityLabel.prepend(opacityInput);
 
-            const shadowInput = document.createElement('input');
-            shadowInput.type = 'color';
-            shadowInput.value = state.shadowColor;
-            const shadowLabel = document.createElement('label');
-            shadowLabel.innerHTML = '<span>Sombra</span>';
-            shadowLabel.prepend(shadowInput);
+            const brightnessInput = document.createElement('input');
+            brightnessInput.type = 'range';
+            brightnessInput.min = '0';
+            brightnessInput.max = '100';
+            brightnessInput.value = String(Math.round(letterBoxTagGlobalState.brightness * 100));
+            brightnessInput.style.width = '100%';
+            const brightnessValue = document.createElement('span');
+            brightnessValue.textContent = `${Math.round(letterBoxTagGlobalState.brightness * 100)}%`;
+            const brightnessLabel = document.createElement('label');
+            brightnessLabel.innerHTML = '<span>Claridad</span>';
+            brightnessLabel.appendChild(brightnessValue);
+            brightnessLabel.prepend(brightnessInput);
 
-            backgroundInput.addEventListener('input', () => {
-                const nextColor = backgroundInput.value;
-                state.backgroundColor = nextColor;
-                state.shadowColor = getLetterBoxTagShadowColor(nextColor);
-                shadowInput.value = state.shadowColor;
-                tag.dataset.tagBgColor = nextColor;
-                tag.style.background = nextColor;
-                tag.style.setProperty('--tag-bg', nextColor);
-                tag.style.setProperty('--tag-shadow-color', hexToRgba(state.shadowColor, 0.7));
+            const applyColor = (nextColor) => {
+                state.color = nextColor;
+                updateAllLetterBoxTagStyles();
+            };
+
+            colorInput.addEventListener('input', () => {
+                applyColor(colorInput.value);
             });
 
-            textInput.addEventListener('input', () => {
-                const nextColor = textInput.value;
-                state.textColor = nextColor;
-                tag.dataset.tagTextColor = nextColor;
-                tag.style.color = nextColor;
-                tag.style.setProperty('--tag-text', nextColor);
+            opacityInput.addEventListener('input', () => {
+                letterBoxTagGlobalState.opacity = Number(opacityInput.value) / 100;
+                opacityValue.textContent = `${opacityInput.value}%`;
+                updateAllLetterBoxTagStyles();
             });
 
-            shadowInput.addEventListener('input', () => {
-                const nextColor = shadowInput.value;
-                state.shadowColor = nextColor;
-                tag.style.setProperty('--tag-shadow-color', hexToRgba(nextColor, 0.7));
+            brightnessInput.addEventListener('input', () => {
+                letterBoxTagGlobalState.brightness = Number(brightnessInput.value) / 100;
+                brightnessValue.textContent = `${brightnessInput.value}%`;
+                updateAllLetterBoxTagStyles();
             });
 
-            menu.append(backgroundLabel, textLabel, shadowLabel);
+            menu.append(colorLabel, opacityLabel, brightnessLabel);
             document.body.appendChild(menu);
         }
 
@@ -2636,16 +2342,20 @@
                     if (!part) return;
                     if (/^\[[^\]]+\]$/.test(part)) {
                         const tagText = part.slice(1, -1).trim();
+                        const tagKey = extractLetterBoxTagKey(tagText);
                         const paletteState = getLetterBoxTagPaletteState(tagText);
                         const tag = document.createElement('span');
                         tag.className = 'letter-box-tag';
-                        tag.dataset.tagKey = String(tagText).trim().toLowerCase();
+                        tag.dataset.tagKey = tagKey;
                         tag.textContent = tagText.toUpperCase();
-                        tag.style.background = paletteState.backgroundColor;
-                        tag.style.color = paletteState.textColor;
-                        tag.style.setProperty('--tag-bg', paletteState.backgroundColor);
-                        tag.style.setProperty('--tag-text', paletteState.textColor);
-                        tag.style.setProperty('--tag-shadow-color', hexToRgba(paletteState.shadowColor, 0.7));
+                        const currentColor = paletteState.color;
+                        const backgroundValue = adjustColorBrightness(currentColor, letterBoxTagGlobalState.brightness, letterBoxTagGlobalState.opacity);
+                        tag.style.background = backgroundValue;
+                        tag.style.color = currentColor;
+                        tag.style.borderColor = currentColor;
+                        tag.style.setProperty('--tag-bg', backgroundValue);
+                        tag.style.setProperty('--tag-text', currentColor);
+                        tag.style.setProperty('--tag-border', currentColor);
                         tag.addEventListener('click', (event) => toggleLetterBoxTagMenu(tag, event));
                         tag.addEventListener('pointerdown', (event) => {
                             event.stopPropagation();
@@ -3145,7 +2855,10 @@
             const secIsGrad = getCheckedRadioValue('secBarType') === 'gradient';
             const secC1 = document.getElementById('secBarColor1').value;
             const secC2 = document.getElementById('secBarColor2').value;
-            document.getElementById('customSliderBg').style.background = secIsGrad ? `linear-gradient(90deg, ${secC1}, ${secC2})` : secC1;
+            const customBg = document.getElementById('customSliderBg');
+            customBg.style.background = secIsGrad ? `linear-gradient(90deg, ${secC1}, ${secC2})` : secC1;
+            // Ensure background is flat (no inset shadow/depth)
+            customBg.style.boxShadow = 'none';
 
             const tColor = document.getElementById('customThumbColor').value;
             const tSize = document.getElementById('customThumbSize').value + 'px';
@@ -3202,14 +2915,6 @@
                 linkedVinylBorderSecondaryColor: document.getElementById('linkedVinylBorderSecondaryColor').value,
                 linkedVinylBorderWidth: document.getElementById('linkedVinylBorderWidth').value,
                 linkedVinylLayerOrder: document.getElementById('linkedVinylLayerOrder').value,
-                visualizerType: getCheckedRadioValue('visualizerType'),
-                visualizerColor1: document.getElementById('visualizerColor1').value,
-                visualizerColor2: document.getElementById('visualizerColor2').value,
-                visualizerLength: document.getElementById('visualizerLength').value,
-                visualizerHeight: document.getElementById('visualizerHeight').value,
-                visualizerScale: document.getElementById('visualizerScale').value,
-                visualizerOpacity: document.getElementById('visualizerOpacity').value,
-                visualizerStyleMode: getCheckedRadioValue('visualizerStyleMode'),
                 configVisibility: document.getElementById('configVisibility').checked,
                 letterBoxText: letterBoxTextState.value,
                 letterBoxTextSize: letterBoxTextState.size,
@@ -3328,18 +3033,12 @@
                     setElementValue('controlInsetShadowOpacity', settings.controlInsetShadowOpacity ?? 0.45);
                 }
 
-                if (settings.visualizerType !== undefined || settings.visualizerColor1 !== undefined || settings.visualizerLength !== undefined || settings.visualizerHeight !== undefined || settings.visualizerScale !== undefined || settings.visualizerOpacity !== undefined || settings.visualizerStyleMode !== undefined) {
-                    setCheckedRadioValue('visualizerType', settings.visualizerType ?? 'color');
-                    setElementValue('visualizerColor1', settings.visualizerColor1 ?? '#22c55e');
-                    setElementValue('visualizerColor2', settings.visualizerColor2 ?? '#06b6d4');
-                    setElementValue('visualizerLength', settings.visualizerLength ?? 16);
-                    setElementValue('visualizerHeight', settings.visualizerHeight ?? 120);
-                    setElementValue('visualizerScale', settings.visualizerScale ?? 1);
-                    setElementValue('visualizerOpacity', settings.visualizerOpacity ?? 0.9);
-                    setCheckedRadioValue('visualizerStyleMode', settings.visualizerStyleMode ?? 'simple');
+                if (settings.configVisibility !== undefined) {
+                    setElementValue('configVisibility', settings.configVisibility);
+                    toggleConfigBtn();
                 }
 
-                if (settings.configVisibility !== undefined) {
+                if (settings.letterBoxText !== undefined) {
                     setElementValue('configVisibility', settings.configVisibility);
                     toggleConfigBtn();
                 }
@@ -3351,9 +3050,6 @@
                     letterBoxTextState.offset = settings.letterBoxTextOffset || 0;
                     renderLetterBoxText();
                 }
-
-                toggleVisualizerType();
-                applyVisualizerSettings();
 
                 if (settings.mainBarColor1 !== undefined) {
                     setCheckedRadioValue('mainBarType', settings.mainBarType || 'simple');
