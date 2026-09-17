@@ -624,6 +624,56 @@
             display: inline-block;
         }
 
+        .config-shell {
+            background: linear-gradient(135deg, var(--config-shell-start, rgba(38, 38, 38, 0.88)), var(--config-shell-end, rgba(38, 38, 38, 0.96)));
+            border: 1px solid var(--config-shell-border, rgba(255,255,255,0.12));
+            box-shadow: 0 26px 80px rgba(0,0,0,0.38);
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+
+        #modalOverlay {
+            background: rgba(2, 6, 23, 0.58);
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+
+        .config-sidebar {
+            background: rgba(15, 23, 42, 0.34);
+            border-right: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .config-section-nav-btn {
+            width: 100%;
+            text-align: left;
+            border-radius: 0.9rem;
+            padding: 0.8rem 0.9rem;
+            color: rgba(255,255,255,0.8);
+            background: rgba(255,255,255,0.04);
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .config-section-nav-btn:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        .config-section-nav-btn.active {
+            background: linear-gradient(135deg, var(--config-shell-start, rgba(38, 38, 38, 0.88)), var(--config-shell-end, rgba(38, 38, 38, 0.96)));
+            border-color: rgba(255,255,255,0.2);
+            color: white;
+            box-shadow: inset 0 0 0 1px rgba(148,163,184,0.26);
+        }
+
+        .config-section-panel {
+            display: none;
+        }
+
+        .config-section-panel.active {
+            display: block;
+        }
+
         @keyframes scroll-marquee {
             0%, 10% { transform: translateY(-50%) translateX(0); }
             90%, 100% { transform: translateY(-50%) translateX(var(--scroll-dist)); }
@@ -829,432 +879,498 @@
 
     <div id="configGhostTrigger" class="fixed top-0 left-0 w-20 h-20 z-50 cursor-pointer hidden" title="Abrir configuración"></div>
 
-    <div id="modalOverlay" class="fixed inset-0 bg-black/30 hidden flex items-center justify-center p-6 backdrop-blur-sm z-50">
-        <div class="neu-card w-full max-w-4xl h-3/4 p-12 relative overflow-y-auto">
-            <button id="closeModal" class="absolute top-6 right-6 text-gray-400 hover:text-white transition text-xl">✕</button>
-            <h2 class="text-3xl font-bold mb-8">Configuración</h2>
-            
-            <ul class="space-y-6">
-                <li id="visibilityOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                    <div class="flex flex-col space-y-4">
-                        <span class="font-semibold text-xl">Visibilidad del botón</span>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="configVisibility" checked onchange="toggleConfigBtn()"> Mostrar botón de configuración
-                        </label>
-                    </div>
-                </li>
+    <div id="modalOverlay" class="fixed inset-0 bg-black/40 hidden z-50 backdrop-blur-sm">
+        <div class="config-shell w-full h-full flex flex-col">
+            <header class="flex items-center justify-between border-b border-white/10 px-6 py-5 sm:px-8">
+                <button id="closeModal" class="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-xl text-white transition hover:bg-white/10" aria-label="Cerrar configuración">←</button>
+                <h2 id="configSectionTitle" class="text-2xl font-bold tracking-tight text-white sm:text-3xl">Configuración</h2>
+                <div class="w-12"></div>
+            </header>
 
-                <li id="controlSizeOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                    <div class="flex flex-col space-y-4">
-                        <span class="font-semibold text-xl">Tamaño del botón de pausa y del control</span>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-24">Escala</span>
-                            <input type="range" id="controlSizeScale" min="0.7" max="1.5" step="0.05" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyControlSizeSettings()">
-                        </div>
-                    </div>
-                </li>
+            <div class="flex min-h-0 flex-1 flex-col lg:flex-row">
+                <aside class="config-sidebar w-full shrink-0 border-b border-white/10 p-4 lg:w-72 lg:border-b-0 lg:border-r lg:p-5">
+                    <nav id="configSectionNav" class="flex flex-col gap-2">
+                        <button type="button" class="config-section-nav-btn active" data-config-section="general">General</button>
+                        <button type="button" class="config-section-nav-btn" data-config-section="apariencia">Apariencia</button>
+                        <button type="button" class="config-section-nav-btn" data-config-section="fondo">Fondo</button>
+                        <button type="button" class="config-section-nav-btn" data-config-section="imagen">Imagen</button>
+                        <button type="button" class="config-section-nav-btn" data-config-section="vinilo">Vinilo</button>
+                        <button type="button" class="config-section-nav-btn" data-config-section="audio">Audio</button>
+                        <button type="button" class="config-section-nav-btn" data-config-section="gestion">Gestión</button>
+                    </nav>
+                </aside>
 
-                <li id="pauseBtnConfig" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                    <div class="flex flex-col space-y-4">
-                        <span class="font-semibold text-xl">Personalizar Botón de Pausa</span>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Color Fondo</span>
-                                <input type="color" id="pauseBgColor" value="#262626" class="w-12 h-12 rounded cursor-pointer" oninput="applyPauseButtonSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Color Icono</span>
-                                <input type="color" id="pauseIconColor" value="#e5e5e5" class="w-12 h-12 rounded cursor-pointer" oninput="applyPauseButtonSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Sombra</span>
-                                <input type="color" id="pauseShadowColor" value="#000000" class="w-12 h-12 rounded cursor-pointer" oninput="applyPauseButtonSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Opacidad</span>
-                                <input type="range" id="pauseShadowOpacity" min="0" max="1" step="0.05" value="0.5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPauseButtonSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Difuminado</span>
-                                <input type="range" id="pauseShadowBlur" min="0" max="100" step="1" value="20" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPauseButtonSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Tamaño</span>
-                                <input type="range" id="pauseShadowSpread" min="0" max="50" step="1" value="2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPauseButtonSettings()">
-                            </div>
+                <main class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+                    <div class="config-section-panel active" data-config-section="general">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-white sm:text-2xl">General</h3>
                         </div>
-                    </div>
-                </li>
-                
-                <li id="themeOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                    <div class="flex flex-col space-y-4">
-                        <span class="font-semibold text-xl">Apariencia de Componentes</span>
-                        <div class="flex items-center gap-4">
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="themeType" value="simple" checked onchange="toggleGradientInputs(false)"> Simple
-                            </label>
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="themeType" value="gradient" onchange="toggleGradientInputs(true)"> Gradiente
-                            </label>
-                        </div>
-                        <div class="flex gap-4 items-center">
-                            <input type="color" id="color1" value="#262626" class="w-12 h-12 rounded cursor-pointer" oninput="applyTheme()">
-                            <input type="color" id="color2" value="#262626" class="w-12 h-12 rounded cursor-pointer hidden" oninput="applyTheme()">
-                            <span id="colorLabel" class="text-sm text-gray-400">Color principal</span>
-                        </div>
-                        <div class="flex flex-col gap-4 mt-2 border-t border-gray-700 pt-4">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" id="btnBlurToggle" onchange="applyButtonCustomization()"> Activar efecto Blur (fondo)
-                            </label>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-24">Intensidad Blur</span>
-                                <input type="range" id="btnBlurIntensity" min="0" max="20" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyButtonCustomization()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-24">Opacidad</span>
-                                <input type="range" id="btnOpacity" min="0.1" max="1" step="0.1" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyButtonCustomization()">
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                
-                <li id="imageSizeOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                    <div class="flex flex-col space-y-4">
-                        <span class="font-semibold text-xl">Tamaño de la imagen</span>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-24">Tamaño</span>
-                            <input type="range" id="imageSizeRange" min="10" max="1000" step="1" value="220" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="updateImageSizeFromControl()">
-                        </div>
-                        <div id="imageSizeValue" class="text-sm text-gray-400">220 px</div>
-                    </div>
-                </li>
-
-                <li id="bgOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                    <div class="flex flex-col space-y-4">
-                        <span class="font-semibold text-xl">Cambiar fondo</span>
-                        <div class="flex flex-wrap items-center gap-4">
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="bgType" value="simple" checked onchange="updateBgControls('simple')"> Color
-                            </label>
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="bgType" value="gradient" onchange="updateBgControls('gradient')"> Gradiente
-                            </label>
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="bgType" value="image" onchange="updateBgControls('image')"> Imagen
-                            </label>
-                        </div>
-                        <div id="bgControls" class="flex flex-col gap-4">
-                            <div id="simpleBgControl" class="flex gap-4 items-center">
-                                <input type="color" id="bgColorSimple" value="#262626" class="w-12 h-12 rounded cursor-pointer" oninput="applyBackground()">
-                                <span class="text-sm text-gray-400">Color de fondo</span>
-                            </div>
-                            <div id="gradientBgControl" class="hidden flex gap-4 items-center">
-                                <input type="color" id="bgColorGrad1" value="#262626" class="w-12 h-12 rounded cursor-pointer" oninput="applyBackground()">
-                                <input type="color" id="bgColorGrad2" value="#4a4a4a" class="w-12 h-12 rounded cursor-pointer" oninput="applyBackground()">
-                                <span class="text-sm text-gray-400">Colores de gradiente</span>
-                            </div>
-                            <div id="imageBgControl" class="hidden flex gap-4 items-center">
-                                <input type="file" id="bgImageFile" accept="image/*" class="bg-[#1a1a1a] p-2 rounded border border-gray-700 w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-white hover:file:bg-gray-600 cursor-pointer" onchange="applyBackground()">
-                            </div>
-                        </div>
-                        <button onclick="syncBackgroundWithButtons()" class="mt-4 w-full p-3 neu-btn rounded-lg text-sm font-semibold hover:opacity-80 transition">
-                            Sincronizar con tema de botones
-                        </button>
-                        <div class="flex flex-col gap-2 mt-4 pt-4 border-t border-gray-700">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" id="blurToggle" onchange="applyBlur()"> Activar efecto Blur
-                            </label>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-24">Intensidad</span>
-                                <input type="range" id="blurIntensity" min="0" max="20" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyBlur()">
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                
-                <li id="textOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                    <div class="flex flex-col space-y-4">
-                        <span class="font-semibold text-xl">Color de texto e iconos</span>
-                        <div class="flex items-center gap-4">
-                            <input type="color" id="textColorPicker" value="#e5e5e5" class="w-12 h-12 rounded cursor-pointer">
-                            <button onclick="applyTextAndIconColor()" class="neu-btn px-6 py-2 rounded-lg font-semibold hover:opacity-80 transition">
-                                Aplicar Color
-                            </button>
-                        </div>
-                    </div>
-                </li>
-                
-                <li id="playerCardOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                    <div class="flex flex-col space-y-4">
-                        <span class="font-semibold text-xl">Cuadro de Audio</span>
-                        <div class="border border-gray-700/50 rounded-xl p-5 bg-black/10 flex flex-col gap-4 mb-2 shadow-inner">
-                            <span class="font-semibold text-lg text-gray-300 border-b border-gray-700/50 pb-2">Ajustes de Sombra</span>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Color Exterior</span>
-                                <input type="color" id="playerShadowColor" value="#000000" class="w-12 h-12 rounded cursor-pointer" oninput="applyPlayerCardSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Color Secundario</span>
-                                <input type="color" id="playerShadowSecondaryColor" value="#ffffff" class="w-12 h-12 rounded cursor-pointer" oninput="applyPlayerCardSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Inicio Gradiente</span>
-                                <input type="range" id="playerShadowGradientStart" min="0" max="99" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()" title="0 = centro, 50 = mitad del borde, 99 = casi borde">
-                                <span id="playerShadowGradientStartValue" class="text-sm text-gray-400 min-w-[2.5rem] text-right">50%</span>
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Opacidad</span>
-                                <input type="range" id="playerShadowOpacity" min="0" max="1" step="0.05" value="0.5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Difuminado</span>
-                                <input type="range" id="playerShadowBlur" min="0" max="400" step="1" value="40" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()" title="De 0 a 400px">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Tamaño</span>
-                                <input type="range" id="playerShadowSpread" min="-50" max="150" step="1" value="5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()" title="Crecimiento simétrico">
-                            </div>
-                        </div>
-                        <div class="border border-gray-700/50 rounded-xl p-5 bg-black/10 flex flex-col gap-4 mt-2 shadow-inner">
-                            <span class="font-semibold text-lg text-gray-300 border-b border-gray-700/50 pb-2">Sombra interior de botones y contadores</span>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Tamaño</span>
-                                <input type="range" id="controlInsetShadowSize" min="0" max="20" step="1" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyControlInsetShadowSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Difuminado</span>
-                                <input type="range" id="controlInsetShadowBlur" min="0" max="40" step="1" value="12" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyControlInsetShadowSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Opacidad</span>
-                                <input type="range" id="controlInsetShadowOpacity" min="0" max="1" step="0.05" value="0.45" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyControlInsetShadowSettings()">
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4 mt-2">
-                            <span class="text-sm text-gray-400 w-28">Blur Fondo</span>
-                            <input type="range" id="playerBlur" min="0" max="40" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()">
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-28">Opacidad Panel</span>
-                            <input type="range" id="playerOpacity" min="0.1" max="1" step="0.05" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()">
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-28">Escala Panel</span>
-                            <input type="range" id="playerScale" min="0.5" max="1.5" step="0.05" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()">
-                        </div>
-                    </div>
-                </li>
-
-                <li id="letterBoxOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                    <div class="flex flex-col space-y-4">
-                        <span class="font-semibold text-xl">Cuadro de Letras</span>
-                        <div class="border border-gray-700/50 rounded-xl p-5 bg-black/10 flex flex-col gap-4 mb-2 shadow-inner">
-                            <span class="font-semibold text-lg text-gray-300 border-b border-gray-700/50 pb-2">Sombra del cuadro</span>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Color</span>
-                                <input type="color" id="letterBoxShadowColor" value="#000000" class="w-12 h-12 rounded cursor-pointer" oninput="applyLetterBoxSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Color Secundario</span>
-                                <input type="color" id="letterBoxShadowSecondaryColor" value="#ffffff" class="w-12 h-12 rounded cursor-pointer" oninput="applyLetterBoxSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Inicio Gradiente</span>
-                                <input type="range" id="letterBoxShadowGradientStart" min="0" max="99" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Opacidad</span>
-                                <input type="range" id="letterBoxShadowOpacity" min="0" max="1" step="0.05" value="0.45" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Difuminado</span>
-                                <input type="range" id="letterBoxShadowBlur" min="0" max="400" step="1" value="40" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Tamaño</span>
-                                <input type="range" id="letterBoxShadowSpread" min="-50" max="150" step="1" value="5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-28">Opacidad</span>
-                            <input type="range" id="letterBoxOpacity" min="0.1" max="1" step="0.05" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-28">Blur</span>
-                            <input type="range" id="letterBoxBlur" min="0" max="40" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-28">Tamaño vertical</span>
-                            <input type="range" id="letterBoxHeightPercent" min="0.1" max="150" step="0.1" value="24" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-28">Tamaño horizontal</span>
-                            <input type="range" id="letterBoxWidthPercent" min="0.1" max="150" step="0.1" value="60" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-28">Posición horizontal</span>
-                            <input type="range" id="letterBoxHorizontalPosition" min="0" max="100" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-28">Posición vertical</span>
-                            <input type="range" id="letterBoxVerticalPosition" min="0" max="100" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
-                        </div>
-                    </div>
-                </li>
-
-                <li id="linkedVinylOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                    <div class="flex flex-col space-y-4">
-                        <span class="font-semibold text-xl">Vinilo enlazado</span>
-                        <div class="border border-gray-700/50 rounded-xl p-5 bg-black/10 flex flex-col gap-4 mb-2 shadow-inner">
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-400 w-28">Tamaño</span>
-                                <input type="range" id="linkedVinylSizePercent" min="10" max="100" step="1" value="24" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLinkedVinylSettings()">
-                            </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-28">Posición horizontal</span>
-                            <input type="range" id="linkedVinylHorizontalPosition" min="0" max="100" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLinkedVinylSettings()">
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-28">Posición vertical</span>
-                            <input type="range" id="linkedVinylVerticalPosition" min="0" max="100" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLinkedVinylSettings()">
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-28">Estilo</span>
-                            <select id="linkedVinylStyle" class="w-full rounded-xl border border-gray-700/60 bg-black/20 px-3 py-2 text-sm" onchange="applyLinkedVinylSettings()">
-                                <option value="classic">Clásico</option>
-                                <option value="modern">Moderno</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-28">Tipo de borde</span>
-                            <select id="linkedVinylBorderType" class="w-full rounded-xl border border-gray-700/60 bg-black/20 px-3 py-2 text-sm" onchange="applyLinkedVinylSettings()">
-                                <option value="simple">Color simple</option>
-                                <option value="gradient">Gradiente</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-28">Color borde</span>
-                            <input type="color" id="linkedVinylBorderColor" value="#ffffff" class="w-12 h-12 rounded cursor-pointer" oninput="applyLinkedVinylSettings()">
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-28">Color borde 2</span>
-                            <input type="color" id="linkedVinylBorderSecondaryColor" value="#808080" class="w-12 h-12 rounded cursor-pointer" oninput="applyLinkedVinylSettings()">
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-28">Grosor borde</span>
-                            <input type="range" id="linkedVinylBorderWidth" min="0" max="40" step="1" value="2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLinkedVinylSettings()">
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-28">Capa</span>
-                            <select id="linkedVinylLayerOrder" class="w-full rounded-xl border border-gray-700/60 bg-black/20 px-3 py-2 text-sm" onchange="applyLinkedVinylSettings()">
-                                <option value="front">Delante del cuadro</option>
-                                <option value="back">Detrás del cuadro</option>
-                            </select>
-                        </div>
-                    </div>
-                </li>
-
-
-                <li id="progressOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                    <div class="flex flex-col space-y-4">
-                        <span class="font-semibold text-xl">Barra de Audio Personalizada</span>
-                        <div class="space-y-4 border-b border-gray-700/50 pb-4">
-                            <span class="text-sm text-gray-300 font-semibold">Color Principal (Reproducido)</span>
-                            <div class="flex gap-4 items-center">
-                                <label class="flex items-center gap-2 text-sm">
-                                    <input type="radio" name="mainBarType" value="simple" checked onchange="toggleBarMainType()"> Simple
-                                </label>
-                                <label class="flex items-center gap-2 text-sm">
-                                    <input type="radio" name="mainBarType" value="gradient" onchange="toggleBarMainType()"> Gradiente
-                                </label>
-                            </div>
-                            <div class="flex gap-4 items-center">
-                                <input type="color" id="mainBarColor1" value="#e5e5e5" class="w-10 h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
-                                <input type="color" id="mainBarColor2" value="#ffffff" class="w-10 h-10 rounded cursor-pointer hidden" oninput="applyCustomSliderSettings()">
-                            </div>
-                        </div>
-
-                        <div class="space-y-4 border-b border-gray-700/50 pb-4">
-                            <span class="text-sm text-gray-300 font-semibold">Color Secundario (No Reproducido)</span>
-                            <div class="flex gap-4 items-center">
-                                <label class="flex items-center gap-2 text-sm">
-                                    <input type="radio" name="secBarType" value="simple" checked onchange="toggleBarSecType()"> Simple
-                                </label>
-                                <label class="flex items-center gap-2 text-sm">
-                                    <input type="radio" name="secBarType" value="gradient" onchange="toggleBarSecType()"> Gradiente
-                                </label>
-                            </div>
-                            <div class="flex gap-4 items-center">
-                                <input type="color" id="secBarColor1" value="#000000" class="w-10 h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
-                                <input type="color" id="secBarColor2" value="#333333" class="w-10 h-10 rounded cursor-pointer hidden" oninput="applyCustomSliderSettings()">
-                            </div>
-                        </div>
-                        <div class="space-y-4 border-b border-gray-700/50 pb-4">
-                            <span class="text-sm text-gray-300 font-semibold">Círculo (Thumb)</span>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="flex flex-col gap-2">
-                                    <span class="text-xs text-gray-400">Color (Simple)</span>
-                                    <input type="color" id="customThumbColor" value="#e5e5e5" class="w-full h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
+                        <ul class="space-y-6">
+                            <li id="visibilityOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
+                                <div class="flex flex-col space-y-4">
+                                    <span class="font-semibold text-xl">Visibilidad del botón</span>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" id="configVisibility" checked onchange="toggleConfigBtn()"> Mostrar botón de configuración
+                                    </label>
                                 </div>
-                                <div class="flex flex-col gap-2">
-                                    <span class="text-xs text-gray-400">Tamaño</span>
-                                    <input type="range" id="customThumbSize" min="10" max="50" value="20" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer mt-4" oninput="applyCustomSliderSettings()">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="space-y-4">
-                            <span class="text-sm text-gray-300 font-semibold">Sombra del Círculo</span>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="flex flex-col gap-2">
-                                    <span class="text-xs text-gray-400">Color Sombra</span>
-                                    <input type="color" id="customThumbShadowColor" value="#000000" class="w-full h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
-                                </div>
-                                <div class="flex flex-col gap-2">
-                                    <span class="text-xs text-gray-400">Transparencia</span>
-                                    <input type="range" id="customThumbShadowOpacity" min="0" max="1" step="0.05" value="0.5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer mt-4" oninput="applyCustomSliderSettings()">
-                                </div>
-                                <div class="flex flex-col gap-2">
-                                    <span class="text-xs text-gray-400">Intensidad Blur</span>
-                                    <input type="range" id="customThumbShadowBlur" min="0" max="30" value="5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer mt-4" oninput="applyCustomSliderSettings()">
-                                </div>
-                                <div class="flex flex-col gap-2">
-                                    <span class="text-xs text-gray-400">Tamaño (Spread)</span>
-                                    <input type="range" id="customThumbShadowSize" min="-10" max="20" value="2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer mt-4" oninput="applyCustomSliderSettings()">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
+                            </li>
 
-                <li id="timeChipOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                    <div class="flex flex-col space-y-4">
-                        <span class="font-semibold text-xl">Posición horizontal de los contadores</span>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-24">Izquierda</span>
-                            <input type="range" id="timeChipOffsetLeft" min="0" max="20" step="0.1" value="3.2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyTimeChipSettings()">
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 w-24">Derecha</span>
-                            <input type="range" id="timeChipOffsetRight" min="0" max="20" step="0.1" value="3.2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyTimeChipSettings()">
-                        </div>
-                    </div>
-                </li>
+                            <li id="controlSizeOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
+                                <div class="flex flex-col space-y-4">
+                                    <span class="font-semibold text-xl">Tamaño del botón de pausa y del control</span>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-400 w-24">Escala</span>
+                                        <input type="range" id="controlSizeScale" min="0.7" max="1.5" step="0.05" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyControlSizeSettings()">
+                                    </div>
+                                </div>
+                            </li>
 
-                <li id="configManagement" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                    <div class="flex flex-col space-y-4">
-                        <span class="font-semibold text-xl">Gestionar Configuración</span>
-                        <div class="flex flex-wrap gap-4">
-                            <button onclick="saveSettings()" class="neu-btn px-6 py-2 rounded-lg font-semibold hover:opacity-80 transition">
-                                Guardar (JSON)
-                            </button>
-                            <button onclick="document.getElementById('loadInput').click()" class="neu-btn px-6 py-2 rounded-lg font-semibold hover:opacity-80 transition">
-                                Cargar (Archivo)
-                            </button>
-                            <input type="file" id="loadInput" class="hidden" accept=".json" onchange="loadSettings(event)">
-                        </div>
+                            <li id="pauseBtnConfig" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
+                                <div class="flex flex-col space-y-4">
+                                    <span class="font-semibold text-xl">Personalizar Botón de Pausa</span>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Color Fondo</span>
+                                            <input type="color" id="pauseBgColor" value="#262626" class="w-12 h-12 rounded cursor-pointer" oninput="applyPauseButtonSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Color Icono</span>
+                                            <input type="color" id="pauseIconColor" value="#e5e5e5" class="w-12 h-12 rounded cursor-pointer" oninput="applyPauseButtonSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Sombra</span>
+                                            <input type="color" id="pauseShadowColor" value="#000000" class="w-12 h-12 rounded cursor-pointer" oninput="applyPauseButtonSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Opacidad</span>
+                                            <input type="range" id="pauseShadowOpacity" min="0" max="1" step="0.05" value="0.5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPauseButtonSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Difuminado</span>
+                                            <input type="range" id="pauseShadowBlur" min="0" max="100" step="1" value="20" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPauseButtonSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Tamaño</span>
+                                            <input type="range" id="pauseShadowSpread" min="0" max="50" step="1" value="2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPauseButtonSettings()">
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
-                </li>
-            </ul>
+
+                    <div class="config-section-panel" data-config-section="apariencia">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-white sm:text-2xl">Apariencia</h3>
+                        </div>
+                        <ul class="space-y-6">
+                            <li id="themeOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
+                                <div class="flex flex-col space-y-4">
+                                    <span class="font-semibold text-xl">Apariencia de Componentes</span>
+                                    <div class="flex items-center gap-4">
+                                        <label class="flex items-center gap-2">
+                                            <input type="radio" name="themeType" value="simple" checked onchange="toggleGradientInputs(false)"> Simple
+                                        </label>
+                                        <label class="flex items-center gap-2">
+                                            <input type="radio" name="themeType" value="gradient" onchange="toggleGradientInputs(true)"> Gradiente
+                                        </label>
+                                    </div>
+                                    <div class="flex gap-4 items-center">
+                                        <input type="color" id="color1" value="#262626" class="w-12 h-12 rounded cursor-pointer" oninput="applyTheme()">
+                                        <input type="color" id="color2" value="#262626" class="w-12 h-12 rounded cursor-pointer hidden" oninput="applyTheme()">
+                                        <span id="colorLabel" class="text-sm text-gray-400">Color principal</span>
+                                    </div>
+                                    <div class="flex flex-col gap-4 mt-2 border-t border-gray-700 pt-4">
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" id="btnBlurToggle" onchange="applyButtonCustomization()"> Activar efecto Blur (fondo)
+                                        </label>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-24">Intensidad Blur</span>
+                                            <input type="range" id="btnBlurIntensity" min="0" max="20" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyButtonCustomization()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-24">Opacidad</span>
+                                            <input type="range" id="btnOpacity" min="0.1" max="1" step="0.1" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyButtonCustomization()">
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li id="textOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
+                                <div class="flex flex-col space-y-4">
+                                    <span class="font-semibold text-xl">Color de texto e iconos</span>
+                                    <div class="flex items-center gap-4">
+                                        <input type="color" id="textColorPicker" value="#e5e5e5" class="w-12 h-12 rounded cursor-pointer">
+                                        <button onclick="applyTextAndIconColor()" class="neu-btn px-6 py-2 rounded-lg font-semibold hover:opacity-80 transition">
+                                            Aplicar Color
+                                        </button>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li id="playerCardOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
+                                <div class="flex flex-col space-y-4">
+                                    <span class="font-semibold text-xl">Cuadro de Audio</span>
+                                    <div class="border border-gray-700/50 rounded-xl p-5 bg-black/10 flex flex-col gap-4 mb-2 shadow-inner">
+                                        <span class="font-semibold text-lg text-gray-300 border-b border-gray-700/50 pb-2">Ajustes de Sombra</span>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Color Exterior</span>
+                                            <input type="color" id="playerShadowColor" value="#000000" class="w-12 h-12 rounded cursor-pointer" oninput="applyPlayerCardSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Color Secundario</span>
+                                            <input type="color" id="playerShadowSecondaryColor" value="#ffffff" class="w-12 h-12 rounded cursor-pointer" oninput="applyPlayerCardSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Inicio Gradiente</span>
+                                            <input type="range" id="playerShadowGradientStart" min="0" max="99" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()" title="0 = centro, 50 = mitad del borde, 99 = casi borde">
+                                            <span id="playerShadowGradientStartValue" class="text-sm text-gray-400 min-w-[2.5rem] text-right">50%</span>
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Opacidad</span>
+                                            <input type="range" id="playerShadowOpacity" min="0" max="1" step="0.05" value="0.5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Difuminado</span>
+                                            <input type="range" id="playerShadowBlur" min="0" max="400" step="1" value="40" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()" title="De 0 a 400px">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Tamaño</span>
+                                            <input type="range" id="playerShadowSpread" min="-50" max="150" step="1" value="5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()" title="Crecimiento simétrico">
+                                        </div>
+                                    </div>
+                                    <div class="border border-gray-700/50 rounded-xl p-5 bg-black/10 flex flex-col gap-4 mt-2 shadow-inner">
+                                        <span class="font-semibold text-lg text-gray-300 border-b border-gray-700/50 pb-2">Sombra interior de botones y contadores</span>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Tamaño</span>
+                                            <input type="range" id="controlInsetShadowSize" min="0" max="20" step="1" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyControlInsetShadowSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Difuminado</span>
+                                            <input type="range" id="controlInsetShadowBlur" min="0" max="40" step="1" value="12" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyControlInsetShadowSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Opacidad</span>
+                                            <input type="range" id="controlInsetShadowOpacity" min="0" max="1" step="0.05" value="0.45" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyControlInsetShadowSettings()">
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-4 mt-2">
+                                        <span class="text-sm text-gray-400 w-28">Blur Fondo</span>
+                                        <input type="range" id="playerBlur" min="0" max="40" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()">
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-400 w-28">Opacidad Panel</span>
+                                        <input type="range" id="playerOpacity" min="0.1" max="1" step="0.05" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()">
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-400 w-28">Escala Panel</span>
+                                        <input type="range" id="playerScale" min="0.5" max="1.5" step="0.05" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()">
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li id="letterBoxOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
+                                <div class="flex flex-col space-y-4">
+                                    <span class="font-semibold text-xl">Cuadro de Letras</span>
+                                    <div class="border border-gray-700/50 rounded-xl p-5 bg-black/10 flex flex-col gap-4 mb-2 shadow-inner">
+                                        <span class="font-semibold text-lg text-gray-300 border-b border-gray-700/50 pb-2">Sombra del cuadro</span>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Color</span>
+                                            <input type="color" id="letterBoxShadowColor" value="#000000" class="w-12 h-12 rounded cursor-pointer" oninput="applyLetterBoxSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Color Secundario</span>
+                                            <input type="color" id="letterBoxShadowSecondaryColor" value="#ffffff" class="w-12 h-12 rounded cursor-pointer" oninput="applyLetterBoxSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Inicio Gradiente</span>
+                                            <input type="range" id="letterBoxShadowGradientStart" min="0" max="99" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Opacidad</span>
+                                            <input type="range" id="letterBoxShadowOpacity" min="0" max="1" step="0.05" value="0.45" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Difuminado</span>
+                                            <input type="range" id="letterBoxShadowBlur" min="0" max="400" step="1" value="40" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Tamaño</span>
+                                            <input type="range" id="letterBoxShadowSpread" min="-50" max="150" step="1" value="5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-400 w-28">Opacidad</span>
+                                        <input type="range" id="letterBoxOpacity" min="0.1" max="1" step="0.05" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-400 w-28">Blur</span>
+                                        <input type="range" id="letterBoxBlur" min="0" max="40" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-400 w-28">Tamaño vertical</span>
+                                        <input type="range" id="letterBoxHeightPercent" min="0.1" max="150" step="0.1" value="24" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-400 w-28">Tamaño horizontal</span>
+                                        <input type="range" id="letterBoxWidthPercent" min="0.1" max="150" step="0.1" value="60" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-400 w-28">Posición horizontal</span>
+                                        <input type="range" id="letterBoxHorizontalPosition" min="0" max="100" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-400 w-28">Posición vertical</span>
+                                        <input type="range" id="letterBoxVerticalPosition" min="0" max="100" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="config-section-panel" data-config-section="fondo">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-white sm:text-2xl">Fondo</h3>
+                        </div>
+                        <ul class="space-y-6">
+                            <li id="bgOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
+                                <div class="flex flex-col space-y-4">
+                                    <span class="font-semibold text-xl">Cambiar fondo</span>
+                                    <div class="flex flex-wrap items-center gap-4">
+                                        <label class="flex items-center gap-2">
+                                            <input type="radio" name="bgType" value="simple" checked onchange="updateBgControls('simple')"> Color
+                                        </label>
+                                        <label class="flex items-center gap-2">
+                                            <input type="radio" name="bgType" value="gradient" onchange="updateBgControls('gradient')"> Gradiente
+                                        </label>
+                                        <label class="flex items-center gap-2">
+                                            <input type="radio" name="bgType" value="image" onchange="updateBgControls('image')"> Imagen
+                                        </label>
+                                    </div>
+                                    <div id="bgControls" class="flex flex-col gap-4">
+                                        <div id="simpleBgControl" class="flex gap-4 items-center">
+                                            <input type="color" id="bgColorSimple" value="#262626" class="w-12 h-12 rounded cursor-pointer" oninput="applyBackground()">
+                                            <span class="text-sm text-gray-400">Color de fondo</span>
+                                        </div>
+                                        <div id="gradientBgControl" class="hidden flex gap-4 items-center">
+                                            <input type="color" id="bgColorGrad1" value="#262626" class="w-12 h-12 rounded cursor-pointer" oninput="applyBackground()">
+                                            <input type="color" id="bgColorGrad2" value="#4a4a4a" class="w-12 h-12 rounded cursor-pointer" oninput="applyBackground()">
+                                            <span class="text-sm text-gray-400">Colores de gradiente</span>
+                                        </div>
+                                        <div id="imageBgControl" class="hidden flex gap-4 items-center">
+                                            <input type="file" id="bgImageFile" accept="image/*" class="bg-[#1a1a1a] p-2 rounded border border-gray-700 w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-white hover:file:bg-gray-600 cursor-pointer" onchange="applyBackground()">
+                                        </div>
+                                    </div>
+                                    <button onclick="syncBackgroundWithButtons()" class="mt-4 w-full p-3 neu-btn rounded-lg text-sm font-semibold hover:opacity-80 transition">
+                                        Sincronizar con tema de botones
+                                    </button>
+                                    <div class="flex flex-col gap-2 mt-4 pt-4 border-t border-gray-700">
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" id="blurToggle" onchange="applyBlur()"> Activar efecto Blur
+                                        </label>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-24">Intensidad</span>
+                                            <input type="range" id="blurIntensity" min="0" max="20" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyBlur()">
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="config-section-panel" data-config-section="imagen">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-white sm:text-2xl">Imagen</h3>
+                        </div>
+                        <ul class="space-y-6">
+                            <li id="imageSizeOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
+                                <div class="flex flex-col space-y-4">
+                                    <span class="font-semibold text-xl">Tamaño de la imagen</span>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-400 w-24">Tamaño</span>
+                                        <input type="range" id="imageSizeRange" min="10" max="1000" step="1" value="220" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="updateImageSizeFromControl()">
+                                    </div>
+                                    <div id="imageSizeValue" class="text-sm text-gray-400">220 px</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="config-section-panel" data-config-section="vinilo">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-white sm:text-2xl">Vinilo</h3>
+                        </div>
+                        <ul class="space-y-6">
+                            <li id="linkedVinylOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
+                                <div class="flex flex-col space-y-4">
+                                    <span class="font-semibold text-xl">Vinilo enlazado</span>
+                                    <div class="border border-gray-700/50 rounded-xl p-5 bg-black/10 flex flex-col gap-4 mb-2 shadow-inner">
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Tamaño</span>
+                                            <input type="range" id="linkedVinylSizePercent" min="10" max="100" step="1" value="24" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLinkedVinylSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Posición horizontal</span>
+                                            <input type="range" id="linkedVinylHorizontalPosition" min="0" max="100" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLinkedVinylSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Posición vertical</span>
+                                            <input type="range" id="linkedVinylVerticalPosition" min="0" max="100" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLinkedVinylSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Estilo</span>
+                                            <select id="linkedVinylStyle" class="w-full rounded-xl border border-gray-700/60 bg-black/20 px-3 py-2 text-sm" onchange="applyLinkedVinylSettings()">
+                                                <option value="classic">Clásico</option>
+                                                <option value="modern">Moderno</option>
+                                            </select>
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Tipo de borde</span>
+                                            <select id="linkedVinylBorderType" class="w-full rounded-xl border border-gray-700/60 bg-black/20 px-3 py-2 text-sm" onchange="applyLinkedVinylSettings()">
+                                                <option value="simple">Color simple</option>
+                                                <option value="gradient">Gradiente</option>
+                                            </select>
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Color borde</span>
+                                            <input type="color" id="linkedVinylBorderColor" value="#ffffff" class="w-12 h-12 rounded cursor-pointer" oninput="applyLinkedVinylSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Color borde 2</span>
+                                            <input type="color" id="linkedVinylBorderSecondaryColor" value="#808080" class="w-12 h-12 rounded cursor-pointer" oninput="applyLinkedVinylSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Grosor borde</span>
+                                            <input type="range" id="linkedVinylBorderWidth" min="0" max="40" step="1" value="2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLinkedVinylSettings()">
+                                        </div>
+                                        <div class="flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Capa</span>
+                                            <select id="linkedVinylLayerOrder" class="w-full rounded-xl border border-gray-700/60 bg-black/20 px-3 py-2 text-sm" onchange="applyLinkedVinylSettings()">
+                                                <option value="front">Delante del cuadro</option>
+                                                <option value="back">Detrás del cuadro</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="config-section-panel" data-config-section="audio">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-white sm:text-2xl">Audio</h3>
+                        </div>
+                        <ul class="space-y-6">
+                            <li id="progressOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
+                                <div class="flex flex-col space-y-4">
+                                    <span class="font-semibold text-xl">Barra de Audio Personalizada</span>
+                                    <div class="space-y-4 border-b border-gray-700/50 pb-4">
+                                        <span class="text-sm text-gray-300 font-semibold">Color Principal (Reproducido)</span>
+                                        <div class="flex gap-4 items-center">
+                                            <label class="flex items-center gap-2 text-sm">
+                                                <input type="radio" name="mainBarType" value="simple" checked onchange="toggleBarMainType()"> Simple
+                                            </label>
+                                            <label class="flex items-center gap-2 text-sm">
+                                                <input type="radio" name="mainBarType" value="gradient" onchange="toggleBarMainType()"> Gradiente
+                                            </label>
+                                        </div>
+                                        <div class="flex gap-4 items-center">
+                                            <input type="color" id="mainBarColor1" value="#e5e5e5" class="w-10 h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
+                                            <input type="color" id="mainBarColor2" value="#ffffff" class="w-10 h-10 rounded cursor-pointer hidden" oninput="applyCustomSliderSettings()">
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-4 border-b border-gray-700/50 pb-4">
+                                        <span class="text-sm text-gray-300 font-semibold">Color Secundario (No Reproducido)</span>
+                                        <div class="flex gap-4 items-center">
+                                            <label class="flex items-center gap-2 text-sm">
+                                                <input type="radio" name="secBarType" value="simple" checked onchange="toggleBarSecType()"> Simple
+                                            </label>
+                                            <label class="flex items-center gap-2 text-sm">
+                                                <input type="radio" name="secBarType" value="gradient" onchange="toggleBarSecType()"> Gradiente
+                                            </label>
+                                        </div>
+                                        <div class="flex gap-4 items-center">
+                                            <input type="color" id="secBarColor1" value="#000000" class="w-10 h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
+                                            <input type="color" id="secBarColor2" value="#333333" class="w-10 h-10 rounded cursor-pointer hidden" oninput="applyCustomSliderSettings()">
+                                        </div>
+                                    </div>
+                                    <div class="space-y-4 border-b border-gray-700/50 pb-4">
+                                        <span class="text-sm text-gray-300 font-semibold">Círculo (Thumb)</span>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div class="flex flex-col gap-2">
+                                                <span class="text-xs text-gray-400">Color (Simple)</span>
+                                                <input type="color" id="customThumbColor" value="#e5e5e5" class="w-full h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <span class="text-xs text-gray-400">Tamaño</span>
+                                                <input type="range" id="customThumbSize" min="10" max="50" value="20" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer mt-4" oninput="applyCustomSliderSettings()">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <span class="text-sm text-gray-300 font-semibold">Sombra del Círculo</span>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div class="flex flex-col gap-2">
+                                                <span class="text-xs text-gray-400">Color Sombra</span>
+                                                <input type="color" id="customThumbShadowColor" value="#000000" class="w-full h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <span class="text-xs text-gray-400">Transparencia</span>
+                                                <input type="range" id="customThumbShadowOpacity" min="0" max="1" step="0.05" value="0.5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer mt-4" oninput="applyCustomSliderSettings()">
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <span class="text-xs text-gray-400">Intensidad Blur</span>
+                                                <input type="range" id="customThumbShadowBlur" min="0" max="30" value="5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer mt-4" oninput="applyCustomSliderSettings()">
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <span class="text-xs text-gray-400">Tamaño (Spread)</span>
+                                                <input type="range" id="customThumbShadowSize" min="-10" max="20" value="2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer mt-4" oninput="applyCustomSliderSettings()">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li id="timeChipOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
+                                <div class="flex flex-col space-y-4">
+                                    <span class="font-semibold text-xl">Posición horizontal de los contadores</span>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-400 w-24">Izquierda</span>
+                                        <input type="range" id="timeChipOffsetLeft" min="0" max="20" step="0.1" value="3.2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyTimeChipSettings()">
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-400 w-24">Derecha</span>
+                                        <input type="range" id="timeChipOffsetRight" min="0" max="20" step="0.1" value="3.2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyTimeChipSettings()">
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="config-section-panel" data-config-section="gestion">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-white sm:text-2xl">Gestión</h3>
+                        </div>
+                        <ul class="space-y-6">
+                            <li id="configManagement" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
+                                <div class="flex flex-col space-y-4">
+                                    <span class="font-semibold text-xl">Gestionar Configuración</span>
+                                    <div class="flex flex-wrap gap-4">
+                                        <button onclick="saveSettings()" class="neu-btn px-6 py-2 rounded-lg font-semibold hover:opacity-80 transition">
+                                            Guardar (JSON)
+                                        </button>
+                                        <button onclick="document.getElementById('loadInput').click()" class="neu-btn px-6 py-2 rounded-lg font-semibold hover:opacity-80 transition">
+                                            Cargar (Archivo)
+                                        </button>
+                                        <input type="file" id="loadInput" class="hidden" accept=".json" onchange="loadSettings(event)">
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </main>
+            </div>
         </div>
     </div>
 
@@ -1464,15 +1580,50 @@
         }
 
 
+        const configSectionTitle = document.getElementById('configSectionTitle');
+        const configSectionButtons = Array.from(document.querySelectorAll('.config-section-nav-btn'));
+        const configPanels = Array.from(document.querySelectorAll('.config-section-panel'));
+
+        const configSectionLabels = {
+            general: 'General',
+            apariencia: 'Apariencia',
+            fondo: 'Fondo',
+            imagen: 'Imagen',
+            vinilo: 'Vinilo',
+            audio: 'Audio',
+            gestion: 'Gestión'
+        };
+
+        function setActiveConfigSection(sectionId) {
+            const nextSection = configSectionLabels[sectionId] ? sectionId : 'general';
+            configSectionButtons.forEach((button) => {
+                const isActive = button.dataset.configSection === nextSection;
+                button.classList.toggle('active', isActive);
+            });
+
+            configPanels.forEach((panel) => {
+                panel.classList.toggle('active', panel.dataset.configSection === nextSection);
+            });
+
+            if (configSectionTitle) {
+                configSectionTitle.textContent = configSectionLabels[nextSection] || 'Configuración';
+            }
+        }
+
         function openConfig() {
             setConfigMode(true);
             modalOverlay.classList.remove('hidden');
+            setActiveConfigSection('general');
         }
 
         function closeConfig() {
             modalOverlay.classList.add('hidden');
             setConfigMode(false);
         }
+
+        configSectionButtons.forEach((button) => {
+            button.addEventListener('click', () => setActiveConfigSection(button.dataset.configSection));
+        });
 
         configBtn.addEventListener('click', openConfig);
         if (configGhostTrigger) {
@@ -1919,6 +2070,34 @@
             applyButtonCustomization();
         }
 
+        function applyConfigShellTheme() {
+            const baseColor = color1Input?.value || '#262626';
+            const isGradient = getCheckedRadioValue('themeType') === 'gradient';
+            const accentColor = isGradient && color2Input ? color2Input.value : baseColor;
+            const opacity = Number(document.getElementById('btnOpacity')?.value || 1);
+            const shellStart = hexToRgba(baseColor, Math.min(0.92, 0.4 + opacity * 0.52));
+            const shellEnd = hexToRgba(accentColor, Math.min(0.98, 0.5 + opacity * 0.48));
+
+            document.documentElement.style.setProperty('--config-shell-start', shellStart);
+            document.documentElement.style.setProperty('--config-shell-end', shellEnd);
+            document.documentElement.style.setProperty('--config-shell-border', hexToRgba(baseColor, 0.28));
+
+            const configShell = document.querySelector('.config-shell');
+            if (configShell) {
+                configShell.style.background = isGradient
+                    ? `linear-gradient(135deg, ${shellStart}, ${shellEnd})`
+                    : `linear-gradient(135deg, ${shellStart}, ${shellStart})`;
+            }
+
+            document.querySelectorAll('.config-section-nav-btn').forEach((button) => {
+                const isActive = button.classList.contains('active');
+                button.style.background = isActive
+                    ? (isGradient ? `linear-gradient(135deg, ${shellStart}, ${shellEnd})` : `linear-gradient(135deg, ${shellStart}, ${shellStart})`)
+                    : 'rgba(255,255,255,0.04)';
+                button.style.borderColor = isActive ? 'rgba(255,255,255,0.2)' : 'transparent';
+            });
+        }
+
         function applyButtonCustomization() {
             const isGradient = getCheckedRadioValue('themeType') === 'gradient';
             const baseColor = color1Input.value;
@@ -1939,6 +2118,7 @@
 
             buttons.forEach((b) => b.style.background = gradientStr);
             cards.forEach((c) => c.style.background = gradientStr);
+            applyConfigShellTheme();
             applyLetterBoxSettings();
         }
 
@@ -3304,10 +3484,12 @@
             updateLetterBoxTextScrollByAudio();
         });
 
+        toggleGradientInputs(getCheckedRadioValue('themeType') === 'gradient');
         syncLetterBoxEditorControls();
         renderLetterBoxText();
         updateTimeDisplays();
         updateLetterBoxCutButtons();
+        applyTheme();
         applyPlayerCardSettings();
         applyCustomSliderSettings();
         applyPauseButtonSettings();
