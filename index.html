@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>App Neumórfica</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- El render usa el DOM clonado a 1920×1080; no depende de la resolución de pantalla. -->
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/build/mp4-muxer.js"></script>
     
     <style>
         :root {
@@ -681,16 +678,6 @@
             0%, 10% { transform: translateY(-50%) translateX(0); }
             90%, 100% { transform: translateY(-50%) translateX(var(--scroll-dist)); }
         }
-
-        #renderProgressOverlay {
-            background: rgba(2, 6, 23, 0.82);
-            backdrop-filter: blur(12px);
-        }
-
-        #renderProgressBarFill {
-            width: 0%;
-            transition: width 0.12s linear;
-        }
     </style>
 </head>
 
@@ -785,9 +772,6 @@
 
     <button id="imagePickerBtn" class="image-picker-btn neu-btn fixed top-6 left-24 px-4 py-3 rounded-2xl flex items-center justify-center z-40 text-sm font-semibold">
         Elegir imagen
-    </button>
-    <button id="renderVideoBtn" type="button" class="fixed top-6 left-52 px-4 py-3 rounded-2xl neu-btn z-40 text-sm font-semibold hidden" title="Renderizar un MP4 a 1920 × 1080 y 60 fps">
-        Renderizar MP4
     </button>
     <button id="letterBoxEditBtn" type="button" class="fixed top-6 right-6 p-4 neu-btn rounded-2xl flex items-center justify-center z-40" title="Editar texto del cuadro de letra">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -1030,15 +1014,20 @@
                                     <div class="border border-gray-700/50 rounded-xl p-5 bg-black/10 flex flex-col gap-4 mb-2 shadow-inner">
                                         <span class="font-semibold text-lg text-gray-300 border-b border-gray-700/50 pb-2">Ajustes de Sombra</span>
                                         <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Color Exterior</span>
+                                            <span class="text-sm text-gray-400 w-28">Tipo</span>
+                                            <label class="flex items-center gap-2">
+                                                <input type="radio" name="playerShadowType" value="shadow" checked onchange="togglePlayerShadowType()"> Sombra
+                                            </label>
+                                            <label class="flex items-center gap-2">
+                                                <input type="radio" name="playerShadowType" value="light" onchange="togglePlayerShadowType()"> Luz
+                                            </label>
+                                        </div>
+                                        <div id="playerLightColorControl" class="hidden flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Color exterior</span>
                                             <input type="color" id="playerShadowColor" value="#000000" class="w-12 h-12 rounded cursor-pointer" oninput="applyPlayerCardSettings()">
                                         </div>
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Color Secundario</span>
-                                            <input type="color" id="playerShadowSecondaryColor" value="#ffffff" class="w-12 h-12 rounded cursor-pointer" oninput="applyPlayerCardSettings()">
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Inicio Gradiente</span>
+                                        <div id="playerLightGradientControl" class="hidden flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Inicio de luz</span>
                                             <input type="range" id="playerShadowGradientStart" min="0" max="99" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()" title="0 = centro, 50 = mitad del borde, 99 = casi borde">
                                             <span id="playerShadowGradientStartValue" class="text-sm text-gray-400 min-w-[2.5rem] text-right">50%</span>
                                         </div>
@@ -1091,15 +1080,20 @@
                                     <div class="border border-gray-700/50 rounded-xl p-5 bg-black/10 flex flex-col gap-4 mb-2 shadow-inner">
                                         <span class="font-semibold text-lg text-gray-300 border-b border-gray-700/50 pb-2">Sombra del cuadro</span>
                                         <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Color</span>
+                                            <span class="text-sm text-gray-400 w-28">Tipo</span>
+                                            <label class="flex items-center gap-2">
+                                                <input type="radio" name="letterBoxShadowType" value="shadow" checked onchange="toggleLetterBoxShadowType()"> Sombra
+                                            </label>
+                                            <label class="flex items-center gap-2">
+                                                <input type="radio" name="letterBoxShadowType" value="light" onchange="toggleLetterBoxShadowType()"> Luz
+                                            </label>
+                                        </div>
+                                        <div id="letterBoxLightColorControl" class="hidden flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Color exterior</span>
                                             <input type="color" id="letterBoxShadowColor" value="#000000" class="w-12 h-12 rounded cursor-pointer" oninput="applyLetterBoxSettings()">
                                         </div>
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Color Secundario</span>
-                                            <input type="color" id="letterBoxShadowSecondaryColor" value="#ffffff" class="w-12 h-12 rounded cursor-pointer" oninput="applyLetterBoxSettings()">
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Inicio Gradiente</span>
+                                        <div id="letterBoxLightGradientControl" class="hidden flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Inicio de luz</span>
                                             <input type="range" id="letterBoxShadowGradientStart" min="0" max="99" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
                                         </div>
                                         <div class="flex items-center gap-4">
@@ -1412,18 +1406,6 @@
         </div>
     </div>
 
-    <div id="renderProgressOverlay" class="fixed inset-0 hidden items-center justify-center p-6 z-[100]" role="dialog" aria-modal="true" aria-labelledby="renderProgressTitle">
-        <div class="w-full max-w-md rounded-3xl border border-white/15 bg-slate-950/90 p-7 shadow-2xl text-center">
-            <h3 id="renderProgressTitle" class="text-2xl font-bold text-white">Preparando renderizado</h3>
-            <p id="renderProgressStatus" class="mt-3 text-sm text-slate-300">Componiendo a 1920 × 1080 · 60 fps</p>
-            <div class="mt-6 h-3 overflow-hidden rounded-full bg-white/10">
-                <div id="renderProgressBarFill" class="h-full rounded-full bg-emerald-400"></div>
-            </div>
-            <p id="renderProgressPercent" class="mt-3 text-lg font-semibold text-white">0%</p>
-            <button id="cancelRenderBtn" type="button" class="mt-6 rounded-xl bg-white/10 px-5 py-2.5 font-semibold text-white transition hover:bg-white/20">Cancelar</button>
-        </div>
-    </div>
-
     <audio id="audioPlayer" class="hidden"></audio>
 
     <script>
@@ -1478,13 +1460,7 @@
             letterBoxCancelBtn: document.getElementById('letterBoxCancelBtn'),
             letterBoxClearBtn: document.getElementById('letterBoxClearBtn'),
             letterBoxAcceptBtn: document.getElementById('letterBoxAcceptBtn'),
-            configGhostTrigger: document.getElementById('configGhostTrigger'),
-            renderVideoBtn: document.getElementById('renderVideoBtn'),
-            renderProgressOverlay: document.getElementById('renderProgressOverlay'),
-            renderProgressStatus: document.getElementById('renderProgressStatus'),
-            renderProgressPercent: document.getElementById('renderProgressPercent'),
-            renderProgressBarFill: document.getElementById('renderProgressBarFill'),
-            cancelRenderBtn: document.getElementById('cancelRenderBtn')
+            configGhostTrigger: document.getElementById('configGhostTrigger')
         };
 
         const configBtn = refs.configBtn;
@@ -1525,9 +1501,6 @@
         const letterBoxClearBtn = refs.letterBoxClearBtn;
         const letterBoxAcceptBtn = refs.letterBoxAcceptBtn;
         const configGhostTrigger = refs.configGhostTrigger;
-        let loadedAudioFile = null;
-        let renderCancelRequested = false;
-        let isRenderingVideo = false;
 
         const letterBoxTextState = {
             value: '',
@@ -1589,6 +1562,15 @@
         }
 
         const shadowStyleCache = new WeakMap();
+
+        function applyFlatShadowStyle(element, color, opacity, blur, spread) {
+            if (!element) return;
+
+            const cacheKey = `flat|${color}|${opacity}|${blur}|${spread}`;
+            if (shadowStyleCache.get(element) === cacheKey) return;
+            shadowStyleCache.set(element, cacheKey);
+            element.style.boxShadow = `0 0 ${Math.max(0, Number(blur) || 0)}px ${Number(spread) || 0}px ${hexToRgba(color, opacity)}`;
+        }
 
         function applyShadowStyle(element, primaryHex, secondaryHex, opacity, blur, spread, gradientStartPercent = 50) {
             if (!element) return;
@@ -1663,11 +1645,6 @@
         });
 
         configBtn.addEventListener('click', openConfig);
-        refs.renderVideoBtn?.addEventListener('click', renderVideoMp4);
-        refs.cancelRenderBtn?.addEventListener('click', () => {
-            renderCancelRequested = true;
-            setRenderProgress(Number(refs.renderProgressPercent?.textContent?.replace('%', '')) || 0, 'Cancelando al terminar el fotograma actual…');
-        });
         if (configGhostTrigger) {
             configGhostTrigger.addEventListener('click', openConfig);
         }
@@ -1988,229 +1965,10 @@
             updateLinkedVinylActionButtons();
         }
 
-        const RENDER_WIDTH = 1920;
-        const RENDER_HEIGHT = 1080;
-        const RENDER_FPS = 60;
-
-        function setRenderProgress(percent, status) {
-            const safePercent = Math.max(0, Math.min(100, percent));
-            if (refs.renderProgressBarFill) refs.renderProgressBarFill.style.width = `${safePercent}%`;
-            if (refs.renderProgressPercent) refs.renderProgressPercent.textContent = `${Math.round(safePercent)}%`;
-            if (status && refs.renderProgressStatus) refs.renderProgressStatus.textContent = status;
-        }
-
-        function setRenderUi(active) {
-            isRenderingVideo = active;
-            refs.renderProgressOverlay?.classList.toggle('hidden', !active);
-            refs.renderProgressOverlay?.classList.toggle('flex', active);
-            if (refs.renderVideoBtn) {
-                refs.renderVideoBtn.disabled = active;
-                refs.renderVideoBtn.classList.toggle('opacity-50', active);
-                refs.renderVideoBtn.classList.toggle('cursor-not-allowed', active);
-            }
-        }
-
-        function renderSimulationFrame(time, duration) {
-            const safeTime = Math.max(0, Math.min(duration, time));
-            audio.currentTime = safeTime;
-            const percentage = duration ? (safeTime / duration) * 100 : 0;
-            if (customSliderFill) customSliderFill.style.width = `${percentage}%`;
-            if (customSliderThumb) customSliderThumb.style.left = `${percentage}%`;
-            updateTimeDisplays();
-            updateLetterBoxTextScrollByAudio();
-        }
-
-        async function getRenderAudioTrack() {
-            if (!loadedAudioFile || !window.AudioEncoder || !window.AudioData) return null;
-            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-            if (!AudioContextClass) return null;
-
-            const context = new AudioContextClass();
-            try {
-                const sourceData = await loadedAudioFile.arrayBuffer();
-                const buffer = await context.decodeAudioData(sourceData);
-                const config = {
-                    codec: 'mp4a.40.2',
-                    sampleRate: buffer.sampleRate,
-                    numberOfChannels: Math.min(2, buffer.numberOfChannels),
-                    bitrate: 192000
-                };
-                const support = await AudioEncoder.isConfigSupported(config);
-                return support.supported ? { buffer, config } : null;
-            } catch (error) {
-                console.warn('No se pudo codificar el audio para el MP4.', error);
-                return null;
-            } finally {
-                await context.close();
-            }
-        }
-
-        async function encodeRenderAudio(audioTrack, muxer) {
-            if (!audioTrack) return;
-            const { buffer, config } = audioTrack;
-            const encoder = new AudioEncoder({
-                output: (chunk, metadata) => muxer.addAudioChunk(chunk, metadata),
-                error: (error) => { throw error; }
-            });
-            encoder.configure(config);
-
-            const framesPerChunk = 1024;
-            const channels = config.numberOfChannels;
-            for (let start = 0; start < buffer.length; start += framesPerChunk) {
-                if (renderCancelRequested) break;
-                const frameCount = Math.min(framesPerChunk, buffer.length - start);
-                const planarData = new Float32Array(frameCount * channels);
-                for (let channel = 0; channel < channels; channel += 1) {
-                    planarData.set(buffer.getChannelData(channel).subarray(start, start + frameCount), channel * frameCount);
-                }
-                const audioData = new AudioData({
-                    format: 'f32-planar',
-                    sampleRate: config.sampleRate,
-                    numberOfFrames: frameCount,
-                    numberOfChannels: channels,
-                    timestamp: Math.round((start / config.sampleRate) * 1_000_000),
-                    data: planarData
-                });
-                encoder.encode(audioData);
-                audioData.close();
-            }
-            await encoder.flush();
-            encoder.close();
-        }
-
-        async function renderVideoMp4() {
-            if (isRenderingVideo) return;
-            if (!audio.src || !Number.isFinite(audio.duration) || audio.duration <= 0) {
-                alert('Carga un audio y espera a que se conozca su duración antes de renderizar.');
-                return;
-            }
-            if (!window.html2canvas || !window.Mp4Muxer || !window.VideoEncoder) {
-                alert('Este navegador no admite el renderizador MP4. Usa una versión actual de Chrome o Edge.');
-                return;
-            }
-
-            const previousTime = audio.currentTime;
-            const wasPlaying = !audio.paused;
-            audio.pause();
-            playIcon.classList.add('hidden');
-            pauseIcon.classList.remove('hidden');
-            renderCancelRequested = false;
-            setRenderUi(true);
-            setRenderProgress(0, 'Preparando la composición 1920 × 1080…');
-
-            let videoEncoder;
-            try {
-                const audioTrack = await getRenderAudioTrack();
-                if (!audioTrack) {
-                    throw new Error('No se pudo preparar el audio AAC. Abre la app en Chrome o Edge actualizado para crear un MP4 con sonido.');
-                }
-                const duration = audioTrack?.buffer.duration || audio.duration;
-                const frameCount = Math.ceil(duration * RENDER_FPS);
-                const videoConfig = {
-                    codec: 'avc1.42001f',
-                    width: RENDER_WIDTH,
-                    height: RENDER_HEIGHT,
-                    bitrate: 14_000_000,
-                    framerate: RENDER_FPS,
-                    avc: { format: 'avc' }
-                };
-                const support = await VideoEncoder.isConfigSupported(videoConfig);
-                if (!support.supported) throw new Error('H.264 no está disponible en este navegador.');
-
-                const muxer = new Mp4Muxer.Muxer({
-                    target: new Mp4Muxer.ArrayBufferTarget(),
-                    video: { codec: 'avc', width: RENDER_WIDTH, height: RENDER_HEIGHT },
-                    audio: {
-                        codec: 'aac',
-                        sampleRate: audioTrack.config.sampleRate,
-                        numberOfChannels: audioTrack.config.numberOfChannels
-                    },
-                    fastStart: 'in-memory'
-                });
-                videoEncoder = new VideoEncoder({
-                    output: (chunk, metadata) => muxer.addVideoChunk(chunk, metadata),
-                    error: (error) => { throw error; }
-                });
-                videoEncoder.configure(videoConfig);
-
-                for (let frameIndex = 0; frameIndex < frameCount; frameIndex += 1) {
-                    if (renderCancelRequested) break;
-                    const time = frameIndex / RENDER_FPS;
-                    renderSimulationFrame(time, duration);
-                    const canvas = await html2canvas(document.body, {
-                        backgroundColor: getComputedStyle(document.body).backgroundColor,
-                        width: RENDER_WIDTH,
-                        height: RENDER_HEIGHT,
-                        windowWidth: RENDER_WIDTH,
-                        windowHeight: RENDER_HEIGHT,
-                        scale: 1,
-                        useCORS: true,
-                        logging: false,
-                        onclone: (clonedDocument) => {
-                            const root = clonedDocument.documentElement;
-                            root.style.setProperty('--player-layout-scale', String(RENDER_WIDTH / 1366));
-                            root.style.width = `${RENDER_WIDTH}px`;
-                            root.style.height = `${RENDER_HEIGHT}px`;
-                            const body = clonedDocument.body;
-                            body.style.width = `${RENDER_WIDTH}px`;
-                            body.style.height = `${RENDER_HEIGHT}px`;
-                            body.style.overflow = 'hidden';
-                            ['homeView', 'configBtn', 'imagePickerBtn', 'renderVideoBtn', 'letterBoxEditBtn', 'letterBoxCutControls', 'borrar-cancion', 'modalOverlay', 'deleteModalOverlay', 'renderProgressOverlay', 'configGhostTrigger'].forEach((id) => {
-                                clonedDocument.getElementById(id)?.style.setProperty('display', 'none', 'important');
-                            });
-                            const clonedPlayer = clonedDocument.getElementById('playerView');
-                            clonedPlayer?.classList.remove('hidden');
-                            clonedPlayer?.style.setProperty('width', `${RENDER_WIDTH}px`, 'important');
-                            clonedPlayer?.style.setProperty('height', `${RENDER_HEIGHT}px`, 'important');
-                        }
-                    });
-                    const frame = new VideoFrame(canvas, {
-                        timestamp: Math.round((frameIndex * 1_000_000) / RENDER_FPS)
-                    });
-                    videoEncoder.encode(frame, { keyFrame: frameIndex % (RENDER_FPS * 2) === 0 });
-                    frame.close();
-
-                    if (frameIndex % 3 === 0 || frameIndex === frameCount - 1) {
-                        setRenderProgress((frameIndex + 1) / frameCount * 92, `Renderizando fotograma ${frameIndex + 1} de ${frameCount}…`);
-                        await new Promise(requestAnimationFrame);
-                    }
-                }
-
-                if (renderCancelRequested) return;
-                setRenderProgress(94, 'Codificando el audio…');
-                await videoEncoder.flush();
-                videoEncoder.close();
-                videoEncoder = null;
-                await encodeRenderAudio(audioTrack, muxer);
-                if (renderCancelRequested) return;
-                muxer.finalize();
-
-                const output = new Blob([muxer.target.buffer], { type: 'video/mp4' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(output);
-                link.download = 'audio-visualizer-1920x1080-60fps.mp4';
-                link.click();
-                setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-                setRenderProgress(100, 'MP4 listo. La descarga comenzará enseguida.');
-            } catch (error) {
-                console.error('Error durante el renderizado.', error);
-                alert(`No se pudo renderizar el MP4: ${error.message || error}`);
-            } finally {
-                if (videoEncoder && videoEncoder.state !== 'closed') videoEncoder.close();
-                renderSimulationFrame(previousTime, audio.duration || 0);
-                playIcon.classList.toggle('hidden', wasPlaying);
-                pauseIcon.classList.toggle('hidden', !wasPlaying);
-                if (wasPlaying) audio.play().catch(() => {});
-                setRenderUi(false);
-            }
-        }
-
         function handleAudioFile(file) {
             homeView.classList.add('hidden');
             playerView.classList.remove('hidden');
 
-            loadedAudioFile = file;
-            refs.renderVideoBtn?.classList.remove('hidden');
             audio.src = URL.createObjectURL(file);
             audio.load();
             requestAnimationFrame(updatePlayerLayoutScale);
@@ -2259,8 +2017,6 @@
         function resetApp() {
             audio.pause();
             audio.src = '';
-            loadedAudioFile = null;
-            refs.renderVideoBtn?.classList.add('hidden');
             playIcon.classList.remove('hidden');
             pauseIcon.classList.add('hidden');
             playerView.classList.add('hidden');
@@ -3211,8 +2967,9 @@
             const letterBoxOpacityOverride = Number(document.getElementById('letterBoxOpacity')?.value || 1);
             const opacity = Math.max(0, Math.min(1, componentOpacity * letterBoxOpacityOverride));
             const blur = Number(document.getElementById('letterBoxBlur').value || 0);
-            const primaryHex = document.getElementById('letterBoxShadowColor').value;
-            const secondaryHex = document.getElementById('letterBoxShadowSecondaryColor').value || primaryHex;
+            const shadowType = getCheckedRadioValue('letterBoxShadowType') || 'shadow';
+            const outerColor = document.getElementById('letterBoxShadowColor').value;
+            const shadowColor = shadowType === 'light' ? '#ffffff' : '#000000';
             const shadowOpacity = document.getElementById('letterBoxShadowOpacity').value;
             const shadowBlur = document.getElementById('letterBoxShadowBlur').value;
             const shadowSpread = document.getElementById('letterBoxShadowSpread').value;
@@ -3231,7 +2988,11 @@
             }
             letterBox.style.backdropFilter = `blur(${blur}px)`;
             letterBox.style.opacity = '1';
-            applyShadowStyle(letterBox, primaryHex, secondaryHex, shadowOpacity, shadowBlur, shadowSpread, gradientStart);
+            if (shadowType === 'light') {
+                applyShadowStyle(letterBox, outerColor, '#ffffff', shadowOpacity, shadowBlur, shadowSpread, gradientStart);
+            } else {
+                applyFlatShadowStyle(letterBox, shadowColor, shadowOpacity, shadowBlur, shadowSpread);
+            }
             renderLetterBoxText();
 
             const viewportWidth = window.innerWidth;
@@ -3247,17 +3008,23 @@
             letterBox.style.top = `${Math.round(nextTop)}px`;
         }
 
-        function updatePlayerShadowGradientLabel() {
-            const slider = document.getElementById('playerShadowGradientStart');
-            const label = document.getElementById('playerShadowGradientStartValue');
-            if (slider && label) {
-                label.textContent = `${slider.value}%`;
-            }
+        function toggleLetterBoxShadowType() {
+            const isLight = getCheckedRadioValue('letterBoxShadowType') === 'light';
+            document.getElementById('letterBoxLightColorControl').classList.toggle('hidden', !isLight);
+            document.getElementById('letterBoxLightGradientControl').classList.toggle('hidden', !isLight);
+            applyLetterBoxSettings();
+        }
+
+        function togglePlayerShadowType() {
+            const isLight = getCheckedRadioValue('playerShadowType') === 'light';
+            document.getElementById('playerLightColorControl').classList.toggle('hidden', !isLight);
+            document.getElementById('playerLightGradientControl').classList.toggle('hidden', !isLight);
+            applyPlayerCardSettings();
         }
 
         function applyPlayerCardSettings() {
-            const primaryHex = document.getElementById('playerShadowColor').value;
-            const secondaryHex = document.getElementById('playerShadowSecondaryColor').value || primaryHex;
+            const shadowType = getCheckedRadioValue('playerShadowType') || 'shadow';
+            const outerColor = document.getElementById('playerShadowColor').value;
             const shadowOpacity = document.getElementById('playerShadowOpacity').value;
             const shadowBlur = document.getElementById('playerShadowBlur').value;
             const shadowSpread = document.getElementById('playerShadowSpread').value;
@@ -3266,8 +3033,11 @@
             const opacity = document.getElementById('playerOpacity').value;
             const scale = document.getElementById('playerScale').value;
 
-            updatePlayerShadowGradientLabel();
-            applyShadowStyle(playerCard, primaryHex, secondaryHex, shadowOpacity, shadowBlur, shadowSpread, gradientStart);
+            if (shadowType === 'light') {
+                applyShadowStyle(playerCard, outerColor, '#ffffff', shadowOpacity, shadowBlur, shadowSpread, gradientStart);
+            } else {
+                applyFlatShadowStyle(playerCard, '#000000', shadowOpacity, shadowBlur, shadowSpread);
+            }
             playerCard.style.backdropFilter = `blur(${blur}px)`;
             playerCard.style.opacity = opacity;
             playerCard.style.transform = `translateX(-50%) scale(${scale})`;
@@ -3327,8 +3097,8 @@
                 bgColorSimple: document.getElementById('bgColorSimple')?.value,
                 bgColorGrad1: document.getElementById('bgColorGrad1')?.value,
                 bgColorGrad2: document.getElementById('bgColorGrad2')?.value,
+                playerShadowType: getCheckedRadioValue('playerShadowType'),
                 playerShadowColor: document.getElementById('playerShadowColor').value,
-                playerShadowSecondaryColor: document.getElementById('playerShadowSecondaryColor').value,
                 playerShadowOpacity: document.getElementById('playerShadowOpacity').value,
                 playerShadowBlur: document.getElementById('playerShadowBlur').value,
                 playerShadowSpread: document.getElementById('playerShadowSpread').value,
@@ -3338,8 +3108,8 @@
                 playerScale: document.getElementById('playerScale').value,
                 letterBoxOpacity: document.getElementById('letterBoxOpacity').value,
                 letterBoxBlur: document.getElementById('letterBoxBlur').value,
+                letterBoxShadowType: getCheckedRadioValue('letterBoxShadowType'),
                 letterBoxShadowColor: document.getElementById('letterBoxShadowColor').value,
-                letterBoxShadowSecondaryColor: document.getElementById('letterBoxShadowSecondaryColor').value,
                 letterBoxShadowOpacity: document.getElementById('letterBoxShadowOpacity').value,
                 letterBoxShadowBlur: document.getElementById('letterBoxShadowBlur').value,
                 letterBoxShadowSpread: document.getElementById('letterBoxShadowSpread').value,
@@ -3436,12 +3206,14 @@
                     applyTimeChipSettings();
                 }
 
-                if (settings.playerShadowColor !== undefined || settings.playerShadowColorPrimary !== undefined || settings.playerShadowSecondaryColor !== undefined || settings.playerShadowGradientStart !== undefined || settings.playerShadowOpacity !== undefined) {
+                if (settings.playerShadowColor !== undefined || settings.playerShadowColorPrimary !== undefined || settings.playerShadowSecondaryColor !== undefined || settings.playerShadowType !== undefined || settings.playerShadowGradientStart !== undefined || settings.playerShadowOpacity !== undefined || settings.letterBoxShadowColor !== undefined || settings.letterBoxShadowSecondaryColor !== undefined || settings.letterBoxShadowType !== undefined) {
                     const primaryShadowColor = settings.playerShadowColorPrimary ?? settings.playerShadowColor ?? '#000000';
-                    const secondaryShadowColor = settings.playerShadowSecondaryColor ?? settings.playerShadowColor ?? primaryShadowColor;
                     const gradientStart = settings.playerShadowGradientStart ?? 50;
+                    const playerShadowType = settings.playerShadowType ?? (settings.playerShadowSecondaryColor !== undefined ? 'light' : 'shadow');
+                    const letterShadowType = settings.letterBoxShadowType ?? (settings.letterBoxShadowSecondaryColor !== undefined ? 'light' : 'shadow');
+                    setCheckedRadioValue('playerShadowType', playerShadowType);
+                    setCheckedRadioValue('letterBoxShadowType', letterShadowType);
                     setElementValue('playerShadowColor', primaryShadowColor);
-                    setElementValue('playerShadowSecondaryColor', secondaryShadowColor);
                     setElementValue('playerShadowOpacity', settings.playerShadowOpacity ?? 0.5);
                     if (settings.playerShadowBlur !== undefined) setElementValue('playerShadowBlur', settings.playerShadowBlur);
                     if (settings.playerShadowSpread !== undefined) setElementValue('playerShadowSpread', settings.playerShadowSpread);
@@ -3453,7 +3225,6 @@
                     setElementValue('letterBoxOpacity', settings.letterBoxOpacity ?? 1);
                     setElementValue('letterBoxBlur', settings.letterBoxBlur ?? 0);
                     setElementValue('letterBoxShadowColor', settings.letterBoxShadowColor ?? '#000000');
-                    setElementValue('letterBoxShadowSecondaryColor', settings.letterBoxShadowSecondaryColor ?? '#ffffff');
                     setElementValue('letterBoxShadowOpacity', settings.letterBoxShadowOpacity ?? 0.45);
                     setElementValue('letterBoxShadowBlur', settings.letterBoxShadowBlur ?? 40);
                     setElementValue('letterBoxShadowSpread', settings.letterBoxShadowSpread ?? 5);
@@ -3517,6 +3288,8 @@
                 applyBackground();
                 applyBlur();
                 applyTextAndIconColor();
+                togglePlayerShadowType();
+                toggleLetterBoxShadowType();
                 applyPlayerCardSettings();
                 applyCustomSliderSettings();
                 applyLinkedVinylSettings();
@@ -3753,6 +3526,8 @@
         updateTimeDisplays();
         updateLetterBoxCutButtons();
         applyTheme();
+        togglePlayerShadowType();
+        toggleLetterBoxShadowType();
         applyPlayerCardSettings();
         applyCustomSliderSettings();
         applyPauseButtonSettings();
