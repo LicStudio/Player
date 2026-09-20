@@ -24,8 +24,8 @@
             --control-inset-shadow-opacity: 0.45;
             --letter-box-opacity: 1;
             --letter-box-blur: 0px;
-            --letter-box-width-percent: 60;
-            --letter-box-height-percent: 24;
+            --letter-box-width-percent: 48;
+            --letter-box-height-percent: 78;
             --letter-box-horizontal-position: 50;
             --letter-box-vertical-position: 50;
             --text-color: #e5e5e5;
@@ -40,6 +40,10 @@
             --player-layout-scale: 1;
             --time-chip-offset-left: 3.2%;
             --time-chip-offset-right: 3.2%;
+            /* El acento se sincroniza con "Apariencia de Componentes". */
+            --ui-accent: #262626;
+            --ui-on-accent: #ffffff;
+            --config-opacity: 0.72;
         }
 
         body {
@@ -152,13 +156,6 @@
             transform: translateX(calc(-5.5px * var(--control-size-factor) * var(--player-layout-scale)));
         }
 
-        .image-picker-btn {
-            background: transparent;
-            border: none;
-            box-shadow: none;
-            backdrop-filter: none;
-        }
-
         .image-preview-box {
             width: var(--image-preview-size, 220px);
             height: auto;
@@ -190,6 +187,113 @@
             pointer-events: none;
             max-width: 100%;
             max-height: 100%;
+        }
+
+        .image-preview-menu {
+            position: fixed;
+            z-index: 70;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            width: min(20rem, calc(100vw - 1.5rem));
+            min-height: 3.5rem;
+            padding: 0.42rem;
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 1rem;
+            background: rgba(43, 43, 43, 0.96);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.32);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .image-preview-menu input[type="range"] {
+            flex: 1;
+            min-width: 0;
+            appearance: none;
+            -webkit-appearance: none;
+            height: 0.35rem;
+            margin: 0 0.45rem;
+            border-radius: 999px;
+            background: rgba(240,240,240,0.3);
+            accent-color: var(--ui-accent);
+            cursor: pointer;
+        }
+
+        .image-preview-menu input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 1.1rem;
+            height: 1.1rem;
+            border: 2px solid #171717;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 0 0 2px var(--ui-accent), 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .image-preview-menu input[type="range"]::-moz-range-thumb {
+            width: 0.86rem;
+            height: 0.86rem;
+            border: 2px solid #171717;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 0 0 2px var(--ui-accent), 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .image-preview-menu-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            width: 2.65rem;
+            height: 2.65rem;
+            padding: 0;
+            border: 0;
+            border-radius: 50%;
+            background: transparent;
+            color: #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+        }
+
+        .image-preview-menu-btn:hover {
+            background: rgba(240,240,240,0.1);
+        }
+
+        .image-preview-menu-btn:active {
+            transform: scale(0.92);
+        }
+
+        .image-preview-menu-btn:focus-visible,
+        .image-preview-menu input[type="range"]:focus-visible {
+            outline: 2px solid color-mix(in srgb, var(--ui-accent) 58%, transparent);
+            outline-offset: 2px;
+        }
+
+        .image-preview-menu-btn svg {
+            color: inherit !important;
+        }
+
+        .image-preview-layer-btn.is-front {
+            background: color-mix(in srgb, var(--ui-accent) 30%, #383838);
+            color: var(--ui-on-accent);
+        }
+
+        .image-preview-delete-btn {
+            color: #ffb4ab;
+        }
+
+        /* El contenedor no crea una capa propia: cada imagen puede situarse
+           realmente por delante o por detrás de los cuadros del reproductor. */
+        #imagePreviewContainer {
+            z-index: auto !important;
+        }
+
+        .image-preview-box.image-preview-back {
+            z-index: 5 !important;
+        }
+
+        .image-preview-box.image-preview-front {
+            z-index: 39 !important;
         }
 
         .letter-box {
@@ -291,6 +395,7 @@
             filter: none;
         }
 
+        .letter-box-tag-menu,
         .letter-box-parenthetical-tag-menu {
             position: fixed;
             top: 0;
@@ -298,32 +403,82 @@
             z-index: 2147483647;
             display: flex;
             flex-direction: column;
-            gap: 0.45rem;
-            padding: 0.5rem;
-            min-width: 180px;
-            border-radius: 0.6rem;
-            border: 1px solid rgba(255,255,255,0.16);
-            background: rgba(15, 23, 42, 0.96) !important;
-            box-shadow: 0 12px 24px rgba(0,0,0,0.28);
+            gap: 0.7rem;
+            width: min(17rem, calc(100vw - 1.5rem));
+            padding: 0.8rem;
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 1rem;
+            background: rgba(43,43,43,0.97) !important;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.32);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             pointer-events: auto;
             opacity: 1 !important;
             isolation: isolate;
         }
 
+        .letter-box-tag-menu label,
         .letter-box-parenthetical-tag-menu label {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
             gap: 0.5rem;
-            color: #f8fafc;
-            font-size: 0.76rem;
+            color: #e5e5e5;
+            font-size: 0.78rem;
             font-weight: 600;
         }
 
+        .letter-box-tag-menu input[type="range"],
         .letter-box-parenthetical-tag-menu input[type="range"] {
             width: 100%;
-            accent-color: #22c55e;
+            appearance: none;
+            -webkit-appearance: none;
+            height: 0.35rem;
+            margin: 0.1rem 0;
+            border-radius: 999px;
+            background: rgba(240,240,240,0.3);
+            accent-color: var(--ui-accent);
             cursor: pointer;
+        }
+
+        .letter-box-tag-menu input[type="range"]::-webkit-slider-thumb,
+        .letter-box-parenthetical-tag-menu input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 1.1rem;
+            height: 1.1rem;
+            border: 2px solid #171717;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 0 0 2px var(--ui-accent), 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .letter-box-tag-menu input[type="range"]::-moz-range-thumb,
+        .letter-box-parenthetical-tag-menu input[type="range"]::-moz-range-thumb {
+            width: 0.86rem;
+            height: 0.86rem;
+            border: 2px solid #171717;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 0 0 2px var(--ui-accent), 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .letter-box-tag-menu input[type="color"],
+        .letter-box-parenthetical-tag-menu input[type="color"] {
+            width: 2.25rem;
+            height: 2.25rem;
+            padding: 0.18rem;
+            border: 1px solid rgba(255,255,255,0.24);
+            border-radius: 0.7rem;
+            background: rgba(255,255,255,0.08);
+            cursor: pointer;
+        }
+
+        .letter-box-tag-menu input:focus-visible,
+        .letter-box-parenthetical-tag-menu input:focus-visible {
+            outline: 2px solid color-mix(in srgb, var(--ui-accent) 58%, transparent);
+            outline-offset: 2px;
         }
 
         .letter-box-green-action-btn {
@@ -334,44 +489,6 @@
 
         .letter-box-green-action-btn svg {
             color: #22c55e !important;
-        }
-
-        .letter-box-tag-menu {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 2147483647;
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-            padding: 0.5rem;
-            min-width: 150px;
-            border-radius: 0.6rem;
-            border: 1px solid rgba(255,255,255,0.16);
-            background: rgba(15, 23, 42, 0.96);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.28);
-            pointer-events: auto;
-            opacity: 1 !important;
-            isolation: isolate;
-        }
-
-        .letter-box-tag-menu label {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.5rem;
-            color: #f8fafc;
-            font-size: 0.76rem;
-            font-weight: 600;
-        }
-
-        .letter-box-tag-menu input[type="color"] {
-            width: 1.25rem;
-            height: 1.25rem;
-            padding: 0;
-            border: none;
-            background: transparent;
-            cursor: pointer;
         }
 
         .letter-box-text-dragging {
@@ -678,6 +795,892 @@
             0%, 10% { transform: translateY(-50%) translateX(0); }
             90%, 100% { transform: translateY(-50%) translateX(var(--scroll-dist)); }
         }
+
+        /* Configuración: sistema visual Material Design 3.
+           Se mantiene deliberadamente aislado para no alterar el reproductor. */
+        #modalOverlay {
+            background: rgb(0 0 0 / calc(var(--config-opacity) * 0.34));
+            backdrop-filter: blur(calc(var(--config-opacity) * 10px));
+            -webkit-backdrop-filter: blur(calc(var(--config-opacity) * 10px));
+        }
+
+        .config-shell {
+            --md-surface: rgb(23 23 23 / var(--config-opacity));
+            --md-surface-container: rgb(33 33 33 / var(--config-opacity));
+            --md-surface-container-high: rgb(44 44 44 / var(--config-opacity));
+            --md-outline: #989898;
+            --md-on-surface: #f0f0f0;
+            --md-on-surface-variant: #c9c9c9;
+            --md-primary: var(--ui-accent);
+            --md-on-primary: var(--ui-on-accent);
+            --md-primary-container: var(--ui-accent);
+            --md-secondary-container: color-mix(in srgb, var(--ui-accent) 28%, #383838);
+            --md-on-secondary-container: #ffffff;
+            background: var(--md-surface) !important;
+            border: 0;
+            box-shadow: none;
+            color: var(--md-on-surface);
+            position: relative;
+            backdrop-filter: blur(calc(var(--config-opacity) * 20px));
+            -webkit-backdrop-filter: blur(calc(var(--config-opacity) * 20px));
+        }
+
+        .config-opacity-control {
+            position: absolute;
+            z-index: 10;
+            bottom: 1.25rem;
+            left: 1.25rem;
+            width: min(13rem, calc(100% - 2.5rem));
+        }
+
+        .config-opacity-control input {
+            width: 100%;
+            accent-color: var(--ui-accent);
+            cursor: pointer;
+        }
+
+        .config-shell > header {
+            min-height: 80px;
+            padding: 0 2rem;
+            background: var(--md-surface-container);
+            border-color: rgba(220, 220, 220, 0.12);
+        }
+
+        .config-shell > header h2 {
+            color: var(--md-on-surface);
+            font-size: clamp(1.4rem, 2vw, 1.8rem);
+            font-weight: 500;
+            letter-spacing: 0;
+        }
+
+        #closeModal {
+            border: 0;
+            border-radius: 999px;
+            background: transparent;
+            color: var(--md-on-surface);
+        }
+
+        #closeModal:hover {
+            background: rgba(240, 240, 240, 0.08);
+        }
+
+        .config-sidebar {
+            padding: 1.25rem;
+            background: var(--md-surface-container);
+            border-color: rgba(220, 220, 220, 0.1);
+        }
+
+        #configSectionNav {
+            gap: 0.35rem;
+        }
+
+        .config-section-nav-btn {
+            min-height: 48px;
+            padding: 0.75rem 1rem;
+            border: 0;
+            border-radius: 999px;
+            color: var(--md-on-surface-variant);
+            background: transparent;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+        }
+
+        .config-section-nav-btn:hover {
+            border-color: transparent;
+            background: rgba(240, 240, 240, 0.08);
+        }
+
+        .config-section-nav-btn.active {
+            border: 0;
+            color: var(--md-on-secondary-container);
+            background: var(--md-secondary-container) !important;
+            box-shadow: none;
+        }
+
+        #modalOverlay main {
+            padding: clamp(1.25rem, 3vw, 2.5rem);
+            background: var(--md-surface);
+        }
+
+        #modalOverlay .config-section-panel.active {
+            width: min(100%, 960px);
+            margin: 0 auto;
+        }
+
+        #modalOverlay .config-section-panel h3 {
+            color: var(--md-on-surface);
+            font-weight: 500;
+            letter-spacing: 0;
+        }
+
+        #modalOverlay .neu-list-item {
+            padding: clamp(1.25rem, 2.2vw, 1.75rem);
+            border: 1px solid rgba(220, 220, 220, 0.14);
+            border-radius: 1.25rem;
+            background: var(--md-surface-container);
+            box-shadow: none;
+            color: var(--md-on-surface);
+            cursor: default;
+        }
+
+        #modalOverlay .neu-list-item:hover {
+            /* La tarjeta sólo agrupa controles; no es una acción interactiva. */
+            background: var(--md-surface-container);
+        }
+
+        #modalOverlay .neu-list-item > div > span:first-child {
+            color: var(--md-on-surface);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        #modalOverlay span,
+        #modalOverlay label {
+            color: var(--md-on-surface-variant);
+        }
+
+        #modalOverlay input[type="range"] {
+            accent-color: var(--md-primary);
+        }
+
+        #modalOverlay input[type="color"] {
+            width: 2.75rem;
+            height: 2.75rem;
+            padding: 0.2rem;
+            border: 1px solid var(--md-outline);
+            border-radius: 0.75rem;
+            background: var(--md-surface-container-high);
+        }
+
+        #modalOverlay select,
+        #modalOverlay input[type="file"] {
+            border-color: var(--md-outline) !important;
+            border-radius: 0.75rem;
+            background: var(--md-surface-container-high) !important;
+            color: var(--md-on-surface);
+        }
+
+        #modalOverlay .neu-list-item .border {
+            padding: 1.25rem;
+            border-color: rgba(220, 220, 220, 0.12) !important;
+            border-radius: 1rem;
+            background: rgba(255,255,255,0.025) !important;
+            box-shadow: none;
+        }
+
+        #modalOverlay .neu-list-item .border > span {
+            color: var(--md-on-surface) !important;
+        }
+
+        #modalOverlay .neu-btn {
+            min-height: 40px;
+            padding-inline: 1.25rem;
+            border: 0;
+            border-radius: 999px;
+            background: var(--md-primary-container) !important;
+            box-shadow: none !important;
+            color: var(--md-on-primary);
+            font-weight: 650;
+        }
+
+        #modalOverlay .neu-btn:hover {
+            filter: brightness(1.12);
+        }
+
+        /* Los botones principales oscuros conservan el mismo contraste que
+           las acciones destacadas de la pantalla principal. */
+        .ui-accent-dark #modalOverlay .neu-btn {
+            border: 1px solid rgba(255, 255, 255, 0.9);
+        }
+
+        @media (max-width: 1023px) {
+            .config-sidebar {
+                padding: 0.75rem 1rem;
+            }
+
+            #configSectionNav {
+                flex-direction: row;
+                overflow-x: auto;
+                padding-bottom: 0.2rem;
+            }
+
+            .config-section-nav-btn {
+                width: auto;
+                flex: 0 0 auto;
+            }
+        }
+
+        /* Acciones del reproductor: barras Material 3 compactas y agrupadas. */
+        .player-action-toolbar {
+            position: fixed;
+            top: 1.5rem;
+            z-index: 40;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.35rem;
+            border: 1px solid rgba(220, 220, 220, 0.16);
+            border-radius: 1.15rem;
+            background: rgba(33, 33, 33, 0.92);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.26);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
+        .player-action-toolbar-left { left: 1.5rem; }
+        .player-action-toolbar-right { right: 1.5rem; }
+
+        /* Esta opacidad pertenece exclusivamente a la opción de visibilidad.
+           Tiene prioridad sobre la personalización visual de componentes, pero
+           no bloquea eventos: las acciones siguen siendo clicables. */
+        .player-action-toolbar.is-visually-hidden {
+            opacity: 0 !important;
+        }
+
+        .player-toolbar-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.75rem;
+            height: 2.75rem;
+            padding: 0;
+            border: 0;
+            border-radius: 0.85rem;
+            background: transparent;
+            color: #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+        }
+
+        .player-toolbar-btn:hover:not(:disabled) {
+            background: rgba(240, 240, 240, 0.12);
+        }
+
+        .player-toolbar-btn:active:not(:disabled) {
+            transform: scale(0.94);
+        }
+
+        .player-toolbar-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.42;
+        }
+
+        .player-toolbar-btn.is-emphasis {
+            background: var(--ui-accent);
+            color: var(--ui-on-accent);
+        }
+
+        /* Los acentos oscuros necesitan un borde para conservar contraste. */
+        .ui-accent-dark .player-toolbar-btn.is-emphasis {
+            border: 1px solid rgba(255, 255, 255, 0.9);
+        }
+
+        .player-toolbar-btn.is-danger {
+            color: #ffb4ab;
+        }
+
+        /* Diálogo de eliminación: compacto y alineado con las superficies
+           Material 3 de la configuración. */
+        #deleteModalOverlay {
+            background: rgb(0 0 0 / 0.42);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .delete-audio-dialog {
+            width: min(100%, 26rem);
+            padding: 1.5rem;
+            border: 1px solid rgba(220, 220, 220, 0.16);
+            border-radius: 1.25rem;
+            background: #212121;
+            box-shadow: 0 24px 56px rgba(0, 0, 0, 0.42);
+            color: #f0f0f0;
+        }
+
+        .delete-audio-dialog-header {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .delete-audio-dialog-icon {
+            display: grid;
+            place-items: center;
+            width: 3rem;
+            height: 3rem;
+            flex: 0 0 auto;
+            border-radius: 50%;
+            background: rgba(255, 180, 171, 0.12);
+            color: #ffb4ab;
+        }
+
+        .delete-audio-dialog-icon svg {
+            color: inherit !important;
+        }
+
+        .delete-audio-dialog > p {
+            display: none;
+        }
+
+        .delete-audio-dialog-icon {
+            float: left;
+            margin-right: 0.85rem;
+        }
+
+        .delete-audio-dialog h3 {
+            display: flex;
+            align-items: center;
+            min-height: 3rem;
+        }
+
+        .delete-audio-dialog h3 {
+            margin: 0;
+            color: #f0f0f0;
+            font-size: 1.35rem;
+            font-weight: 500;
+            line-height: 1.25;
+        }
+
+        .delete-audio-actions {
+            clear: both;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .delete-audio-actions button {
+            min-height: 2.5rem;
+            padding: 0 1.15rem;
+            border: 0;
+            border-radius: 999px;
+            font-size: 0.88rem;
+            font-weight: 650;
+            transition: background-color 0.16s ease, filter 0.16s ease;
+        }
+
+        .delete-audio-cancel {
+            background: transparent;
+            color: #f0f0f0;
+        }
+
+        .delete-audio-cancel:hover {
+            background: rgba(240, 240, 240, 0.1);
+        }
+
+        .delete-audio-confirm {
+            background: #ab3843;
+            color: #ffffff;
+        }
+
+        .delete-audio-confirm:hover {
+            filter: brightness(1.12);
+        }
+
+        .player-toolbar-divider {
+            width: 1px;
+            height: 1.75rem;
+            margin: 0 0.18rem;
+            background: rgba(220, 220, 220, 0.22);
+        }
+
+        #letterBoxEditorPanel {
+            background: rgba(0, 0, 0, 0.62) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        #letterBoxEditorPanel .letter-box-editor-panel {
+            background: #212121;
+            border: 1px solid rgba(220, 220, 220, 0.16);
+            border-radius: 1.5rem;
+            box-shadow: 0 22px 60px rgba(0,0,0,0.42);
+        }
+
+        #letterBoxEditorPanel h3 { color: #f0f0f0; font-weight: 500; }
+
+        #letterBoxEditorCloseBtn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 999px;
+            color: #f0f0f0;
+        }
+
+        #letterBoxEditorCloseBtn:hover { background: rgba(240, 240, 240, 0.1); }
+
+        #letterBoxTextInput {
+            min-height: 8rem;
+            border: 1px solid #989898 !important;
+            border-radius: 0.8rem !important;
+            background: #2c2c2c !important;
+            color: #f0f0f0;
+        }
+
+        #letterBoxTextInput:focus {
+            border-color: var(--ui-accent) !important;
+            outline: 2px solid color-mix(in srgb, var(--ui-accent) 28%, transparent);
+        }
+
+        /* Los deslizadores del editor comparten la apariencia Material de la configuración. */
+        #letterBoxEditorPanel input[type="range"] {
+            appearance: none;
+            -webkit-appearance: none;
+            height: 0.35rem;
+            border-radius: 999px;
+            background: color-mix(in srgb, #f0f0f0 30%, transparent);
+            accent-color: var(--ui-accent);
+            cursor: pointer;
+        }
+
+        #letterBoxEditorPanel input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 1.15rem;
+            height: 1.15rem;
+            border: 2px solid #000000;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 0 0 2px var(--ui-accent), 0 2px 4px rgba(0, 0, 0, 0.42);
+        }
+
+        #letterBoxEditorPanel input[type="range"]::-moz-range-thumb {
+            width: 0.88rem;
+            height: 0.88rem;
+            border: 2px solid #000000;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 0 0 2px var(--ui-accent), 0 2px 4px rgba(0, 0, 0, 0.42);
+        }
+        #letterBoxEditorPanel span { color: #c9c9c9; }
+
+        #letterBoxEditorPanel .letter-align-btn {
+            border: 1px solid #989898;
+            border-radius: 999px;
+            background: transparent;
+            color: #f0f0f0;
+        }
+
+        #letterBoxEditorPanel .letter-align-btn.active {
+            border-color: transparent;
+            background: color-mix(in srgb, var(--ui-accent) 28%, #383838);
+            color: #f0f0f0;
+        }
+
+        #letterBoxEditorPanel #letterBoxAcceptBtn,
+        #letterBoxEditorPanel #letterBoxCancelBtn,
+        #letterBoxEditorPanel #letterBoxClearBtn {
+            border-radius: 999px;
+            font-weight: 650;
+        }
+
+        #letterBoxEditorPanel #letterBoxAcceptBtn { background: #32945B; color: #ffffff; }
+        #letterBoxEditorPanel #letterBoxCancelBtn { background: color-mix(in srgb, var(--ui-accent) 28%, #383838); }
+        #letterBoxEditorPanel #letterBoxClearBtn { background: #AB3843; }
+
+        /* Editor de letra a pantalla completa: edición a la derecha y
+           previsualización con controles de composición a la izquierda. */
+        #letterBoxEditorPanel {
+            padding: 0 !important;
+            align-items: stretch;
+            justify-content: stretch;
+            background: rgba(0, 0, 0, 0.18) !important;
+            backdrop-filter: blur(3px) !important;
+            -webkit-backdrop-filter: blur(3px) !important;
+        }
+
+        #letterBoxEditorPanel .letter-box-editor-panel {
+            position: relative;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            width: 100%;
+            max-width: none;
+            max-height: none;
+            min-width: 0;
+            height: 100%;
+            padding: 0;
+            overflow: hidden;
+            border: 0;
+            border-radius: 0;
+        }
+
+        .letter-editor-preview-pane {
+            position: relative;
+            min-width: 0;
+            padding: clamp(1.5rem, 4vw, 4rem);
+            padding-top: clamp(5rem, 9vw, 7rem);
+            padding-bottom: 11rem;
+            background: #171717;
+            border-right: 1px solid rgba(220, 220, 220, 0.16);
+            overflow: hidden;
+        }
+
+        #letterBoxEditorPreview {
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            line-height: 1.15;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .letter-editor-controls {
+            position: absolute;
+            right: clamp(1.5rem, 4vw, 4rem);
+            bottom: clamp(1.5rem, 4vw, 4rem);
+            left: clamp(1.5rem, 4vw, 4rem);
+            display: grid;
+            grid-template-columns: auto minmax(10rem, 1fr);
+            align-items: end;
+            gap: 1rem 1.5rem;
+        }
+
+        .letter-editor-alignment { display: flex; gap: 0.45rem; }
+        .letter-editor-sliders { display: grid; gap: 0.8rem; }
+        .letter-editor-slider-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0.75rem; }
+        .letter-editor-slider-row label { color: #c9c9c9; font-size: 0.8rem; }
+        .letter-editor-slider-row output { color: #c9c9c9; font-size: 0.8rem; min-width: 3.5rem; text-align: right; }
+
+        .letter-editor-input-pane { position: relative; min-width: 0; background: #212121; }
+        #letterBoxTextInput {
+            width: 100%;
+            height: 100%;
+            min-height: 0;
+            padding: clamp(5.5rem, 9vw, 7rem) clamp(1.5rem, 4vw, 4rem) clamp(6rem, 9vw, 7rem);
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            line-height: 1.15;
+            resize: none;
+        }
+
+        #letterBoxEditorBackBtn,
+        #letterBoxClearBtn,
+        #letterBoxAcceptBtn { position: absolute; z-index: 2; }
+        #letterBoxEditorBackBtn { top: clamp(1rem, 2vw, 2rem); left: clamp(1rem, 2vw, 2rem); }
+        #letterBoxClearBtn { top: clamp(1rem, 2vw, 2rem); right: clamp(1rem, 2vw, 2rem); }
+        #letterBoxAcceptBtn { right: clamp(1rem, 2vw, 2rem); bottom: clamp(1rem, 2vw, 2rem); }
+
+        #letterBoxEditorBackBtn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-height: 2.75rem;
+            padding: 0 1rem;
+            border: 0;
+            border-radius: 999px;
+            background: rgba(240, 240, 240, 0.1);
+            color: #f0f0f0;
+        }
+
+        @media (max-width: 760px) {
+            #letterBoxEditorPanel .letter-box-editor-panel { grid-template-columns: 1fr; grid-template-rows: 42% 58%; }
+            .letter-editor-preview-pane { padding-bottom: 8.5rem; border-right: 0; border-bottom: 1px solid rgba(220, 220, 220, 0.16); }
+            .letter-editor-controls { grid-template-columns: 1fr; gap: 0.6rem; bottom: 1rem; }
+            .letter-editor-alignment { justify-content: flex-start; }
+            #letterBoxClearBtn { top: 0.8rem; right: 0.8rem; }
+            #letterBoxEditorBackBtn { top: 0.8rem; left: 0.8rem; }
+            #letterBoxAcceptBtn { bottom: 0.8rem; right: 0.8rem; }
+        }
+
+        /* Composición final: controles compactos a la izquierda y editor en
+           la mitad derecha, sin duplicar el texto fuera del área de edición. */
+        #letterBoxEditorPanel .letter-box-editor-panel {
+            display: block;
+            background: transparent !important;
+            pointer-events: none;
+        }
+        .letter-editor-preview-pane {
+            position: absolute;
+            z-index: 3;
+            right: auto;
+            bottom: clamp(1.25rem, 3vw, 2rem);
+            left: clamp(1.25rem, 3vw, 2rem);
+            width: min(42vw, 560px);
+            height: auto;
+            padding: 1rem 1.15rem;
+            background: rgba(33, 33, 33, 0.72);
+            border: 1px solid rgba(220, 220, 220, 0.18);
+            border-radius: 1.25rem;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            overflow: visible;
+            pointer-events: auto;
+        }
+        #letterBoxEditorPreview { display: none; }
+        .letter-editor-controls { position: static; display: grid; grid-template-columns: 1fr; gap: 0.8rem; }
+        .letter-editor-alignment { order: -1; }
+        .letter-editor-sliders { gap: 0.65rem; }
+        .letter-editor-input-pane {
+            position: absolute;
+            inset: 0 0 0 var(--letter-editor-input-left, 50%);
+            overflow: hidden;
+            pointer-events: auto;
+        }
+        .letter-editor-resizer {
+            position: absolute;
+            z-index: 4;
+            top: 0;
+            bottom: 0;
+            left: calc(var(--letter-editor-input-left, 50%) - 0.4rem);
+            width: 0.8rem;
+            cursor: col-resize;
+            touch-action: none;
+            pointer-events: auto;
+        }
+        .letter-editor-resizer::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0.18rem;
+            height: 3.5rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.42);
+            transform: translate(-50%, -50%);
+            transition: background-color 0.16s ease;
+        }
+        .letter-editor-resizer:hover::after,
+        .letter-editor-resizer.is-resizing::after { background: var(--ui-accent); }
+        #letterBoxTextInput {
+            /* La posición horizontal sólo se refleja en el cuadro de letras;
+               el área de edición permanece estable. */
+            text-indent: 0;
+        }
+        #letterBoxEditorBackBtn {
+            top: clamp(1rem, 2vw, 2rem);
+            left: clamp(1rem, 2vw, 2rem);
+            width: 2.75rem;
+            padding: 0;
+            justify-content: center;
+            font-size: 1rem;
+            line-height: 1;
+        }
+        .letter-editor-confirm-popover {
+            position: fixed;
+            z-index: 70;
+            width: min(20rem, calc(100vw - 2rem));
+            padding: 0.85rem;
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 0.85rem;
+            background: rgba(33,33,33,0.98);
+            box-shadow: 0 12px 26px rgba(0,0,0,0.34);
+            color: #f0f0f0;
+            pointer-events: auto;
+        }
+        .letter-editor-confirm-popover p { margin: 0 0 0.75rem; font-size: 0.82rem; line-height: 1.35; }
+        .letter-editor-confirm-actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
+        .letter-editor-confirm-actions button { padding: 0.45rem 0.75rem; border-radius: 999px; font-size: 0.78rem; font-weight: 650; }
+        .letter-editor-confirm-actions .confirm-cancel { background: rgba(255,255,255,0.1); color: #f0f0f0; }
+        .letter-editor-confirm-actions .confirm-accept { background: #32945B; color: #ffffff; }
+        .letter-editor-confirm-actions .confirm-danger { background: #AB3843; color: #ffffff; }
+
+        @media (max-width: 760px) {
+            .letter-editor-preview-pane { width: calc(100vw - 2rem); bottom: 1rem; left: 1rem; }
+            .letter-editor-input-pane { inset: 0; }
+            .letter-editor-resizer { display: none; }
+            #letterBoxTextInput { padding-left: 1.5rem; padding-right: 1.5rem; padding-bottom: 12rem; }
+        }
+
+        /* Tooltips propios: nunca quedan bajo el cursor y conservan el lenguaje visual. */
+        .has-custom-tooltip {
+            position: relative;
+        }
+
+        .has-custom-tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: calc(100% + 0.65rem);
+            left: 50%;
+            z-index: 100;
+            width: max-content;
+            max-width: min(17rem, calc(100vw - 1.5rem));
+            padding: 0.48rem 0.72rem;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 0.6rem;
+            background: rgba(33, 33, 33, 0.98);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+            color: #f0f0f0;
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1.2;
+            text-align: center;
+            pointer-events: none;
+            opacity: 0;
+            transform: translate(-50%, -0.25rem);
+            transition: opacity 0.16s ease, transform 0.16s ease;
+        }
+
+        .has-custom-tooltip:hover::after,
+        .has-custom-tooltip:focus-visible::after {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        /* Las barras están en los extremos: el tooltip crece siempre hacia dentro. */
+        .player-action-toolbar-left .has-custom-tooltip::after {
+            left: 0;
+            transform: translate(0, -0.25rem);
+        }
+
+        .player-action-toolbar-left .has-custom-tooltip:hover::after,
+        .player-action-toolbar-left .has-custom-tooltip:focus-visible::after {
+            transform: translate(0, 0);
+        }
+
+        .player-action-toolbar-right .has-custom-tooltip::after {
+            right: 0;
+            left: auto;
+            transform: translate(0, -0.25rem);
+        }
+
+        .player-action-toolbar-right .has-custom-tooltip:hover::after,
+        .player-action-toolbar-right .has-custom-tooltip:focus-visible::after {
+            transform: translate(0, 0);
+        }
+
+        /* El botón de cierre está en el extremo izquierdo del encabezado. */
+        #closeModal.has-custom-tooltip::after {
+            left: 0;
+            transform: translate(0, -0.25rem);
+        }
+
+        #closeModal.has-custom-tooltip:hover::after,
+        #closeModal.has-custom-tooltip:focus-visible::after {
+            transform: translate(0, 0);
+        }
+
+        /* Controles Material 3, sin las apariencias nativas del navegador. */
+        #modalOverlay input[type="range"] {
+            appearance: none;
+            -webkit-appearance: none;
+            height: 0.35rem;
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--md-on-surface) 30%, transparent);
+            accent-color: var(--md-primary);
+            cursor: pointer;
+        }
+
+        #modalOverlay input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 1.15rem;
+            height: 1.15rem;
+            border: 2px solid #000000;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 0 0 2px var(--md-primary), 0 2px 4px rgba(0, 0, 0, 0.42);
+        }
+
+        #modalOverlay input[type="range"]::-moz-range-thumb {
+            width: 0.88rem;
+            height: 0.88rem;
+            border: 2px solid #000000;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 0 0 2px var(--md-primary), 0 2px 4px rgba(0, 0, 0, 0.42);
+        }
+
+        #modalOverlay input[type="checkbox"],
+        #modalOverlay input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            display: inline-grid;
+            place-content: center;
+            width: 1.25rem;
+            height: 1.25rem;
+            margin: 0;
+            flex: 0 0 auto;
+            border: 2px solid var(--md-outline);
+            background: transparent;
+            cursor: pointer;
+            transition: background-color 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+        }
+
+        #modalOverlay input[type="checkbox"] { border-radius: 0.28rem; }
+        #modalOverlay input[type="radio"] { border-radius: 50%; }
+
+        #modalOverlay input[type="checkbox"]::after {
+            content: '';
+            width: 0.54rem;
+            height: 0.3rem;
+            border-bottom: 2px solid var(--md-on-primary);
+            border-left: 2px solid var(--md-on-primary);
+            transform: rotate(-45deg) scale(0);
+            transition: transform 0.14s ease;
+        }
+
+        #modalOverlay input[type="radio"]::after {
+            content: '';
+            width: 0.56rem;
+            height: 0.56rem;
+            border-radius: 50%;
+            background: var(--md-on-primary);
+            transform: scale(0);
+            transition: transform 0.14s ease;
+        }
+
+        #modalOverlay input[type="checkbox"]:checked,
+        #modalOverlay input[type="radio"]:checked {
+            border-color: var(--md-primary);
+            background: var(--md-primary);
+        }
+
+        #modalOverlay input[type="checkbox"]:checked::after,
+        #modalOverlay input[type="radio"]:checked::after { transform: scale(1) rotate(-45deg); }
+        #modalOverlay input[type="radio"]:checked::after { transform: scale(1); }
+
+        #modalOverlay input[type="checkbox"]:focus-visible,
+        #modalOverlay input[type="radio"]:focus-visible,
+        #modalOverlay select:focus-visible,
+        #modalOverlay input[type="range"]:focus-visible {
+            outline: 2px solid color-mix(in srgb, var(--md-primary) 55%, transparent);
+            outline-offset: 3px;
+        }
+
+        #modalOverlay select {
+            appearance: none;
+            -webkit-appearance: none;
+            min-height: 2.8rem;
+            padding: 0.6rem 2.7rem 0.6rem 0.9rem;
+            background-image: linear-gradient(45deg, transparent 50%, var(--md-on-surface-variant) 50%), linear-gradient(135deg, var(--md-on-surface-variant) 50%, transparent 50%);
+            background-position: calc(100% - 1.15rem) 1.15rem, calc(100% - 0.82rem) 1.15rem;
+            background-size: 0.38rem 0.38rem, 0.38rem 0.38rem;
+            background-repeat: no-repeat;
+            cursor: pointer;
+        }
+
+        /* Scrollbar discreta, acorde a las superficies grises de la app. */
+        html, body, #modalOverlay main, .letter-box-editor-panel {
+            scrollbar-width: thin;
+            scrollbar-color: color-mix(in srgb, var(--ui-accent) 58%, #777) #1b1b1b;
+        }
+
+        ::-webkit-scrollbar { width: 0.72rem; height: 0.72rem; }
+        ::-webkit-scrollbar-track { background: #1b1b1b; }
+        ::-webkit-scrollbar-thumb {
+            border: 3px solid #1b1b1b;
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--ui-accent) 58%, #777);
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--ui-accent); }
+
+        @media (max-width: 700px) {
+            .player-action-toolbar { top: 0.85rem; }
+            .player-action-toolbar-left { left: 0.85rem; }
+            .player-action-toolbar-right { right: 0.85rem; flex-direction: column; }
+            .player-toolbar-btn { width: 2.4rem; height: 2.4rem; }
+            .player-toolbar-divider { width: 1.75rem; height: 1px; margin: 0.05rem 0; }
+        }
     </style>
 </head>
 
@@ -695,14 +1698,7 @@
         </div>
 
         <div id="playerView" class="hidden w-full h-full relative p-6">
-            <button id="borrar-cancion" onclick="showDeleteModal()" class="fixed top-24 left-6 p-4 neu-btn rounded-2xl flex items-center justify-center z-40 hover:opacity-80 transition" title="Eliminar Audio">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 6h18"></path>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                </svg>
-            </button>
-            
-            <div id="cuadro-de-letra" class="letter-box absolute z-10" style="left: 10%; top: 10%; width: 60vw; height: 24vh;">
+            <div id="cuadro-de-letra" class="letter-box absolute z-10" style="left: 10%; top: 10%; width: 48vw; height: 78vh;">
                 <div id="letterBoxTextLayer" class="letter-box-content">
                     <div id="letterBoxTextWrap" class="letter-box-text-wrap">
                         <div id="letterBoxText" class="letter-box-text"></div>
@@ -764,103 +1760,63 @@
         </div>
     </div>
 
-    <button id="configBtn" class="fixed top-6 left-6 p-4 neu-btn rounded-2xl flex items-center justify-center z-40">
-        <svg id="configIcon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-            <path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.4.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.4-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
-        </svg>
-    </button>
-
-    <button id="imagePickerBtn" class="image-picker-btn neu-btn fixed top-6 left-24 px-4 py-3 rounded-2xl flex items-center justify-center z-40 text-sm font-semibold">
-        Elegir imagen
-    </button>
-    <button id="letterBoxEditBtn" type="button" class="fixed top-6 right-6 p-4 neu-btn rounded-2xl flex items-center justify-center z-40" title="Editar texto del cuadro de letra">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 20h9"></path>
-            <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
-        </svg>
-    </button>
-
-    <div id="letterBoxCutControls" class="fixed top-24 right-6 flex flex-col gap-2 z-40">
-        <button id="letterBoxResumeBtn" type="button" class="letter-box-green-action-btn p-4 neu-btn rounded-2xl flex items-center justify-center" title="Guardar un punto de control para reanudar la letra al reproducir" style="color:#22c55e; background: rgba(34,197,94,0.16); border-color: rgba(34,197,94,0.52);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 3h10l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"></path>
-                <path d="M8 3v5h8V3"></path>
-                <path d="M8 13h8"></path>
-                <path d="M8 17h8"></path>
-            </svg>
+    <div class="player-action-toolbar player-action-toolbar-left" aria-label="Acciones generales">
+        <button id="configBtn" type="button" class="player-toolbar-btn" title="Abrir configuración" aria-label="Abrir configuración">
+            <svg id="configIcon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.4.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.4-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
         </button>
-        <button id="letterBoxCutBtn" type="button" class="letter-box-green-action-btn p-4 neu-btn rounded-2xl flex items-center justify-center" title="Cortar la letra en este punto">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 7a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
-                <path d="M20 17a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
-                <path d="M4 7l16 10"></path>
-                <path d="M20 17 4 7"></path>
-                <path d="M7 7l10 10"></path>
-            </svg>
+        <span id="configImageDivider" class="player-toolbar-divider" aria-hidden="true"></span>
+        <button id="imagePickerBtn" type="button" class="player-toolbar-btn is-emphasis" title="Añadir imagen" aria-label="Añadir imagen">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="m21 15-5-5L5 21"></path><path d="M17 5v4"></path><path d="M15 7h4"></path></svg>
         </button>
-        <button id="letterBoxUndoCutBtn" type="button" class="letter-box-green-action-btn p-4 neu-btn rounded-2xl flex items-center justify-center" title="Deshacer último corte">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 8a8 8 0 0 1 13.5-5.5"></path>
-                <path d="M3 8h6"></path>
-                <path d="M3 8v-6"></path>
-                <path d="M21 16a8 8 0 0 1-13.5 5.5"></path>
-                <path d="M21 16h-6"></path>
-                <path d="M21 16v6"></path>
-            </svg>
+        <span id="imageAudioDivider" class="player-toolbar-divider hidden" aria-hidden="true"></span>
+        <button id="borrar-cancion" type="button" onclick="showDeleteModal()" class="player-toolbar-btn is-danger hidden" title="Eliminar audio" aria-label="Eliminar audio">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
         </button>
     </div>
 
-    <button id="linkedVinylActionBtn" type="button" class="fixed top-6 right-24 p-4 neu-btn rounded-2xl flex items-center justify-center z-40" title="Añadir imagen al vinilo">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 5v14"></path>
-            <path d="M5 12h14"></path>
-        </svg>
-    </button>
-    <button id="linkedVinylDeleteBtn" type="button" class="fixed top-6 right-24 p-4 neu-btn rounded-2xl hidden items-center justify-center z-40" title="Eliminar imagen del vinilo">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 6h18"></path>
-            <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"></path>
-            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-            <path d="M10 11v6"></path>
-            <path d="M14 11v6"></path>
-        </svg>
-    </button>
+    <div class="player-action-toolbar player-action-toolbar-right" aria-label="Acciones de letra y vinilo">
+        <button id="letterBoxEditBtn" type="button" class="player-toolbar-btn" title="Editar texto de la letra" aria-label="Editar texto de la letra">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>
+        </button>
+        <span class="player-toolbar-divider" aria-hidden="true"></span>
+        <button id="letterBoxCutBtn" type="button" class="player-toolbar-btn" title="Pausar letra en este punto" aria-label="Pausar letra en este punto">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5v14"></path><path d="M15 5v14"></path></svg>
+        </button>
+        <button id="letterBoxUndoCutBtn" type="button" class="player-toolbar-btn" title="Deshacer último punto" aria-label="Deshacer último punto">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10a6 6 0 0 1 6 6v1"></path></svg>
+        </button>
+        <span class="player-toolbar-divider" aria-hidden="true"></span>
+        <button id="linkedVinylActionBtn" type="button" class="player-toolbar-btn" title="Añadir imagen al vinilo" aria-label="Añadir imagen al vinilo">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="2"></circle><path d="M19 4v4"></path><path d="M17 6h4"></path></svg>
+        </button>
+        <button id="linkedVinylDeleteBtn" type="button" class="player-toolbar-btn is-danger hidden" title="Eliminar imagen del vinilo" aria-label="Eliminar imagen del vinilo">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
+        </button>
+    </div>
     <input type="file" id="imageInput" class="hidden" accept="image/*">
     <input type="file" id="vinylImageInput" class="hidden" accept="image/*">
 
-    <div id="letterBoxEditorPanel" class="fixed inset-0 hidden z-[60] flex items-center justify-center bg-black/45 p-6 backdrop-blur-sm">
-        <div class="letter-box-editor-panel w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-3xl p-6 sm:p-8">
-            <div class="flex flex-col gap-4">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-semibold">Texto del cuadro</h3>
-                    <button id="letterBoxEditorCloseBtn" type="button" class="text-sm opacity-70 hover:opacity-100">✕</button>
-                </div>
-                <textarea id="letterBoxTextInput" rows="5" class="w-full rounded-2xl border border-white/10 bg-black/20 p-3 text-sm outline-none resize-none" placeholder="Escribe el texto..."></textarea>
-                <div class="flex flex-col gap-2">
-                    <div class="flex items-center justify-between text-sm">
-                        <span>Tamaño</span>
-                        <span id="letterBoxTextSizeValue">48px</span>
+    <div id="letterBoxEditorPanel" class="fixed inset-0 hidden z-[60] flex items-center justify-center p-6">
+        <div class="letter-box-editor-panel">
+            <section class="letter-editor-preview-pane" aria-label="Previsualización de la letra">
+                <div class="letter-editor-controls">
+                    <div class="letter-editor-alignment" role="group" aria-label="Alineación del texto">
+                        <button type="button" class="letter-align-btn active inline-flex h-10 w-10 items-center justify-center" data-align="left" aria-label="Alinear a la izquierda"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 10h10M4 14h16M4 18h10"/></svg></button>
+                        <button type="button" class="letter-align-btn inline-flex h-10 w-10 items-center justify-center" data-align="center" aria-label="Centrar texto"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 10h10M4 14h16M7 18h10"/></svg></button>
+                        <button type="button" class="letter-align-btn inline-flex h-10 w-10 items-center justify-center" data-align="right" aria-label="Alinear a la derecha"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M10 10h10M4 14h16M10 18h10"/></svg></button>
                     </div>
-                    <input id="letterBoxTextSize" type="range" min="18" max="120" step="1" value="48" class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-white/10">
-                </div>
-                <div class="flex flex-col gap-2">
-                    <div class="flex items-center justify-between text-sm">
-                        <span>Posición horizontal</span>
-                        <span id="letterBoxTextHorizontalOffsetValue">0px</span>
+                    <div class="letter-editor-sliders">
+                        <div class="letter-editor-slider-row"><label for="letterBoxTextSize">Tamaño</label><input id="letterBoxTextSize" type="range" min="18" max="120" step="1" value="30"><output id="letterBoxTextSizeValue">30px</output></div>
+                        <div class="letter-editor-slider-row"><label for="letterBoxTextHorizontalOffset">Posición</label><input id="letterBoxTextHorizontalOffset" type="range" min="-1200" max="1200" step="1" value="0"><output id="letterBoxTextHorizontalOffsetValue">0px</output></div>
                     </div>
-                    <input id="letterBoxTextHorizontalOffset" type="range" min="-1200" max="1200" step="1" value="0" class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-white/10">
                 </div>
-                <div class="flex items-center gap-2">
-                    <button type="button" class="letter-align-btn active px-3 py-2 rounded-xl text-sm" data-align="left">Izquierda</button>
-                    <button type="button" class="letter-align-btn px-3 py-2 rounded-xl text-sm" data-align="center">Centro</button>
-                    <button type="button" class="letter-align-btn px-3 py-2 rounded-xl text-sm" data-align="right">Derecha</button>
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button id="letterBoxCancelBtn" type="button" class="px-4 py-2 rounded-xl bg-gray-600 hover:bg-gray-500 text-sm font-semibold">Cancelar</button>
-                    <button id="letterBoxClearBtn" type="button" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-sm font-semibold">Borrar todo</button>
-                    <button id="letterBoxAcceptBtn" type="button" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-sm font-semibold">Aceptar</button>
-                </div>
-            </div>
+            </section>
+            <section class="letter-editor-input-pane" aria-label="Edición de letra">
+                <button id="letterBoxClearBtn" type="button" class="px-4 py-2 text-sm font-semibold">Limpiar letra</button>
+                <textarea id="letterBoxTextInput" spellcheck="true" placeholder="Escribe la letra..."></textarea>
+            </section>
+            <div id="letterBoxEditorResizer" class="letter-editor-resizer" role="separator" aria-label="Cambiar ancho del editor" aria-orientation="vertical"></div>
+            <div id="letterBoxEditorConfirmPopover" class="letter-editor-confirm-popover hidden" role="dialog" aria-live="polite"></div>
         </div>
     </div>
 
@@ -871,18 +1827,16 @@
         </div>
     </div>
 
-    <div id="imagePreviewContainer" class="hidden fixed top-6 left-6 z-35">
-        <div id="imagePreviewBox" class="image-preview-box relative">
-            <img id="selectedImage" src="" alt="Imagen seleccionada">
-        </div>
-    </div>
+    <div id="imagePreviewContainer" class="fixed inset-0 z-35 pointer-events-none"></div>
 
     <div id="configGhostTrigger" class="fixed top-0 left-0 w-20 h-20 z-50 cursor-pointer hidden" title="Abrir configuración"></div>
 
     <div id="modalOverlay" class="fixed inset-0 bg-black/40 hidden z-50 backdrop-blur-sm">
         <div class="config-shell w-full h-full flex flex-col">
             <header class="flex items-center justify-between border-b border-white/10 px-6 py-5 sm:px-8">
-                <button id="closeModal" class="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-xl text-white transition hover:bg-white/10" aria-label="Cerrar configuración">←</button>
+                <button id="closeModal" class="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-xl text-white transition hover:bg-white/10" aria-label="Cerrar configuración" title="Cerrar configuración">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
                 <h2 id="configSectionTitle" class="text-2xl font-bold tracking-tight text-white sm:text-3xl">Configuración</h2>
                 <div class="w-12"></div>
             </header>
@@ -893,10 +1847,8 @@
                         <button type="button" class="config-section-nav-btn active" data-config-section="general">General</button>
                         <button type="button" class="config-section-nav-btn" data-config-section="apariencia">Apariencia</button>
                         <button type="button" class="config-section-nav-btn" data-config-section="fondo">Fondo</button>
-                        <button type="button" class="config-section-nav-btn" data-config-section="imagen">Imagen</button>
                         <button type="button" class="config-section-nav-btn" data-config-section="vinilo">Vinilo</button>
                         <button type="button" class="config-section-nav-btn" data-config-section="audio">Audio</button>
-                        <button type="button" class="config-section-nav-btn" data-config-section="gestion">Gestión</button>
                     </nav>
                 </aside>
 
@@ -1063,10 +2015,9 @@
                                         <span class="text-sm text-gray-400 w-28">Blur Fondo</span>
                                         <input type="range" id="playerBlur" min="0" max="40" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()">
                                     </div>
-                                    <div class="flex items-center gap-4">
-                                        <span class="text-sm text-gray-400 w-28">Opacidad Panel</span>
-                                        <input type="range" id="playerOpacity" min="0.1" max="1" step="0.05" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()">
-                                    </div>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" id="playerVisibility" checked onchange="applyPlayerCardSettings()"> Mostrar cuadro de audio
+                                    </label>
                                     <div class="flex items-center gap-4">
                                         <span class="text-sm text-gray-400 w-28">Escala Panel</span>
                                         <input type="range" id="playerScale" min="0.5" max="1.5" step="0.05" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()">
@@ -1119,11 +2070,11 @@
                                     </div>
                                     <div class="flex items-center gap-4">
                                         <span class="text-sm text-gray-400 w-28">Tamaño vertical</span>
-                                        <input type="range" id="letterBoxHeightPercent" min="0.1" max="150" step="0.1" value="24" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
+                                        <input type="range" id="letterBoxHeightPercent" min="0.1" max="150" step="0.1" value="78" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
                                     </div>
                                     <div class="flex items-center gap-4">
                                         <span class="text-sm text-gray-400 w-28">Tamaño horizontal</span>
-                                        <input type="range" id="letterBoxWidthPercent" min="0.1" max="150" step="0.1" value="60" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
+                                        <input type="range" id="letterBoxWidthPercent" min="0.1" max="150" step="0.1" value="48" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
                                     </div>
                                     <div class="flex items-center gap-4">
                                         <span class="text-sm text-gray-400 w-28">Posición horizontal</span>
@@ -1183,24 +2134,6 @@
                                             <input type="range" id="blurIntensity" min="0" max="20" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyBlur()">
                                         </div>
                                     </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="config-section-panel" data-config-section="imagen">
-                        <div class="mb-6">
-                            <h3 class="text-xl font-semibold text-white sm:text-2xl">Imagen</h3>
-                        </div>
-                        <ul class="space-y-6">
-                            <li id="imageSizeOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                                <div class="flex flex-col space-y-4">
-                                    <span class="font-semibold text-xl">Tamaño de la imagen</span>
-                                    <div class="flex items-center gap-4">
-                                        <span class="text-sm text-gray-400 w-24">Tamaño</span>
-                                        <input type="range" id="imageSizeRange" min="10" max="1000" step="1" value="220" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="updateImageSizeFromControl()">
-                                    </div>
-                                    <div id="imageSizeValue" class="text-sm text-gray-400">220 px</div>
                                 </div>
                             </li>
                         </ul>
@@ -1358,28 +2291,10 @@
                         </ul>
                     </div>
 
-                    <div class="config-section-panel" data-config-section="gestion">
-                        <div class="mb-6">
-                            <h3 class="text-xl font-semibold text-white sm:text-2xl">Gestión</h3>
-                        </div>
-                        <ul class="space-y-6">
-                            <li id="configManagement" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                                <div class="flex flex-col space-y-4">
-                                    <span class="font-semibold text-xl">Gestionar Configuración</span>
-                                    <div class="flex flex-wrap gap-4">
-                                        <button onclick="saveSettings()" class="neu-btn px-6 py-2 rounded-lg font-semibold hover:opacity-80 transition">
-                                            Guardar (JSON)
-                                        </button>
-                                        <button onclick="document.getElementById('loadInput').click()" class="neu-btn px-6 py-2 rounded-lg font-semibold hover:opacity-80 transition">
-                                            Cargar (Archivo)
-                                        </button>
-                                        <input type="file" id="loadInput" class="hidden" accept=".json" onchange="loadSettings(event)">
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
                 </main>
+            </div>
+            <div class="config-opacity-control">
+                <input id="configOpacityControl" type="range" min="0" max="1" step="0.01" value="0.72" aria-label="Opacidad y desenfoque de configuración" title="Opacidad y desenfoque de configuración">
             </div>
         </div>
     </div>
@@ -1395,13 +2310,16 @@
         </div>
     </div>
 
-    <div id="deleteModalOverlay" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-6 backdrop-blur-sm z-50 transition-opacity">
-        <div class="neu-card max-w-sm w-full p-8 text-center border border-gray-700/50 shadow-2xl">
-            <h3 class="text-2xl font-bold mb-3 text-white">¿Estás seguro?</h3>
-            <p class="mb-8 text-gray-300">¿Estás seguro de eliminar esta canción sin guardar?</p>
-            <div class="flex justify-center gap-4">
-                <button onclick="hideDeleteModal()" class="px-6 py-3 rounded-xl bg-gray-500 hover:bg-gray-400 text-white font-semibold transition shadow-lg w-full">Cancelar</button>
-                <button onclick="confirmDelete()" class="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold transition shadow-lg w-full">Eliminar</button>
+    <div id="deleteModalOverlay" class="fixed inset-0 hidden flex items-center justify-center p-6 z-50">
+        <div class="delete-audio-dialog" role="dialog" aria-modal="true" aria-labelledby="deleteAudioDialogTitle" aria-describedby="deleteAudioDialogDescription">
+            <div class="delete-audio-dialog-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
+            </div>
+            <h3 id="deleteAudioDialogTitle">¿Eliminar audio?</h3>
+            <p id="deleteAudioDialogDescription">El audio actual se eliminará sin guardar.</p>
+            <div class="delete-audio-actions">
+                <button type="button" onclick="hideDeleteModal()" class="delete-audio-cancel">Cancelar</button>
+                <button type="button" onclick="confirmDelete()" class="delete-audio-confirm">Eliminar</button>
             </div>
         </div>
     </div>
@@ -1449,15 +2367,15 @@
             letterBoxTextWrap: document.getElementById('letterBoxTextWrap'),
             letterBoxText: document.getElementById('letterBoxText'),
             letterBoxEditBtn: document.getElementById('letterBoxEditBtn'),
-            letterBoxResumeBtn: document.getElementById('letterBoxResumeBtn'),
             letterBoxCutBtn: document.getElementById('letterBoxCutBtn'),
             letterBoxUndoCutBtn: document.getElementById('letterBoxUndoCutBtn'),
             letterBoxEditorPanel: document.getElementById('letterBoxEditorPanel'),
-            letterBoxEditorCloseBtn: document.getElementById('letterBoxEditorCloseBtn'),
+            letterBoxEditorBackBtn: document.getElementById('letterBoxEditorBackBtn'),
+            letterBoxEditorPreview: document.getElementById('letterBoxEditorPreview'),
+            letterBoxEditorConfirmPopover: document.getElementById('letterBoxEditorConfirmPopover'),
             letterBoxTextInput: document.getElementById('letterBoxTextInput'),
             letterBoxTextSize: document.getElementById('letterBoxTextSize'),
             letterBoxTextSizeValue: document.getElementById('letterBoxTextSizeValue'),
-            letterBoxCancelBtn: document.getElementById('letterBoxCancelBtn'),
             letterBoxClearBtn: document.getElementById('letterBoxClearBtn'),
             letterBoxAcceptBtn: document.getElementById('letterBoxAcceptBtn'),
             configGhostTrigger: document.getElementById('configGhostTrigger')
@@ -1489,22 +2407,51 @@
         const letterBoxTextWrap = refs.letterBoxTextWrap;
         const letterBoxText = refs.letterBoxText;
         const letterBoxEditBtn = refs.letterBoxEditBtn;
-        const letterBoxResumeBtn = refs.letterBoxResumeBtn;
         const letterBoxCutBtn = refs.letterBoxCutBtn;
         const letterBoxUndoCutBtn = refs.letterBoxUndoCutBtn;
         const letterBoxEditorPanel = refs.letterBoxEditorPanel;
-        const letterBoxEditorCloseBtn = refs.letterBoxEditorCloseBtn;
+        const letterBoxEditorBackBtn = refs.letterBoxEditorBackBtn;
+        const letterBoxEditorPreview = refs.letterBoxEditorPreview;
+        const letterBoxEditorConfirmPopover = refs.letterBoxEditorConfirmPopover;
         const letterBoxTextInput = refs.letterBoxTextInput;
         const letterBoxTextSize = refs.letterBoxTextSize;
         const letterBoxTextSizeValue = refs.letterBoxTextSizeValue;
-        const letterBoxCancelBtn = refs.letterBoxCancelBtn;
         const letterBoxClearBtn = refs.letterBoxClearBtn;
         const letterBoxAcceptBtn = refs.letterBoxAcceptBtn;
         const configGhostTrigger = refs.configGhostTrigger;
+        const letterBoxEditorResizer = document.getElementById('letterBoxEditorResizer');
 
         const letterBoxTextState = {
-            value: '',
-            size: 48,
+            value: `[intro]
+*Melodía clara y tranquila*
+
+[verse 1]
+Escribir tu canción es un paso sencillo,
+solo usa corchetes para darle un buen brillo.
+Con un [intro] la pista va a comenzar,
+y escribiendo [verse] ya puedes cantar.
+
+[chorus]
+El [chorus] destaca tu idea central,
+y si quieres sin letra, pon [instrumental].
+Con un [bridge] el ritmo lo puedes cambiar,
+y cierra con [ending] al punto final.
+
+[verse 2]
+Si buscas un eco o voz de refuerzo,
+escribir entre (paréntesis) ayuda al esfuerzo.
+Incluso una [etiqueta a tu gusto] es genial,
+para darle a tu letra un orden visual.
+
+[bridge]
+Para marcar un suspiro o un tono más suave,
+*un solo asterisco* funciona de llave.
+Pero si quieres fuerza y cantar con pasión,
+**usa dos asteriscos** y llama la atención.
+
+[ending]
+*La música termina de forma gradual*`,
+            size: 30,
             align: 'center',
             offset: 0,
             horizontalOffset: 0
@@ -1602,19 +2549,29 @@
         const configSectionTitle = document.getElementById('configSectionTitle');
         const configSectionButtons = Array.from(document.querySelectorAll('.config-section-nav-btn'));
         const configPanels = Array.from(document.querySelectorAll('.config-section-panel'));
+        const configContent = document.querySelector('#modalOverlay main');
+        const configOpacityControl = document.getElementById('configOpacityControl');
+        const configNavigationState = {
+            section: 'general',
+            scrollTop: 0
+        };
+
+        function applyConfigOpacity() {
+            const opacity = Math.max(0, Math.min(1, Number(configOpacityControl?.value ?? 0.72)));
+            document.documentElement.style.setProperty('--config-opacity', opacity);
+        }
 
         const configSectionLabels = {
             general: 'General',
             apariencia: 'Apariencia',
             fondo: 'Fondo',
-            imagen: 'Imagen',
             vinilo: 'Vinilo',
-            audio: 'Audio',
-            gestion: 'Gestión'
+            audio: 'Audio'
         };
 
         function setActiveConfigSection(sectionId) {
             const nextSection = configSectionLabels[sectionId] ? sectionId : 'general';
+            configNavigationState.section = nextSection;
             configSectionButtons.forEach((button) => {
                 const isActive = button.dataset.configSection === nextSection;
                 button.classList.toggle('active', isActive);
@@ -1632,10 +2589,14 @@
         function openConfig() {
             setConfigMode(true);
             modalOverlay.classList.remove('hidden');
-            setActiveConfigSection('general');
+            setActiveConfigSection(configNavigationState.section);
+            requestAnimationFrame(() => {
+                if (configContent) configContent.scrollTop = configNavigationState.scrollTop;
+            });
         }
 
         function closeConfig() {
+            if (configContent) configNavigationState.scrollTop = configContent.scrollTop;
             modalOverlay.classList.add('hidden');
             setConfigMode(false);
         }
@@ -1643,6 +2604,13 @@
         configSectionButtons.forEach((button) => {
             button.addEventListener('click', () => setActiveConfigSection(button.dataset.configSection));
         });
+        if (configContent) {
+            configContent.addEventListener('scroll', () => {
+                configNavigationState.scrollTop = configContent.scrollTop;
+            });
+        }
+        configOpacityControl?.addEventListener('input', applyConfigOpacity);
+        applyConfigOpacity();
 
         configBtn.addEventListener('click', openConfig);
         if (configGhostTrigger) {
@@ -1670,10 +2638,6 @@
         const imagePickerBtn = document.getElementById('imagePickerBtn');
         const imageInput = document.getElementById('imageInput');
         const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-        const imagePreviewBox = document.getElementById('imagePreviewBox');
-        const selectedImage = document.getElementById('selectedImage');
-        const imageSizeRange = document.getElementById('imageSizeRange');
-        const imageSizeValue = document.getElementById('imageSizeValue');
         const linkedVinylActionBtn = document.getElementById('linkedVinylActionBtn');
         const linkedVinylDeleteBtn = document.getElementById('linkedVinylDeleteBtn');
         const vinylImageInput = document.getElementById('vinylImageInput');
@@ -1682,20 +2646,57 @@
         const linkedVinylOverlay = document.getElementById('linkedVinylOverlay');
         const linkedVinylContent = document.getElementById('linkedVinylContent');
 
-        imagePickerBtn.addEventListener('click', () => imageInput.click());
+        const MAX_PREVIEW_IMAGES = 5;
+        const imagePreviewItems = [];
+
+        function updateImagePickerState() {
+            const limitReached = imagePreviewItems.length >= MAX_PREVIEW_IMAGES;
+            imagePickerBtn.disabled = limitReached;
+            imagePickerBtn.classList.toggle('opacity-50', limitReached);
+            imagePickerBtn.classList.toggle('cursor-not-allowed', limitReached);
+            imagePickerBtn.dataset.tooltip = limitReached
+                ? `Máximo de ${MAX_PREVIEW_IMAGES} imágenes alcanzado`
+                : 'Añadir imagen';
+        }
+
+        function createImagePreview(imageUrl) {
+            if (imagePreviewItems.length >= MAX_PREVIEW_IMAGES) return;
+
+            const previewBox = document.createElement('div');
+            const image = document.createElement('img');
+            const offset = imagePreviewItems.length * 28;
+            previewBox.className = 'image-preview-box image-preview-front fixed z-35';
+            previewBox.dataset.layer = 'front';
+            setImagePreviewLayer(previewBox, 'front');
+            previewBox.style.left = `${24 + offset}px`;
+            previewBox.style.top = `${24 + offset}px`;
+            previewBox.style.pointerEvents = 'auto';
+            image.src = imageUrl;
+            image.alt = `Imagen añadida ${imagePreviewItems.length + 1}`;
+            previewBox.appendChild(image);
+            // Se inserta en la raíz del documento para que su capa no quede
+            // atrapada por ningún contenedor del reproductor.
+            document.body.appendChild(previewBox);
+            imagePreviewItems.push(previewBox);
+            previewBox.addEventListener('pointerdown', (event) => startImageDrag(event, previewBox));
+            previewBox.addEventListener('click', (event) => showImagePreviewMenu(event, previewBox));
+            applyImageSize(previewBox, 220);
+            updateImagePickerState();
+        }
+
+        imagePickerBtn.addEventListener('click', () => {
+            if (imagePreviewItems.length < MAX_PREVIEW_IMAGES) imageInput.click();
+        });
         imageInput.addEventListener('change', (e) => {
             const file = e.target.files && e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
             reader.onload = (event) => {
-                if (selectedImage) selectedImage.src = event.target.result;
-                if (imagePreviewContainer) imagePreviewContainer.classList.remove('hidden');
-                if (imagePickerBtn) {
-                    imagePickerBtn.classList.add('hidden');
-                }
-                applyImageSize();
+                createImagePreview(event.target.result);
             };
             reader.readAsDataURL(file);
+            // Permite volver a seleccionar el mismo archivo.
+            e.target.value = '';
         });
 
         let linkedVinylImageLoaded = false;
@@ -1771,6 +2772,8 @@
         let dragStartLeft = 0;
         let dragStartTop = 0;
         let imageInteractionMoved = false;
+        let activeImagePreview = null;
+        let activeImagePreviewMenu = null;
 
         function getMaxImageSize() {
             const viewportWidth = Math.max(10, window.innerWidth - 24);
@@ -1778,77 +2781,121 @@
             return Math.max(10, Math.min(viewportWidth, viewportHeight));
         }
 
-        function applyImageSize(size = null) {
-            if (!imagePreviewBox) return;
+        function applyImageSize(previewBox, size = 220) {
+            if (!previewBox) return;
             const maxSize = getMaxImageSize();
-            const nextSize = Math.min(Math.max(Number(size ?? imageSizeRange?.value ?? 220), 10), maxSize);
+            const nextSize = Math.min(Math.max(Number(size) || 220, 10), maxSize);
             const normalizedSize = Math.floor(nextSize);
 
-            imagePreviewBox.style.width = `${normalizedSize}px`;
-            imagePreviewBox.style.height = 'auto';
-            imagePreviewBox.style.setProperty('--image-preview-size', `${normalizedSize}px`);
-            document.documentElement.style.setProperty('--image-preview-size', `${normalizedSize}px`);
-
-            if (imageSizeRange) {
-                imageSizeRange.max = `${Math.floor(maxSize)}`;
-                imageSizeRange.value = `${normalizedSize}`;
-            }
-            if (imageSizeValue) {
-                imageSizeValue.textContent = `${normalizedSize} px`;
-            }
+            previewBox.style.width = `${normalizedSize}px`;
+            previewBox.style.height = 'auto';
+            previewBox.style.setProperty('--image-preview-size', `${normalizedSize}px`);
         }
 
-        function updateImageSizeFromControl() {
-            applyImageSize(imageSizeRange?.value);
+        function setImagePreviewLayer(previewBox, layer) {
+            if (!previewBox) return;
+            const nextLayer = layer === 'back' ? 'back' : 'front';
+            previewBox.dataset.layer = nextLayer;
+            previewBox.classList.toggle('image-preview-front', nextLayer === 'front');
+            previewBox.classList.toggle('image-preview-back', nextLayer === 'back');
+            previewBox.style.zIndex = nextLayer === 'front' ? '39' : '5';
         }
 
-        function startImageDrag(event) {
-            if (!imagePreviewContainer || imagePreviewContainer.classList.contains('hidden')) return;
+        function startImageDrag(event, previewBox) {
+            if (!previewBox) return;
             event.preventDefault();
             event.stopPropagation();
             isDraggingImage = true;
             imageInteractionMoved = false;
-            imagePreviewBox.classList.add('dragging');
+            activeImagePreview = previewBox;
+            previewBox.classList.add('dragging');
             dragStartX = event.clientX;
             dragStartY = event.clientY;
-            const rect = imagePreviewContainer.getBoundingClientRect();
+            const rect = previewBox.getBoundingClientRect();
             dragStartLeft = rect.left;
             dragStartTop = rect.top;
         }
 
-        function removeImagePreview(event) {
-            if (!imagePreviewContainer || imagePreviewContainer.classList.contains('hidden')) return;
+        function deleteImagePreview(previewBox) {
+            if (!previewBox) return;
+            closeImagePreviewMenu();
+            if (activeImagePreview === previewBox) activeImagePreview = null;
+            const index = imagePreviewItems.indexOf(previewBox);
+            if (index >= 0) imagePreviewItems.splice(index, 1);
+            previewBox.remove();
+            updateImagePickerState();
+        }
+
+        function closeImagePreviewMenu() {
+            if (activeImagePreviewMenu) activeImagePreviewMenu.remove();
+            activeImagePreviewMenu = null;
+        }
+
+        function showImagePreviewMenu(event, previewBox) {
             if (imageInteractionMoved) return;
-            if (event.target === selectedImage || event.target === imagePreviewBox) {
-                resetImagePreview();
-            }
+            if (!previewBox || !previewBox.contains(event.target)) return;
+            closeImagePreviewMenu();
+
+            const menu = document.createElement('div');
+            const layerButton = document.createElement('button');
+            const slider = document.createElement('input');
+            const deleteButton = document.createElement('button');
+            const rect = previewBox.getBoundingClientRect();
+            const currentSize = Math.round(parseFloat(previewBox.style.width) || 220);
+            const menuWidth = Math.min(320, window.innerWidth - 24);
+
+            menu.className = 'image-preview-menu';
+            const isFront = previewBox.dataset.layer !== 'back';
+            layerButton.type = 'button';
+            layerButton.className = `image-preview-menu-btn image-preview-layer-btn has-custom-tooltip${isFront ? ' is-front' : ''}`;
+            layerButton.dataset.tooltip = isFront ? 'Enviar imagen detrás de los cuadros' : 'Traer imagen delante de los cuadros';
+            layerButton.setAttribute('aria-label', layerButton.dataset.tooltip);
+            layerButton.setAttribute('aria-pressed', String(isFront));
+            layerButton.innerHTML = isFront
+                ? '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="12" height="12" rx="2"></rect><path d="M5 9H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-1"></path></svg>'
+                : '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="9" width="12" height="12" rx="2"></rect><path d="M19 15h1a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v1"></path></svg>';
+            slider.type = 'range';
+            slider.min = '10';
+            slider.max = String(Math.floor(getMaxImageSize()));
+            slider.value = String(currentSize);
+            slider.setAttribute('aria-label', 'Tamaño de imagen');
+            deleteButton.type = 'button';
+            deleteButton.className = 'image-preview-menu-btn image-preview-delete-btn has-custom-tooltip';
+            deleteButton.dataset.tooltip = 'Eliminar imagen';
+            deleteButton.setAttribute('aria-label', 'Eliminar imagen');
+            deleteButton.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>';
+
+            menu.addEventListener('pointerdown', (menuEvent) => menuEvent.stopPropagation());
+            menu.addEventListener('click', (menuEvent) => menuEvent.stopPropagation());
+            layerButton.addEventListener('click', () => {
+                const nextLayer = previewBox.dataset.layer === 'back' ? 'front' : 'back';
+                setImagePreviewLayer(previewBox, nextLayer);
+                showImagePreviewMenu({ target: previewBox }, previewBox);
+            });
+            slider.addEventListener('input', () => applyImageSize(previewBox, slider.value));
+            deleteButton.addEventListener('click', () => deleteImagePreview(previewBox));
+            menu.append(layerButton, slider, deleteButton);
+            document.body.appendChild(menu);
+            menu.style.left = `${Math.max(12, Math.min(rect.left, window.innerWidth - menuWidth - 12))}px`;
+            menu.style.top = `${Math.max(12, Math.min(rect.bottom + 10, window.innerHeight - menu.offsetHeight - 12))}px`;
+            activeImagePreviewMenu = menu;
         }
 
         function dragImage(event) {
-            if (!isDraggingImage || !imagePreviewContainer) return;
+            if (!isDraggingImage || !activeImagePreview) return;
             const deltaX = event.clientX - dragStartX;
             const deltaY = event.clientY - dragStartY;
             if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
                 imageInteractionMoved = true;
             }
-            imagePreviewContainer.style.left = `${dragStartLeft + deltaX}px`;
-            imagePreviewContainer.style.top = `${dragStartTop + deltaY}px`;
-        }
-
-        function resetImagePreview() {
-            if (selectedImage) selectedImage.removeAttribute('src');
-            if (imagePreviewContainer) imagePreviewContainer.classList.add('hidden');
-            if (imagePickerBtn) {
-                imagePickerBtn.textContent = 'Añadir imagen';
-                imagePickerBtn.classList.remove('hidden');
-            }
+            activeImagePreview.style.left = `${dragStartLeft + deltaX}px`;
+            activeImagePreview.style.top = `${dragStartTop + deltaY}px`;
         }
 
         function updateLinkedVinylActionButtons() {
-            const isVisible = document.getElementById('configVisibility').checked;
             const shouldShowDelete = linkedVinylImageLoaded && linkedVinylOverlay?.getAttribute('src');
-            if (linkedVinylActionBtn) linkedVinylActionBtn.classList.toggle('hidden', !isVisible || shouldShowDelete);
-            if (linkedVinylDeleteBtn) linkedVinylDeleteBtn.classList.toggle('hidden', !isVisible || !shouldShowDelete);
+            if (linkedVinylActionBtn) linkedVinylActionBtn.classList.toggle('hidden', shouldShowDelete);
+            if (linkedVinylDeleteBtn) linkedVinylDeleteBtn.classList.toggle('hidden', !shouldShowDelete);
         }
 
         function applyLinkedVinylSettings() {
@@ -1934,40 +2981,44 @@
 
         function stopImageInteraction() {
             isDraggingImage = false;
-            if (imagePreviewBox) imagePreviewBox.classList.remove('dragging');
-        }
-
-        if (imageSizeRange) {
-            imageSizeRange.addEventListener('input', updateImageSizeFromControl);
+            if (activeImagePreview) activeImagePreview.classList.remove('dragging');
+            activeImagePreview = null;
         }
 
         window.addEventListener('pointermove', dragImage);
         window.addEventListener('pointerup', stopImageInteraction);
         window.addEventListener('pointercancel', stopImageInteraction);
-        window.addEventListener('resize', () => applyImageSize(imageSizeRange?.value));
+        window.addEventListener('resize', () => {
+            imagePreviewItems.forEach((previewBox) => applyImageSize(previewBox, parseFloat(previewBox.style.width) || 220));
+            closeImagePreviewMenu();
+        });
 
-        if (imagePreviewBox) {
-            imagePreviewBox.addEventListener('pointerdown', startImageDrag);
-            imagePreviewBox.addEventListener('click', removeImagePreview);
-        }
 
         function toggleConfigBtn() {
             const isVisible = document.getElementById('configVisibility').checked;
-            configBtn.classList.toggle('hidden', !isVisible);
+            const hasAudioLoaded = !playerView.classList.contains('hidden');
+            document.querySelectorAll('.player-action-toolbar').forEach((toolbar) => {
+                toolbar.classList.toggle('is-visually-hidden', !isVisible);
+            });
+
+            // Restaura elementos que podían haber quedado ocultos por la
+            // lógica anterior; el estado visual ahora se controla en la barra.
+            configBtn.classList.remove('hidden');
+            document.getElementById('configImageDivider')?.classList.remove('hidden');
+            document.getElementById('imageAudioDivider')?.classList.toggle('hidden', !hasAudioLoaded);
             const borrarBtn = document.getElementById('borrar-cancion');
-            if (borrarBtn) borrarBtn.classList.toggle('hidden', !isVisible);
-            if (letterBoxEditBtn) letterBoxEditBtn.classList.toggle('hidden', !isVisible);
-            if (letterBoxResumeBtn) letterBoxResumeBtn.classList.toggle('hidden', !isVisible);
-            if (letterBoxCutBtn) letterBoxCutBtn.classList.toggle('hidden', !isVisible);
-            if (letterBoxUndoCutBtn) letterBoxUndoCutBtn.classList.toggle('hidden', !isVisible);
-            if (!isVisible) closeLetterBoxEditor();
-            document.getElementById('configGhostTrigger').classList.toggle('hidden', isVisible);
+            if (borrarBtn) borrarBtn.classList.toggle('hidden', !hasAudioLoaded);
+            if (letterBoxEditBtn) letterBoxEditBtn.classList.remove('hidden');
+            if (letterBoxCutBtn) letterBoxCutBtn.classList.remove('hidden');
+            if (letterBoxUndoCutBtn) letterBoxUndoCutBtn.classList.remove('hidden');
+            configGhostTrigger?.classList.add('hidden');
             updateLinkedVinylActionButtons();
         }
 
         function handleAudioFile(file) {
             homeView.classList.add('hidden');
             playerView.classList.remove('hidden');
+            toggleConfigBtn();
 
             audio.src = URL.createObjectURL(file);
             audio.load();
@@ -2021,6 +3072,8 @@
             pauseIcon.classList.add('hidden');
             playerView.classList.add('hidden');
             homeView.classList.remove('hidden');
+            document.getElementById('borrar-cancion')?.classList.add('hidden');
+            document.getElementById('imageAudioDivider')?.classList.add('hidden');
             setTextValue('right', '');
             setTextValue('left', '');
         }
@@ -2090,30 +3143,26 @@
         }
 
         function applyConfigShellTheme() {
-            const baseColor = color1Input?.value || '#262626';
-            const isGradient = getCheckedRadioValue('themeType') === 'gradient';
-            const accentColor = isGradient && color2Input ? color2Input.value : baseColor;
-            const opacity = Number(document.getElementById('btnOpacity')?.value || 1);
-            const shellStart = hexToRgba(baseColor, Math.min(0.92, 0.4 + opacity * 0.52));
-            const shellEnd = hexToRgba(accentColor, Math.min(0.98, 0.5 + opacity * 0.48));
-
-            document.documentElement.style.setProperty('--config-shell-start', shellStart);
-            document.documentElement.style.setProperty('--config-shell-end', shellEnd);
-            document.documentElement.style.setProperty('--config-shell-border', hexToRgba(baseColor, 0.28));
-
+            // Las superficies siguen siendo neutras; el acento es el color elegido
+            // para los componentes (o el punto medio del gradiente elegido).
             const configShell = document.querySelector('.config-shell');
-            if (configShell) {
-                configShell.style.background = isGradient
-                    ? `linear-gradient(135deg, ${shellStart}, ${shellEnd})`
-                    : `linear-gradient(135deg, ${shellStart}, ${shellStart})`;
-            }
+            if (configShell) configShell.style.removeProperty('background');
+
+            const isGradient = getCheckedRadioValue('themeType') === 'gradient';
+            const accent = isGradient
+                ? interpolateHex(color1Input.value, color2Input.value, 0.5)
+                : color1Input.value;
+            const { r, g, b } = hexToRgbValues(accent);
+            const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+            const onAccent = luminance > 0.58 ? '#171717' : '#ffffff';
+
+            document.documentElement.style.setProperty('--ui-accent', accent);
+            document.documentElement.style.setProperty('--ui-on-accent', onAccent);
+            document.documentElement.classList.toggle('ui-accent-dark', luminance <= 0.58);
 
             document.querySelectorAll('.config-section-nav-btn').forEach((button) => {
-                const isActive = button.classList.contains('active');
-                button.style.background = isActive
-                    ? (isGradient ? `linear-gradient(135deg, ${shellStart}, ${shellEnd})` : `linear-gradient(135deg, ${shellStart}, ${shellStart})`)
-                    : 'rgba(255,255,255,0.04)';
-                button.style.borderColor = isActive ? 'rgba(255,255,255,0.2)' : 'transparent';
+                button.style.removeProperty('background');
+                button.style.removeProperty('border-color');
             });
         }
 
@@ -2190,6 +3239,33 @@
             document.querySelectorAll('.letter-align-btn').forEach((btn) => {
                 btn.classList.toggle('active', btn.dataset.align === letterBoxTextState.align);
             });
+            updateLetterBoxEditorPreview();
+        }
+
+        function updateLetterBoxEditorPreview() {
+            if (!letterBoxTextInput) return;
+            const size = Number(letterBoxTextSize?.value || letterBoxTextState.size || 30);
+            const horizontalOffset = Number(document.getElementById('letterBoxTextHorizontalOffset')?.value || 0);
+            const align = document.querySelector('.letter-align-btn.active')?.dataset.align || 'center';
+
+            if (letterBoxEditorPreview) {
+                letterBoxEditorPreview.textContent = letterBoxTextInput.value;
+                letterBoxEditorPreview.style.fontSize = `${size}px`;
+                letterBoxEditorPreview.style.textAlign = align;
+            }
+
+            letterBoxTextInput.style.fontSize = `${size}px`;
+            letterBoxTextInput.style.textAlign = align;
+            letterBoxTextInput.style.setProperty('--letter-editor-horizontal-offset', `${horizontalOffset}px`);
+        }
+
+        function applyLetterBoxEditorDraft() {
+            if (!letterBoxTextInput) return;
+            letterBoxTextState.value = letterBoxTextInput.value;
+            letterBoxTextState.size = Number(letterBoxTextSize?.value || 30);
+            letterBoxTextState.align = document.querySelector('.letter-align-btn.active')?.dataset.align || 'center';
+            letterBoxTextState.horizontalOffset = Number(document.getElementById('letterBoxTextHorizontalOffset')?.value || 0);
+            renderLetterBoxText();
         }
 
         let letterBoxTextAnimationRaf = null;
@@ -2199,6 +3275,11 @@
         const letterBoxTagGlobalState = {
             opacity: 0.4,
             brightness: 0.2
+        };
+        const letterBoxParentheticalTagState = {
+            opacity: 0.5,
+            backgroundColor: '#000000',
+            textColor: '#ffffff'
         };
 
         const letterBoxTagDefaultColors = new Map([
@@ -2304,6 +3385,21 @@
             });
         }
 
+        function applyParentheticalTagStyle(tag) {
+            if (!tag) return;
+            const opacityPercent = Math.round(letterBoxParentheticalTagState.opacity * 100);
+            tag.dataset.parentheticalOpacity = String(opacityPercent);
+            tag.dataset.parentheticalBackgroundColor = letterBoxParentheticalTagState.backgroundColor;
+            tag.dataset.parentheticalTextColor = letterBoxParentheticalTagState.textColor;
+            tag.style.setProperty('--parenthetical-tag-opacity', String(letterBoxParentheticalTagState.opacity));
+            tag.style.background = letterBoxParentheticalTagState.backgroundColor;
+            tag.style.color = letterBoxParentheticalTagState.textColor;
+        }
+
+        function updateAllParentheticalTagStyles() {
+            document.querySelectorAll('.letter-box-parenthetical-tag').forEach(applyParentheticalTagStyle);
+        }
+
         function toggleLetterBoxParentheticalTagMenu(tag, event) {
             if (event) {
                 event.preventDefault();
@@ -2346,7 +3442,7 @@
             slider.type = 'range';
             slider.min = '10';
             slider.max = '100';
-            slider.value = String(Math.round((Number(tag.dataset.parentheticalOpacity || 50) || 50)));
+            slider.value = String(Math.round(letterBoxParentheticalTagState.opacity * 100));
 
             const valueText = document.createElement('span');
             valueText.textContent = `${slider.value}%`;
@@ -2355,42 +3451,32 @@
             slider.addEventListener('input', () => {
                 const nextOpacity = Number(slider.value);
                 valueText.textContent = `${nextOpacity}%`;
-                document.querySelectorAll('.letter-box-parenthetical-tag').forEach((parentheticalTag) => {
-                    parentheticalTag.dataset.parentheticalOpacity = String(nextOpacity);
-                    parentheticalTag.style.setProperty('--parenthetical-tag-opacity', `${nextOpacity / 100}`);
-                });
+                letterBoxParentheticalTagState.opacity = nextOpacity / 100;
+                updateAllParentheticalTagStyles();
             });
 
             const backgroundInput = document.createElement('input');
             backgroundInput.type = 'color';
-            backgroundInput.value = tag.dataset.parentheticalBackgroundColor || '#000000';
+            backgroundInput.value = letterBoxParentheticalTagState.backgroundColor;
             const backgroundLabel = document.createElement('label');
             backgroundLabel.innerHTML = '<span>Fondo</span>';
-            backgroundLabel.prepend(backgroundInput);
+            backgroundLabel.appendChild(backgroundInput);
 
             const textInput = document.createElement('input');
             textInput.type = 'color';
-            textInput.value = tag.dataset.parentheticalTextColor || '#ffffff';
+            textInput.value = letterBoxParentheticalTagState.textColor;
             const textLabel = document.createElement('label');
             textLabel.innerHTML = '<span>Texto</span>';
-            textLabel.prepend(textInput);
+            textLabel.appendChild(textInput);
 
             backgroundInput.addEventListener('input', () => {
-                const nextColor = backgroundInput.value;
-                tag.dataset.parentheticalBackgroundColor = nextColor;
-                document.querySelectorAll('.letter-box-parenthetical-tag').forEach((parentheticalTag) => {
-                    parentheticalTag.dataset.parentheticalBackgroundColor = nextColor;
-                    parentheticalTag.style.background = nextColor;
-                });
+                letterBoxParentheticalTagState.backgroundColor = backgroundInput.value;
+                updateAllParentheticalTagStyles();
             });
 
             textInput.addEventListener('input', () => {
-                const nextColor = textInput.value;
-                tag.dataset.parentheticalTextColor = nextColor;
-                document.querySelectorAll('.letter-box-parenthetical-tag').forEach((parentheticalTag) => {
-                    parentheticalTag.dataset.parentheticalTextColor = nextColor;
-                    parentheticalTag.style.color = nextColor;
-                });
+                letterBoxParentheticalTagState.textColor = textInput.value;
+                updateAllParentheticalTagStyles();
             });
 
             menu.append(opacityLabel, slider, backgroundLabel, textLabel);
@@ -2414,7 +3500,7 @@
         }
 
         function updateAllLetterBoxTagStyles() {
-            document.querySelectorAll('.letter-box-tag').forEach((matchedTag) => {
+            document.querySelectorAll('.letter-box-tag:not(.letter-box-parenthetical-tag)').forEach((matchedTag) => {
                 const tagKey = matchedTag.dataset.tagKey || matchedTag.textContent;
                 const tagState = getLetterBoxTagPaletteState(tagKey);
                 const textColor = tagState.color;
@@ -2471,7 +3557,7 @@
             colorInput.value = state.color;
             const colorLabel = document.createElement('label');
             colorLabel.innerHTML = '<span>Color</span>';
-            colorLabel.prepend(colorInput);
+            colorLabel.appendChild(colorInput);
 
             const opacityInput = document.createElement('input');
             opacityInput.type = 'range';
@@ -2484,7 +3570,7 @@
             const opacityLabel = document.createElement('label');
             opacityLabel.innerHTML = '<span>Opacidad</span>';
             opacityLabel.appendChild(opacityValue);
-            opacityLabel.prepend(opacityInput);
+            opacityLabel.appendChild(opacityInput);
 
             const brightnessInput = document.createElement('input');
             brightnessInput.type = 'range';
@@ -2497,7 +3583,7 @@
             const brightnessLabel = document.createElement('label');
             brightnessLabel.innerHTML = '<span>Claridad</span>';
             brightnessLabel.appendChild(brightnessValue);
-            brightnessLabel.prepend(brightnessInput);
+            brightnessLabel.appendChild(brightnessInput);
 
             const applyColor = (nextColor) => {
                 state.color = nextColor;
@@ -2565,8 +3651,7 @@
                         const tag = document.createElement('span');
                         tag.className = 'letter-box-tag letter-box-parenthetical-tag';
                         tag.textContent = tagText;
-                        tag.dataset.parentheticalOpacity = '50';
-                        tag.style.setProperty('--parenthetical-tag-opacity', '0.5');
+                        applyParentheticalTagStyle(tag);
                         tag.addEventListener('click', (event) => toggleLetterBoxParentheticalTagMenu(tag, event));
                         tag.addEventListener('pointerdown', (event) => {
                             event.stopPropagation();
@@ -2717,8 +3802,8 @@
 
         function updateLetterBoxCutButtons() {
             const hasCuts = letterBoxCutState.cuts.length > 0;
-            const latestPoint = hasCuts ? letterBoxCutState.cuts[letterBoxCutState.cuts.length - 1] : null;
-            const canResumeFromPauseCut = latestPoint?.mode === 'cut';
+            const activePoint = getActiveLetterBoxCut();
+            const shouldResume = activePoint?.mode === 'cut';
 
             if (letterBoxUndoCutBtn) {
                 letterBoxUndoCutBtn.disabled = !hasCuts;
@@ -2726,10 +3811,18 @@
                 letterBoxUndoCutBtn.classList.toggle('cursor-not-allowed', !hasCuts);
             }
 
-            if (letterBoxResumeBtn) {
-                letterBoxResumeBtn.disabled = !canResumeFromPauseCut;
-                letterBoxResumeBtn.classList.toggle('opacity-50', !canResumeFromPauseCut);
-                letterBoxResumeBtn.classList.toggle('cursor-not-allowed', !canResumeFromPauseCut);
+            if (letterBoxCutBtn) {
+                const actionLabel = shouldResume ? 'Reanudar letra desde este punto' : 'Pausar letra en este punto';
+                const nextMode = shouldResume ? 'resume' : 'cut';
+                if (letterBoxCutBtn.dataset.controlMode !== nextMode) {
+                    letterBoxCutBtn.dataset.controlMode = nextMode;
+                    letterBoxCutBtn.innerHTML = shouldResume
+                        ? '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 5 11 7-11 7V5z"/></svg>'
+                        : '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5v14"></path><path d="M15 5v14"></path></svg>';
+                }
+                letterBoxCutBtn.dataset.tooltip = actionLabel;
+                letterBoxCutBtn.setAttribute('aria-label', actionLabel);
+                letterBoxCutBtn.classList.toggle('is-emphasis', shouldResume);
             }
         }
 
@@ -2762,21 +3855,9 @@
             updateLetterBoxTextScrollByAudio();
         }
 
-        function resumeLetterBoxTextFromCurrent() {
-            if (!letterBoxCutState.cuts.length) {
-                return;
-            }
-
-            const latestPoint = letterBoxCutState.cuts[letterBoxCutState.cuts.length - 1];
-            if (latestPoint?.mode !== 'cut') {
-                return;
-            }
-
-            addLetterBoxControlPoint('resume');
-        }
-
-        function addLetterBoxCut() {
-            addLetterBoxControlPoint('cut');
+        function toggleLetterBoxControlPoint() {
+            const activePoint = getActiveLetterBoxCut();
+            addLetterBoxControlPoint(activePoint?.mode === 'cut' ? 'resume' : 'cut');
         }
 
         function undoLetterBoxCut() {
@@ -2811,12 +3892,12 @@
         }
 
         function setLetterBoxTextAlignment(align) {
-            letterBoxTextState.align = align;
-            if (letterBoxTextInput) {
-                letterBoxTextState.value = letterBoxTextInput.value;
-            }
-            syncLetterBoxEditorControls();
-            renderLetterBoxText();
+            // La alineación es parte del borrador del editor. Sólo se aplica
+            // a la letra al pulsar Guardar (o se descarta con Cancelar).
+            document.querySelectorAll('.letter-align-btn').forEach((btn) => {
+                btn.classList.toggle('active', btn.dataset.align === align);
+            });
+            updateLetterBoxEditorPreview();
         }
 
         function openLetterBoxEditor() {
@@ -2827,15 +3908,38 @@
 
         function closeLetterBoxEditor() {
             if (letterBoxEditorPanel) letterBoxEditorPanel.classList.add('hidden');
+            closeLetterBoxEditorConfirmation();
+        }
+
+        function closeLetterBoxEditorConfirmation() {
+            if (letterBoxEditorConfirmPopover) letterBoxEditorConfirmPopover.classList.add('hidden');
+        }
+
+        function showLetterBoxEditorConfirmation(anchor, message, confirmLabel, isDanger, onConfirm) {
+            if (!letterBoxEditorConfirmPopover || !anchor) return;
+            const rect = anchor.getBoundingClientRect();
+            letterBoxEditorConfirmPopover.innerHTML = `
+                <p>${message}</p>
+                <div class="letter-editor-confirm-actions">
+                    <button type="button" class="confirm-cancel">Cancelar</button>
+                    <button type="button" class="${isDanger ? 'confirm-danger' : 'confirm-accept'}">${confirmLabel}</button>
+                </div>`;
+            letterBoxEditorConfirmPopover.classList.remove('hidden');
+            const width = letterBoxEditorConfirmPopover.offsetWidth;
+            const left = Math.max(12, Math.min(rect.left, window.innerWidth - width - 12));
+            const top = Math.min(rect.bottom + 10, window.innerHeight - letterBoxEditorConfirmPopover.offsetHeight - 12);
+            letterBoxEditorConfirmPopover.style.left = `${left}px`;
+            letterBoxEditorConfirmPopover.style.top = `${Math.max(12, top)}px`;
+            letterBoxEditorConfirmPopover.querySelector('.confirm-cancel').addEventListener('click', closeLetterBoxEditorConfirmation);
+            letterBoxEditorConfirmPopover.querySelector(`.${isDanger ? 'confirm-danger' : 'confirm-accept'}`).addEventListener('click', () => {
+                closeLetterBoxEditorConfirmation();
+                onConfirm();
+            });
         }
 
         function acceptLetterBoxEditor() {
             if (!letterBoxTextInput) return closeLetterBoxEditor();
-            letterBoxTextState.value = letterBoxTextInput.value;
-            letterBoxTextState.size = Number(letterBoxTextSize?.value || 48);
-            letterBoxTextState.align = document.querySelector('.letter-align-btn.active')?.dataset.align || 'center';
-            letterBoxTextState.horizontalOffset = Number(document.getElementById('letterBoxTextHorizontalOffset')?.value || 0);
-            renderLetterBoxText();
+            applyLetterBoxEditorDraft();
             closeLetterBoxEditor();
         }
 
@@ -2846,6 +3950,16 @@
             if (letterBoxTextInput) letterBoxTextInput.value = '';
             renderLetterBoxText();
             closeLetterBoxEditor();
+        }
+
+        function requestClearLetterBoxEditor() {
+            showLetterBoxEditorConfirmation(
+                letterBoxClearBtn,
+                '¿Seguro que deseas eliminar toda la letra?',
+                'Eliminar',
+                true,
+                clearLetterBoxEditor
+            );
         }
 
         function startLetterBoxTextDrag(event) {
@@ -2885,7 +3999,6 @@
             letterBoxTextManualDragActive = false;
             letterBoxTextLayer.classList.remove('letter-box-text-dragging');
             const didMove = letterBoxTextLayer.dataset.dragMoved === 'true';
-            const dragTargetTime = Number(letterBoxTextLayer.dataset.dragTargetTime || audio?.currentTime || 0);
             delete letterBoxTextLayer.dataset.dragStartY;
             delete letterBoxTextLayer.dataset.dragStartOffset;
             delete letterBoxTextLayer.dataset.dragMoved;
@@ -2898,16 +4011,9 @@
                 return;
             }
 
-            const targetTime = Number.isFinite(dragTargetTime) ? dragTargetTime : Number(audio.currentTime);
-            const existingIndex = findLetterBoxControlPointIndex(targetTime, 'cut');
-            if (existingIndex >= 0) {
-                letterBoxCutState.cuts[existingIndex].offset = Number(letterBoxTextState.offset) || getLetterBoxTextScrollBounds().startOffset;
-                updateLetterBoxCutButtons();
-                updateLetterBoxTextScrollByAudio();
-                return;
-            }
-
-            addLetterBoxControlPoint('cut');
+            // Arrastrar con el audio en pausa reposiciona y continúa la letra;
+            // no añade otra pausa que la deje inmóvil al reanudar el audio.
+            addLetterBoxControlPoint('resume');
         }
 
         function applyBackground() {
@@ -2974,8 +4080,8 @@
             const shadowBlur = document.getElementById('letterBoxShadowBlur').value;
             const shadowSpread = document.getElementById('letterBoxShadowSpread').value;
             const gradientStart = document.getElementById('letterBoxShadowGradientStart').value;
-            const heightPercent = Number(document.getElementById('letterBoxHeightPercent').value || 24);
-            const widthPercent = Number(document.getElementById('letterBoxWidthPercent').value || 60);
+            const heightPercent = Number(document.getElementById('letterBoxHeightPercent').value || 78);
+            const widthPercent = Number(document.getElementById('letterBoxWidthPercent').value || 48);
             const horizontalPercent = Number(document.getElementById('letterBoxHorizontalPosition').value || 50);
             const verticalPercent = Number(document.getElementById('letterBoxVerticalPosition').value || 50);
 
@@ -3030,7 +4136,7 @@
             const shadowSpread = document.getElementById('playerShadowSpread').value;
             const gradientStart = document.getElementById('playerShadowGradientStart').value;
             const blur = document.getElementById('playerBlur').value;
-            const opacity = document.getElementById('playerOpacity').value;
+            const isVisible = document.getElementById('playerVisibility').checked;
             const scale = document.getElementById('playerScale').value;
 
             if (shadowType === 'light') {
@@ -3039,9 +4145,13 @@
                 applyFlatShadowStyle(playerCard, '#000000', shadowOpacity, shadowBlur, shadowSpread);
             }
             playerCard.style.backdropFilter = `blur(${blur}px)`;
-            playerCard.style.opacity = opacity;
+            playerCard.style.opacity = '1';
             playerCard.style.transform = `translateX(-50%) scale(${scale})`;
             playerCard.style.transformOrigin = 'bottom center';
+            playerCard.classList.toggle('hidden', !isVisible);
+            playerCard.setAttribute('aria-hidden', String(!isVisible));
+
+            if (isVisible) requestAnimationFrame(updatePlayerLayoutScale);
         }
 
         function toggleBarMainType() {
@@ -3085,217 +4195,19 @@
             applyShadowStyle(customSliderThumb, hexColor, hexColor, shadowOpacity, shadowBlur, shadowSpread);
         }
 
-        function saveSettings() {
-            const settings = {
-                themeType: getCheckedRadioValue('themeType'),
-                color1: document.getElementById('color1').value,
-                color2: document.getElementById('color2').value,
-                btnOpacity: document.getElementById('btnOpacity').value,
-                btnBlurToggle: document.getElementById('btnBlurToggle').checked,
-                btnBlurIntensity: document.getElementById('btnBlurIntensity').value,
-                bgType: getCheckedRadioValue('bgType'),
-                bgColorSimple: document.getElementById('bgColorSimple')?.value,
-                bgColorGrad1: document.getElementById('bgColorGrad1')?.value,
-                bgColorGrad2: document.getElementById('bgColorGrad2')?.value,
-                playerShadowType: getCheckedRadioValue('playerShadowType'),
-                playerShadowColor: document.getElementById('playerShadowColor').value,
-                playerShadowOpacity: document.getElementById('playerShadowOpacity').value,
-                playerShadowBlur: document.getElementById('playerShadowBlur').value,
-                playerShadowSpread: document.getElementById('playerShadowSpread').value,
-                playerShadowGradientStart: document.getElementById('playerShadowGradientStart').value,
-                playerBlur: document.getElementById('playerBlur').value,
-                playerOpacity: document.getElementById('playerOpacity').value,
-                playerScale: document.getElementById('playerScale').value,
-                letterBoxOpacity: document.getElementById('letterBoxOpacity').value,
-                letterBoxBlur: document.getElementById('letterBoxBlur').value,
-                letterBoxShadowType: getCheckedRadioValue('letterBoxShadowType'),
-                letterBoxShadowColor: document.getElementById('letterBoxShadowColor').value,
-                letterBoxShadowOpacity: document.getElementById('letterBoxShadowOpacity').value,
-                letterBoxShadowBlur: document.getElementById('letterBoxShadowBlur').value,
-                letterBoxShadowSpread: document.getElementById('letterBoxShadowSpread').value,
-                letterBoxShadowGradientStart: document.getElementById('letterBoxShadowGradientStart').value,
-                letterBoxHeightPercent: document.getElementById('letterBoxHeightPercent').value,
-                letterBoxWidthPercent: document.getElementById('letterBoxWidthPercent').value,
-                letterBoxHorizontalPosition: document.getElementById('letterBoxHorizontalPosition').value,
-                letterBoxVerticalPosition: document.getElementById('letterBoxVerticalPosition').value,
-                linkedVinylHorizontalPosition: document.getElementById('linkedVinylHorizontalPosition').value,
-                linkedVinylVerticalPosition: document.getElementById('linkedVinylVerticalPosition').value,
-                linkedVinylSizePercent: document.getElementById('linkedVinylSizePercent').value,
-                linkedVinylStyle: document.getElementById('linkedVinylStyle').value,
-                linkedVinylBorderType: document.getElementById('linkedVinylBorderType').value,
-                linkedVinylBorderColor: document.getElementById('linkedVinylBorderColor').value,
-                linkedVinylBorderSecondaryColor: document.getElementById('linkedVinylBorderSecondaryColor').value,
-                linkedVinylBorderWidth: document.getElementById('linkedVinylBorderWidth').value,
-                linkedVinylLayerOrder: document.getElementById('linkedVinylLayerOrder').value,
-                configVisibility: document.getElementById('configVisibility').checked,
-                letterBoxText: letterBoxTextState.value,
-                letterBoxTextSize: letterBoxTextState.size,
-                letterBoxTextAlign: letterBoxTextState.align,
-                letterBoxTextOffset: letterBoxTextState.offset,
-                controlInsetShadowSize: document.getElementById('controlInsetShadowSize').value,
-                controlInsetShadowBlur: document.getElementById('controlInsetShadowBlur').value,
-                controlInsetShadowOpacity: document.getElementById('controlInsetShadowOpacity').value,
-                mainBarType: getCheckedRadioValue('mainBarType'),
-                mainBarColor1: document.getElementById('mainBarColor1').value,
-                mainBarColor2: document.getElementById('mainBarColor2').value,
-                secBarType: getCheckedRadioValue('secBarType'),
-                secBarColor1: document.getElementById('secBarColor1').value,
-                secBarColor2: document.getElementById('secBarColor2').value,
-                customThumbColor: document.getElementById('customThumbColor').value,
-                customThumbSize: document.getElementById('customThumbSize').value,
-                customThumbShadowColor: document.getElementById('customThumbShadowColor').value,
-                customThumbShadowOpacity: document.getElementById('customThumbShadowOpacity').value,
-                customThumbShadowBlur: document.getElementById('customThumbShadowBlur').value,
-                customThumbShadowSize: document.getElementById('customThumbShadowSize').value,
-                pauseBgColor: document.getElementById('pauseBgColor').value,
-                pauseIconColor: document.getElementById('pauseIconColor').value,
-                pauseShadowColor: document.getElementById('pauseShadowColor').value,
-                pauseShadowOpacity: document.getElementById('pauseShadowOpacity').value,
-                pauseShadowBlur: document.getElementById('pauseShadowBlur').value,
-                pauseShadowSpread: document.getElementById('pauseShadowSpread').value,
-                controlSizeScale: document.getElementById('controlSizeScale').value,
-                timeChipOffsetLeft: document.getElementById('timeChipOffsetLeft').value,
-                timeChipOffsetRight: document.getElementById('timeChipOffsetRight').value
-            };
-            const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'configuracion.json';
-            a.click();
-            URL.revokeObjectURL(url);
+        function initializeCustomTooltips() {
+            document.querySelectorAll('button[title]').forEach((button) => {
+                const label = button.getAttribute('title')?.trim();
+                if (!label) return;
+                button.dataset.tooltip = label;
+                button.classList.add('has-custom-tooltip');
+                // Evita el tooltip nativo, que se superpone al puntero.
+                button.removeAttribute('title');
+            });
         }
 
-        function loadSettings(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const settings = JSON.parse(e.target.result);
-
-                setCheckedRadioValue('themeType', settings.themeType || 'simple');
-                setElementValue('color1', settings.color1);
-                setElementValue('color2', settings.color2);
-                setElementValue('btnOpacity', settings.btnOpacity || 1);
-                setElementValue('btnBlurIntensity', settings.btnBlurIntensity || 0);
-                document.getElementById('btnBlurToggle').checked = settings.btnBlurToggle || false;
-
-                setCheckedRadioValue('bgType', settings.bgType || 'simple');
-                if (settings.bgColorSimple !== undefined) setElementValue('bgColorSimple', settings.bgColorSimple);
-                if (settings.bgColorGrad1 !== undefined) setElementValue('bgColorGrad1', settings.bgColorGrad1);
-                if (settings.bgColorGrad2 !== undefined) setElementValue('bgColorGrad2', settings.bgColorGrad2);
-
-                if (settings.pauseBgColor) {
-                    setElementValue('pauseBgColor', settings.pauseBgColor);
-                    setElementValue('pauseIconColor', settings.pauseIconColor);
-                    setElementValue('pauseShadowColor', settings.pauseShadowColor);
-                    setElementValue('pauseShadowOpacity', settings.pauseShadowOpacity);
-                    setElementValue('pauseShadowBlur', settings.pauseShadowBlur);
-                    setElementValue('pauseShadowSpread', settings.pauseShadowSpread);
-                    applyPauseButtonSettings();
-                }
-
-                if (settings.controlSizeScale !== undefined) {
-                    setElementValue('controlSizeScale', settings.controlSizeScale);
-                    applyControlSizeSettings();
-                }
-
-                if (settings.timeChipOffsetLeft !== undefined) {
-                    setElementValue('timeChipOffsetLeft', settings.timeChipOffsetLeft);
-                    setElementValue('timeChipOffsetRight', settings.timeChipOffsetRight);
-                    applyTimeChipSettings();
-                }
-
-                if (settings.playerShadowColor !== undefined || settings.playerShadowColorPrimary !== undefined || settings.playerShadowSecondaryColor !== undefined || settings.playerShadowType !== undefined || settings.playerShadowGradientStart !== undefined || settings.playerShadowOpacity !== undefined || settings.letterBoxShadowColor !== undefined || settings.letterBoxShadowSecondaryColor !== undefined || settings.letterBoxShadowType !== undefined) {
-                    const primaryShadowColor = settings.playerShadowColorPrimary ?? settings.playerShadowColor ?? '#000000';
-                    const gradientStart = settings.playerShadowGradientStart ?? 50;
-                    const playerShadowType = settings.playerShadowType ?? (settings.playerShadowSecondaryColor !== undefined ? 'light' : 'shadow');
-                    const letterShadowType = settings.letterBoxShadowType ?? (settings.letterBoxShadowSecondaryColor !== undefined ? 'light' : 'shadow');
-                    setCheckedRadioValue('playerShadowType', playerShadowType);
-                    setCheckedRadioValue('letterBoxShadowType', letterShadowType);
-                    setElementValue('playerShadowColor', primaryShadowColor);
-                    setElementValue('playerShadowOpacity', settings.playerShadowOpacity ?? 0.5);
-                    if (settings.playerShadowBlur !== undefined) setElementValue('playerShadowBlur', settings.playerShadowBlur);
-                    if (settings.playerShadowSpread !== undefined) setElementValue('playerShadowSpread', settings.playerShadowSpread);
-                    setElementValue('playerShadowGradientStart', gradientStart);
-                    setElementValue('playerBlur', settings.playerBlur ?? 0);
-                    setElementValue('playerOpacity', settings.playerOpacity ?? 1);
-                    setElementValue('playerScale', settings.playerScale ?? 1);
-                    setElementValue('controlInsetShadowSize', settings.controlInsetShadowSize ?? 0);
-                    setElementValue('letterBoxOpacity', settings.letterBoxOpacity ?? 1);
-                    setElementValue('letterBoxBlur', settings.letterBoxBlur ?? 0);
-                    setElementValue('letterBoxShadowColor', settings.letterBoxShadowColor ?? '#000000');
-                    setElementValue('letterBoxShadowOpacity', settings.letterBoxShadowOpacity ?? 0.45);
-                    setElementValue('letterBoxShadowBlur', settings.letterBoxShadowBlur ?? 40);
-                    setElementValue('letterBoxShadowSpread', settings.letterBoxShadowSpread ?? 5);
-                    setElementValue('letterBoxShadowGradientStart', settings.letterBoxShadowGradientStart ?? 50);
-                    setElementValue('letterBoxHeightPercent', settings.letterBoxHeightPercent ?? 24);
-                    setElementValue('letterBoxWidthPercent', settings.letterBoxWidthPercent ?? 60);
-                    setElementValue('letterBoxHorizontalPosition', settings.letterBoxHorizontalPosition ?? 50);
-                    setElementValue('letterBoxVerticalPosition', settings.letterBoxVerticalPosition ?? 50);
-                    setElementValue('linkedVinylHorizontalPosition', settings.linkedVinylHorizontalPosition ?? 50);
-                    setElementValue('linkedVinylVerticalPosition', settings.linkedVinylVerticalPosition ?? 50);
-                    setElementValue('linkedVinylSizePercent', settings.linkedVinylSizePercent ?? 24);
-                    setElementValue('linkedVinylStyle', settings.linkedVinylStyle ?? 'classic');
-                    setElementValue('linkedVinylBorderType', settings.linkedVinylBorderType ?? 'simple');
-                    setElementValue('linkedVinylBorderColor', settings.linkedVinylBorderColor ?? '#ffffff');
-                    setElementValue('linkedVinylBorderSecondaryColor', settings.linkedVinylBorderSecondaryColor ?? '#808080');
-                    setElementValue('linkedVinylBorderWidth', settings.linkedVinylBorderWidth ?? 2);
-                    setElementValue('linkedVinylLayerOrder', settings.linkedVinylLayerOrder ?? 'front');
-                    setElementValue('controlInsetShadowBlur', settings.controlInsetShadowBlur ?? 12);
-                    setElementValue('controlInsetShadowOpacity', settings.controlInsetShadowOpacity ?? 0.45);
-                }
-
-                if (settings.configVisibility !== undefined) {
-                    setElementValue('configVisibility', settings.configVisibility);
-                    toggleConfigBtn();
-                }
-
-                if (settings.letterBoxText !== undefined) {
-                    setElementValue('configVisibility', settings.configVisibility);
-                    toggleConfigBtn();
-                }
-
-                if (settings.letterBoxText !== undefined) {
-                    letterBoxTextState.value = settings.letterBoxText || '';
-                    letterBoxTextState.size = settings.letterBoxTextSize || 48;
-                    letterBoxTextState.align = settings.letterBoxTextAlign || 'center';
-                    letterBoxTextState.offset = settings.letterBoxTextOffset || 0;
-                    renderLetterBoxText();
-                }
-
-                if (settings.mainBarColor1 !== undefined) {
-                    setCheckedRadioValue('mainBarType', settings.mainBarType || 'simple');
-                    setElementValue('mainBarColor1', settings.mainBarColor1);
-                    setElementValue('mainBarColor2', settings.mainBarColor2);
-                    setCheckedRadioValue('secBarType', settings.secBarType || 'simple');
-                    setElementValue('secBarColor1', settings.secBarColor1);
-                    setElementValue('secBarColor2', settings.secBarColor2);
-                    setElementValue('customThumbColor', settings.customThumbColor);
-                    setElementValue('customThumbSize', settings.customThumbSize);
-                    setElementValue('customThumbShadowColor', settings.customThumbShadowColor);
-                    setElementValue('customThumbShadowOpacity', settings.customThumbShadowOpacity);
-                    setElementValue('customThumbShadowBlur', settings.customThumbShadowBlur);
-                    setElementValue('customThumbShadowSize', settings.customThumbShadowSize);
-                    toggleBarMainType();
-                    toggleBarSecType();
-                }
-
-                toggleGradientInputs(getCheckedRadioValue('themeType') === 'gradient');
-                updateBgControls(getCheckedRadioValue('bgType'));
-                applyTheme();
-                applyButtonCustomization();
-                applyBackground();
-                applyBlur();
-                applyTextAndIconColor();
-                togglePlayerShadowType();
-                toggleLetterBoxShadowType();
-                applyPlayerCardSettings();
-                applyCustomSliderSettings();
-                applyLinkedVinylSettings();
-            };
-            reader.readAsText(file);
-        }
+        /* La importación y exportación de configuraciones se eliminó: las
+           preferencias ahora sólo se ajustan en la interfaz actual. */
 
         const textState = {
             right: {
@@ -3406,6 +4318,14 @@
             closeLetterBoxTagMenus();
         });
 
+        document.addEventListener('click', (event) => {
+            if (event.target instanceof Element && (
+                event.target.closest('.image-preview-box') ||
+                event.target.closest('.image-preview-menu')
+            )) return;
+            closeImagePreviewMenu();
+        });
+
         refs.audioAuthorTrigger.addEventListener('click', () => openTextEditor('right'));
         refs.leftAudioAuthorTrigger.addEventListener('click', () => openTextEditor('left'));
         refs.textEditorCancel.addEventListener('click', cancelTextEditor);
@@ -3419,35 +4339,64 @@
         });
 
         letterBoxEditBtn.addEventListener('click', openLetterBoxEditor);
-        letterBoxResumeBtn.addEventListener('click', resumeLetterBoxTextFromCurrent);
-        letterBoxCutBtn.addEventListener('click', addLetterBoxCut);
+        letterBoxCutBtn.addEventListener('click', toggleLetterBoxControlPoint);
         letterBoxUndoCutBtn.addEventListener('click', undoLetterBoxCut);
-        letterBoxEditorCloseBtn.addEventListener('click', closeLetterBoxEditor);
-        letterBoxCancelBtn.addEventListener('click', closeLetterBoxEditor);
-        letterBoxAcceptBtn.addEventListener('click', acceptLetterBoxEditor);
-        letterBoxClearBtn.addEventListener('click', clearLetterBoxEditor);
+        letterBoxClearBtn.addEventListener('click', requestClearLetterBoxEditor);
         if (letterBoxTextInput) {
             letterBoxTextInput.addEventListener('input', () => {
-                letterBoxTextState.value = letterBoxTextInput.value;
-                renderLetterBoxText();
+                updateLetterBoxEditorPreview();
+                applyLetterBoxEditorDraft();
             });
         }
         letterBoxTextSize.addEventListener('input', () => {
-            letterBoxTextState.size = Number(letterBoxTextSize.value || 48);
             updateLetterBoxTextSizeLabel();
-            renderLetterBoxText();
+            updateLetterBoxEditorPreview();
+            applyLetterBoxEditorDraft();
         });
         const letterBoxHorizontalOffsetInput = document.getElementById('letterBoxTextHorizontalOffset');
         if (letterBoxHorizontalOffsetInput) {
             letterBoxHorizontalOffsetInput.addEventListener('input', () => {
-                letterBoxTextState.horizontalOffset = Number(letterBoxHorizontalOffsetInput.value || 0);
                 updateLetterBoxHorizontalOffsetLabel();
-                renderLetterBoxText();
+                updateLetterBoxEditorPreview();
+                applyLetterBoxEditorDraft();
             });
         }
         document.querySelectorAll('.letter-align-btn').forEach((btn) => {
-            btn.addEventListener('click', () => setLetterBoxTextAlignment(btn.dataset.align));
+            btn.addEventListener('click', () => {
+                setLetterBoxTextAlignment(btn.dataset.align);
+                applyLetterBoxEditorDraft();
+            });
         });
+        if (letterBoxEditorResizer) {
+            let isResizingLetterEditor = false;
+
+            const stopLetterEditorResize = () => {
+                if (!isResizingLetterEditor) return;
+                isResizingLetterEditor = false;
+                letterBoxEditorResizer.classList.remove('is-resizing');
+                document.body.style.removeProperty('cursor');
+                document.body.style.removeProperty('user-select');
+            };
+
+            letterBoxEditorResizer.addEventListener('pointerdown', (event) => {
+                if (window.matchMedia('(max-width: 760px)').matches) return;
+                event.preventDefault();
+                isResizingLetterEditor = true;
+                letterBoxEditorResizer.classList.add('is-resizing');
+                letterBoxEditorResizer.setPointerCapture?.(event.pointerId);
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+            });
+
+            letterBoxEditorResizer.addEventListener('pointermove', (event) => {
+                if (!isResizingLetterEditor) return;
+                const leftPercent = Math.max(28, Math.min(72, (event.clientX / window.innerWidth) * 100));
+                letterBoxEditorPanel.style.setProperty('--letter-editor-input-left', `${leftPercent}%`);
+            });
+
+            letterBoxEditorResizer.addEventListener('pointerup', stopLetterEditorResize);
+            letterBoxEditorResizer.addEventListener('pointercancel', stopLetterEditorResize);
+        }
         if (letterBoxTextLayer) {
             letterBoxTextLayer.addEventListener('pointerdown', startLetterBoxTextDrag);
             letterBoxTextLayer.addEventListener('pointermove', dragLetterBoxText);
@@ -3498,7 +4447,10 @@
                 customSliderThumb.style.left = percentage + '%';
             }
             updateTimeDisplays();
+            updateLetterBoxCutButtons();
         });
+
+        audio.addEventListener('seeked', updateLetterBoxCutButtons);
 
         audio.addEventListener('loadedmetadata', () => {
             updateTimeDisplays();
@@ -3520,6 +4472,7 @@
             updateLetterBoxTextScrollByAudio();
         });
 
+        initializeCustomTooltips();
         toggleGradientInputs(getCheckedRadioValue('themeType') === 'gradient');
         syncLetterBoxEditorControls();
         renderLetterBoxText();
@@ -3535,6 +4488,7 @@
         applyTimeChipSettings();
         applyLetterBoxSettings();
         applyLinkedVinylSettings();
+        updateImagePickerState();
         updateLinkedVinylActionButtons();
         toggleConfigBtn();
         requestAnimationFrame(() => {
