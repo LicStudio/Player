@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>App Neumórfica</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400..700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -328,16 +331,53 @@
 
         .letter-box-text {
             display: inline-block;
-            width: auto;
+            position: relative;
+            width: 100%;
+            height: 100%;
             max-width: 100%;
             color: var(--text-color);
             font-weight: 300;
             line-height: 1.15;
-            white-space: pre-wrap;
-            word-break: break-word;
+            white-space: nowrap;
             text-shadow: 0 0 20px rgba(0,0,0,0.2);
             user-select: none;
             pointer-events: none;
+        }
+
+        .letter-box-group {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            transform-origin: var(--letter-line-transform-origin, center center);
+            will-change: transform, opacity;
+            pointer-events: none;
+        }
+
+        .letter-box-line {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            min-height: 1em;
+            white-space: pre;
+            pointer-events: none;
+        }
+
+        .letter-box-line-content {
+            display: block;
+            flex: 1 1 100%;
+            width: 100%;
+            min-width: 0;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            pointer-events: auto;
+        }
+
+        .letter-box-group.is-snap-candidate .letter-box-line-content {
+            filter: drop-shadow(0 0 0.28em currentColor);
         }
 
         .letter-box-tag {
@@ -508,11 +548,17 @@
         .linked-vinyl {
             position: absolute;
             pointer-events: auto;
-            cursor: pointer;
+            cursor: grab;
             transform-origin: center center;
-            z-index: 40;
+            z-index: 39;
             border-radius: 9999px;
             overflow: visible;
+            touch-action: none;
+            user-select: none;
+        }
+
+        .linked-vinyl.is-dragging {
+            cursor: grabbing;
         }
 
         .linked-vinyl img {
@@ -566,6 +612,96 @@
 
         .linked-vinyl.modern .linked-vinyl-overlay {
             z-index: 3;
+        }
+
+        .linked-vinyl-menu {
+            position: fixed;
+            z-index: 80;
+            display: grid;
+            gap: 0.4rem;
+            width: min(20rem, calc(100vw - 1.5rem));
+            padding: 0.42rem;
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 1rem;
+            background: rgba(43, 43, 43, 0.96);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.32);
+            color: #f0f0f0;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .linked-vinyl-menu[hidden] { display: none; }
+
+        .linked-vinyl-menu-row {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            min-width: 0;
+        }
+
+        .linked-vinyl-menu input[type="range"] {
+            flex: 1 1 auto;
+            width: 1rem;
+            min-width: 0;
+            appearance: none;
+            -webkit-appearance: none;
+            height: 0.35rem;
+            margin: 0 0.45rem;
+            border-radius: 999px;
+            background: rgba(240,240,240,0.3);
+            accent-color: var(--ui-accent);
+            cursor: pointer;
+        }
+
+        .linked-vinyl-menu input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 1.1rem;
+            height: 1.1rem;
+            border: 2px solid #171717;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 0 0 2px var(--ui-accent), 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .linked-vinyl-menu input[type="color"],
+        #modalOverlay input[type="color"] {
+            flex: 0 0 auto;
+            width: 2.65rem;
+            height: 2.65rem;
+            padding: 0.45rem;
+            border: 0;
+            border-radius: 50%;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .linked-vinyl-menu input[type="color"]::-webkit-color-swatch-wrapper,
+        #modalOverlay input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .linked-vinyl-menu input[type="color"]::-webkit-color-swatch,
+        #modalOverlay input[type="color"]::-webkit-color-swatch {
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 50%;
+        }
+
+        .linked-vinyl-menu input[type="color"]::-moz-color-swatch,
+        #modalOverlay input[type="color"]::-moz-color-swatch {
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 50%;
+        }
+
+        .linked-vinyl-menu .image-preview-menu-btn[aria-pressed="true"] {
+            background: color-mix(in srgb, var(--ui-accent) 30%, #383838);
+            color: var(--ui-on-accent);
+        }
+
+        .linked-vinyl-menu button:focus-visible,
+        .linked-vinyl-menu input:focus-visible {
+            outline: 2px solid rgba(255,255,255,0.8);
+            outline-offset: 2px;
         }
 
         .letter-align-btn {
@@ -944,15 +1080,6 @@
             accent-color: var(--md-primary);
         }
 
-        #modalOverlay input[type="color"] {
-            width: 2.75rem;
-            height: 2.75rem;
-            padding: 0.2rem;
-            border: 1px solid var(--md-outline);
-            border-radius: 0.75rem;
-            background: var(--md-surface-container-high);
-        }
-
         #modalOverlay select,
         #modalOverlay input[type="file"] {
             border-color: var(--md-outline) !important;
@@ -976,22 +1103,16 @@
         #modalOverlay .neu-btn {
             min-height: 40px;
             padding-inline: 1.25rem;
-            border: 0;
+            border: 1px solid var(--md-outline);
             border-radius: 999px;
-            background: var(--md-primary-container) !important;
+            background: transparent !important;
             box-shadow: none !important;
-            color: var(--md-on-primary);
+            color: var(--md-on-surface);
             font-weight: 650;
         }
 
         #modalOverlay .neu-btn:hover {
-            filter: brightness(1.12);
-        }
-
-        /* Los botones principales oscuros conservan el mismo contraste que
-           las acciones destacadas de la pantalla principal. */
-        .ui-accent-dark #modalOverlay .neu-btn {
-            border: 1px solid rgba(255, 255, 255, 0.9);
+            background: var(--md-surface-container-high) !important;
         }
 
         @media (max-width: 1023px) {
@@ -1046,7 +1167,7 @@
             height: 2.75rem;
             padding: 0;
             border: 0;
-            border-radius: 0.85rem;
+            border-radius: 999px;
             background: transparent;
             color: #f0f0f0;
             cursor: pointer;
@@ -1064,16 +1185,6 @@
         .player-toolbar-btn:disabled {
             cursor: not-allowed;
             opacity: 0.42;
-        }
-
-        .player-toolbar-btn.is-emphasis {
-            background: var(--ui-accent);
-            color: var(--ui-on-accent);
-        }
-
-        /* Los acentos oscuros necesitan un borde para conservar contraste. */
-        .ui-accent-dark .player-toolbar-btn.is-emphasis {
-            border: 1px solid rgba(255, 255, 255, 0.9);
         }
 
         .player-toolbar-btn.is-danger {
@@ -1590,7 +1701,6 @@
             box-shadow: 0 0 0 2px var(--md-primary), 0 2px 4px rgba(0, 0, 0, 0.42);
         }
 
-        #modalOverlay input[type="checkbox"],
         #modalOverlay input[type="radio"] {
             appearance: none;
             -webkit-appearance: none;
@@ -1606,17 +1716,73 @@
             transition: background-color 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
         }
 
-        #modalOverlay input[type="checkbox"] { border-radius: 0.28rem; }
         #modalOverlay input[type="radio"] { border-radius: 50%; }
 
-        #modalOverlay input[type="checkbox"]::after {
+        .config-switch {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
+            cursor: pointer;
+        }
+
+        #modalOverlay input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            position: relative;
+            display: block;
+            width: 1px;
+            height: 1px;
+            margin: 0;
+            flex: 0 0 1px;
+            opacity: 0;
+        }
+
+        .md-switch-track {
+            position: relative;
+            display: inline-block;
+            width: 3.25rem;
+            height: 2rem;
+            flex: 0 0 auto;
+            border: 2px solid var(--md-outline);
+            border-radius: 999px;
+            background: var(--md-surface-container-high);
+            transition: background-color 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+        }
+
+        .md-switch-track::before {
             content: '';
-            width: 0.54rem;
-            height: 0.3rem;
-            border-bottom: 2px solid var(--md-on-primary);
-            border-left: 2px solid var(--md-on-primary);
-            transform: rotate(-45deg) scale(0);
-            transition: transform 0.14s ease;
+            position: absolute;
+            top: 50%;
+            left: 0.28rem;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background: var(--md-on-surface-variant);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.35);
+            transform: translateY(-50%);
+            transition: left 0.22s cubic-bezier(0.2, 0, 0, 1), width 0.22s ease, height 0.22s ease, background-color 0.22s ease;
+        }
+
+        .config-switch:hover .md-switch-track {
+            box-shadow: 0 0 0 3px rgba(240,240,240,0.06);
+        }
+
+        .config-switch input[type="checkbox"]:checked + .md-switch-track {
+            border-color: var(--md-primary);
+            background: var(--md-primary);
+        }
+
+        .config-switch input[type="checkbox"]:checked + .md-switch-track::before {
+            left: calc(100% - 1.78rem);
+            width: 1.5rem;
+            height: 1.5rem;
+            background: var(--md-on-primary);
+        }
+
+        .config-switch input[type="checkbox"]:focus-visible + .md-switch-track {
+            outline: 2px solid color-mix(in srgb, var(--md-primary) 55%, transparent);
+            outline-offset: 3px;
         }
 
         #modalOverlay input[type="radio"]::after {
@@ -1629,34 +1795,74 @@
             transition: transform 0.14s ease;
         }
 
-        #modalOverlay input[type="checkbox"]:checked,
-        #modalOverlay input[type="radio"]:checked {
-            border-color: var(--md-primary);
-            background: var(--md-primary);
-        }
-
-        #modalOverlay input[type="checkbox"]:checked::after,
-        #modalOverlay input[type="radio"]:checked::after { transform: scale(1) rotate(-45deg); }
         #modalOverlay input[type="radio"]:checked::after { transform: scale(1); }
 
-        #modalOverlay input[type="checkbox"]:focus-visible,
         #modalOverlay input[type="radio"]:focus-visible,
-        #modalOverlay select:focus-visible,
         #modalOverlay input[type="range"]:focus-visible {
             outline: 2px solid color-mix(in srgb, var(--md-primary) 55%, transparent);
             outline-offset: 3px;
         }
 
-        #modalOverlay select {
-            appearance: none;
-            -webkit-appearance: none;
+        .config-choice-group {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.45rem;
+            width: 100%;
+        }
+
+        .config-choice-group.is-three-options {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .config-choice {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
             min-height: 2.8rem;
-            padding: 0.6rem 2.7rem 0.6rem 0.9rem;
-            background-image: linear-gradient(45deg, transparent 50%, var(--md-on-surface-variant) 50%), linear-gradient(135deg, var(--md-on-surface-variant) 50%, transparent 50%);
-            background-position: calc(100% - 1.15rem) 1.15rem, calc(100% - 0.82rem) 1.15rem;
-            background-size: 0.38rem 0.38rem, 0.38rem 0.38rem;
-            background-repeat: no-repeat;
+            padding: 0.65rem 0.85rem;
+            border: 1px solid rgba(220,220,220,0.18);
+            border-radius: 9999px;
+            background: rgba(255,255,255,0.025);
+            color: var(--md-on-surface-variant);
+            font-size: 0.88rem;
+            font-weight: 600;
+            text-align: center;
             cursor: pointer;
+            transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+        }
+
+        .config-choice:hover {
+            background: var(--md-surface-container-high);
+        }
+
+        .config-choice:active {
+            transform: scale(0.98);
+        }
+
+        .config-choice:has(input:checked) {
+            border: 3px solid rgba(255,255,255,0.96);
+            border-radius: 9999px;
+            background: color-mix(in srgb, var(--md-primary) 16%, var(--md-surface-container));
+            color: var(--md-on-surface);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.24);
+        }
+
+        .config-choice input[type="radio"] {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            clip-path: inset(50%);
+        }
+
+        .config-choice:focus-within {
+            outline: 2px solid color-mix(in srgb, var(--md-primary) 55%, transparent);
+            outline-offset: 2px;
         }
 
         /* Scrollbar discreta, acorde a las superficies grises de la app. */
@@ -1680,6 +1886,633 @@
             .player-action-toolbar-right { right: 0.85rem; flex-direction: column; }
             .player-toolbar-btn { width: 2.4rem; height: 2.4rem; }
             .player-toolbar-divider { width: 1.75rem; height: 1px; margin: 0.05rem 0; }
+        }
+
+        #modalOverlay {
+            box-sizing: border-box;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .config-shell {
+            --md-surface: rgb(19 19 20 / var(--config-opacity));
+            --md-page: rgb(27 27 27 / var(--config-opacity));
+            --md-surface-container: rgb(30 31 32 / var(--config-opacity));
+            --md-surface-container-high: rgb(40 42 44 / var(--config-opacity));
+            --md-outline: #444746;
+            --md-on-surface: #E3E3E3;
+            --md-on-surface-variant: #C4C7C5;
+            --md-primary: #E3E3E3;
+            --md-on-primary: #1B1B1B;
+            --md-primary-container: #282A2C;
+            --md-secondary-container: #333537;
+            --md-on-secondary-container: #E3E3E3;
+            --config-slider-length: min(480px, calc(100vw - 544px));
+            width: 100%;
+            height: 100%;
+            min-height: 0;
+            overflow: hidden;
+            border-radius: 0;
+            background: var(--md-surface) !important;
+            color: var(--md-on-surface);
+            font-family: "Roboto Flex", Roboto, sans-serif;
+            font-weight: 400;
+            backdrop-filter: blur(calc(var(--config-opacity) * 20px));
+            -webkit-backdrop-filter: blur(calc(var(--config-opacity) * 20px));
+        }
+
+        .config-shell > header {
+            position: relative;
+            display: flex;
+            flex: 0 0 72px;
+            align-items: center;
+            justify-content: center;
+            min-height: 72px;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--md-outline);
+            background: var(--md-surface);
+        }
+
+        .config-shell > header h2 {
+            color: var(--md-on-surface);
+            font-family: inherit;
+            font-size: 24px;
+            font-weight: 500;
+            line-height: 32px;
+            letter-spacing: 0;
+        }
+
+        #closeModal {
+            position: absolute;
+            left: 24px;
+            width: 48px;
+            height: 48px;
+            border: 0;
+            border-radius: 50%;
+            color: var(--md-on-surface);
+            transition: background-color 160ms ease;
+        }
+
+        #closeModal:hover { background: rgba(227,227,227,0.08); }
+        #closeModal:active { background: rgba(227,227,227,0.12); }
+        #closeModal:focus-visible { outline: 2px solid rgba(227,227,227,0.56); outline-offset: 2px; }
+        .config-shell > header > div:last-child { display: none; }
+
+        .config-shell > .flex.min-h-0.flex-1 {
+            flex-direction: row;
+            min-height: 0;
+        }
+
+        #modalOverlay .config-sidebar {
+            position: relative;
+            display: flex;
+            flex: 0 0 240px;
+            flex-direction: column;
+            width: 240px;
+            min-width: 240px;
+            padding: 24px 16px 88px;
+            border-right: 1px solid var(--md-outline);
+            border-bottom: 0;
+            background: var(--md-surface-container);
+        }
+
+        #configSectionNav {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+            overflow: visible;
+            padding: 0;
+        }
+
+        .config-section-nav-btn {
+            display: flex;
+            flex: 0 0 auto;
+            align-items: center;
+            width: 100%;
+            min-height: 48px;
+            padding: 12px 16px;
+            border: 0;
+            border-radius: 24px;
+            background: transparent;
+            color: var(--md-on-surface-variant);
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 24px;
+            letter-spacing: 0;
+            text-align: left;
+            transition: background-color 160ms ease, color 160ms ease;
+        }
+
+        .config-section-nav-btn:hover { background: rgba(227,227,227,0.08); }
+        .config-section-nav-btn:active { background: rgba(227,227,227,0.12); }
+        .config-section-nav-btn.active {
+            background: var(--md-secondary-container) !important;
+            color: var(--md-on-secondary-container);
+            font-weight: 600;
+        }
+
+        .config-section-nav-btn.active:hover { background: #3A3C3E !important; }
+        .config-section-nav-btn.active:active { background: #414345 !important; }
+        .config-section-nav-btn:focus-visible { outline: 2px solid rgba(227,227,227,0.56); outline-offset: 2px; }
+
+        #modalOverlay main {
+            flex: 1 1 auto;
+            min-width: 0;
+            min-height: 0;
+            padding: 32px;
+            overflow-y: auto;
+            background: var(--md-page);
+            color: var(--md-on-surface);
+        }
+
+        #modalOverlay .config-section-panel.active {
+            width: min(100%, 1000px);
+            margin: 0 auto;
+        }
+
+        #modalOverlay .config-section-panel h3 {
+            margin: 0 0 24px;
+            color: var(--md-on-surface);
+            font-family: inherit;
+            font-size: 24px;
+            font-weight: 500;
+            line-height: 32px;
+            letter-spacing: 0;
+        }
+
+        #modalOverlay .config-section-panel ul {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        #modalOverlay .config-section-panel ul > li { margin-top: 0; }
+
+        #modalOverlay .neu-list-item {
+            padding: 24px;
+            border: 1px solid var(--md-outline);
+            border-radius: 12px;
+            background: var(--md-surface-container);
+            box-shadow: none;
+            color: var(--md-on-surface);
+        }
+
+        #modalOverlay .neu-list-item:hover { background: var(--md-surface-container); }
+
+        #modalOverlay .neu-list-item > div > span:first-child {
+            color: var(--md-on-surface);
+            font-family: inherit;
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 28px;
+        }
+
+        #modalOverlay span,
+        #modalOverlay label {
+            color: var(--md-on-surface-variant);
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 24px;
+            letter-spacing: 0;
+        }
+
+        #modalOverlay .neu-list-item .border {
+            padding: 16px;
+            border: 1px solid var(--md-outline) !important;
+            border-radius: 8px;
+            background: var(--md-surface-container-high) !important;
+            box-shadow: none;
+        }
+
+        #modalOverlay .neu-list-item .border > span { color: var(--md-on-surface) !important; }
+
+        #modalOverlay .neu-list-item .grid:not(.config-choice-group) {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        #modalOverlay .neu-list-item .flex.items-center.gap-4 {
+            min-height: 48px;
+            gap: 16px;
+        }
+
+        #modalOverlay .neu-list-item .flex.items-center.gap-4 > span:first-child {
+            flex: 0 0 112px;
+            width: 112px;
+            min-width: 112px;
+        }
+
+        #modalOverlay .neu-list-item .flex.items-center.gap-4 > input[type="range"] {
+            flex: 0 1 var(--config-slider-length);
+            width: var(--config-slider-length);
+            min-width: 0;
+            max-width: calc(100% - 128px);
+        }
+
+        #modalOverlay .config-switch {
+            min-height: 48px;
+            gap: 12px;
+            color: var(--md-on-surface-variant);
+            font-family: inherit;
+            font-size: 16px;
+            line-height: 24px;
+        }
+
+        .md-switch-track {
+            width: 52px;
+            height: 32px;
+            flex: 0 0 52px;
+            border: 2px solid #8E918F;
+            border-radius: 16px;
+            background: #282A2C;
+        }
+
+        .md-switch-track::before {
+            left: 4px;
+            width: 16px;
+            height: 16px;
+            background: #C4C7C5;
+        }
+
+        .config-switch input[type="checkbox"]:checked + .md-switch-track {
+            border-color: #E3E3E3;
+            background: #E3E3E3;
+        }
+
+        .config-switch input[type="checkbox"]:checked + .md-switch-track::before {
+            left: calc(100% - 28px);
+            width: 24px;
+            height: 24px;
+            background: #1B1B1B;
+        }
+
+        .config-switch:hover .md-switch-track { box-shadow: 0 0 0 8px rgba(227,227,227,0.08); }
+        .config-switch:active .md-switch-track { box-shadow: 0 0 0 8px rgba(227,227,227,0.12); }
+
+        #modalOverlay input[type="range"] {
+            width: var(--config-slider-length);
+            max-width: 100%;
+            min-width: 0;
+            height: 48px;
+            min-height: 48px;
+            margin: 0;
+            padding: 0;
+            appearance: none;
+            -webkit-appearance: none;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            accent-color: var(--md-primary);
+            cursor: pointer;
+        }
+
+        #modalOverlay input[type="range"]::-webkit-slider-runnable-track {
+            height: 4px;
+            border-radius: 4px;
+            background: #444746;
+        }
+
+        #modalOverlay input[type="range"]::-moz-range-track {
+            height: 4px;
+            border-radius: 4px;
+            background: #444746;
+        }
+
+        #modalOverlay input[type="range"]::-webkit-slider-thumb {
+            width: 20px;
+            height: 20px;
+            margin-top: -8px;
+            border: 2px solid #131314;
+            border-radius: 50%;
+            background: #E3E3E3;
+            box-shadow: none;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        #modalOverlay input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #131314;
+            border-radius: 50%;
+            background: #E3E3E3;
+            box-shadow: none;
+        }
+
+        #modalOverlay input[type="color"] {
+            width: 48px;
+            height: 48px;
+            padding: 8px;
+        }
+
+        #modalOverlay select,
+        #modalOverlay input[type="file"] {
+            min-height: 48px;
+            border-color: var(--md-outline) !important;
+            border-radius: 8px;
+            background: var(--md-surface-container-high) !important;
+            color: var(--md-on-surface);
+            font-family: inherit;
+            font-size: 16px;
+        }
+
+        #modalOverlay .config-choice-group {
+            display: block;
+            width: max-content;
+            max-width: 100%;
+        }
+
+        #modalOverlay .config-choice {
+            display: none;
+        }
+
+        #modalOverlay .config-choice-cycle {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            max-width: 100%;
+            min-width: 48px;
+            min-height: 48px;
+            padding: 12px 20px;
+            border: 1px solid var(--md-outline);
+            border-radius: 999px;
+            background: var(--md-surface-container-high);
+            color: var(--md-on-surface);
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 24px;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 160ms ease, border-color 160ms ease;
+        }
+
+        #modalOverlay .config-choice-cycle::after {
+            content: '';
+            width: 9px;
+            height: 9px;
+            margin: 0 4px 4px 16px;
+            flex: 0 0 auto;
+            border-right: 2px solid var(--md-on-surface-variant);
+            border-bottom: 2px solid var(--md-on-surface-variant);
+            transform: rotate(45deg);
+            transition: transform 160ms ease;
+        }
+
+        #modalOverlay .config-choice-cycle:hover { background: #3A3C3E; }
+        #modalOverlay .config-choice-cycle:hover::after { transform: rotate(225deg); }
+        #modalOverlay .config-choice-cycle:active { background: #414345; }
+
+        #modalOverlay .config-switch {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        #themeOption > div,
+        #bgOption > div {
+            display: grid;
+            grid-template-columns: max-content minmax(0, 1fr);
+            align-items: center;
+            gap: 16px;
+        }
+
+        #themeOption > div > span:first-child,
+        #bgOption > div > span:first-child {
+            grid-column: 1 / -1;
+        }
+
+        #themeOption > div > .config-choice-group,
+        #bgOption > div > .config-choice-group {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        #themeOption > div > .flex.gap-4.items-center,
+        #bgOption > div > #bgControls {
+            grid-column: 2;
+            grid-row: 2;
+            min-width: 0;
+        }
+
+        #themeOption > div > .flex.gap-4.items-center,
+        #bgOption #bgControls > div {
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        #themeOption > div > .flex.flex-col.gap-4.mt-2,
+        #bgOption > div > button,
+        #bgOption > div > .flex.flex-col.gap-2.mt-4 {
+            grid-column: 1 / -1;
+        }
+
+        #themeOption > div > .flex.flex-col.gap-4.mt-2 { margin-top: 0; }
+        #bgOption > div > button { justify-self: start; margin-top: 0; }
+
+        #progressOption > div > .space-y-4.border-b {
+            display: grid;
+            grid-template-columns: max-content minmax(0, 1fr);
+            align-items: center;
+            gap: 16px;
+        }
+
+        #progressOption > div > .space-y-4.border-b > span:first-child {
+            grid-column: 1 / -1;
+        }
+
+        #progressOption .config-choice-group { grid-column: 1; }
+
+        #progressOption .config-choice-group + .flex.gap-4.items-center {
+            grid-column: 2;
+            justify-self: end;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        #playerCardOption > div > .border.mb-2,
+        #letterBoxOption > div > .border.mb-2 {
+            display: grid;
+            grid-template-columns: max-content minmax(0, 1fr);
+            align-items: center;
+            gap: 16px;
+        }
+
+        #playerCardOption > div > .border.mb-2 > span:first-child,
+        #letterBoxOption > div > .border.mb-2 > span:first-child {
+            grid-column: 1 / -1;
+        }
+
+        #playerCardOption > div > .border.mb-2 > .flex.flex-col.gap-2,
+        #letterBoxOption > div > .border.mb-2 > .flex.flex-col.gap-2 {
+            grid-column: 1;
+        }
+
+        #playerCardOption > div > .border.mb-2 > .flex.items-center.gap-4:not(#playerLightColorControl):not(#playerLightGradientControl),
+        #letterBoxOption > div > .border.mb-2 > .flex.items-center.gap-4:not(#letterBoxLightColorControl):not(#letterBoxLightGradientControl) {
+            grid-column: 1 / -1;
+        }
+
+        #modalOverlay #playerLightColorControl:not(.hidden),
+        #modalOverlay #letterBoxLightColorControl:not(.hidden) {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 48px;
+            align-items: center;
+            grid-column: 2;
+            gap: 8px;
+            width: 100%;
+            min-width: 0;
+        }
+
+        #modalOverlay #playerLightColorControl span,
+        #modalOverlay #letterBoxLightColorControl span {
+            width: auto;
+            min-width: 0;
+        }
+
+        #modalOverlay #playerLightColorControl input[type="color"],
+        #modalOverlay #letterBoxLightColorControl input[type="color"] {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        #modalOverlay #playerLightGradientControl:not(.hidden),
+        #modalOverlay #letterBoxLightGradientControl:not(.hidden) {
+            grid-column: 2;
+            width: 100%;
+            min-width: 0;
+            flex-wrap: wrap;
+        }
+
+        #modalOverlay input:focus-visible,
+        #modalOverlay select:focus-visible,
+        #modalOverlay button:focus-visible {
+            outline: 2px solid rgba(227,227,227,0.56);
+            outline-offset: 2px;
+        }
+
+        #modalOverlay .neu-btn {
+            min-height: 48px;
+            border-color: var(--md-outline);
+            border-radius: 8px;
+            color: var(--md-on-surface);
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 160ms ease;
+        }
+
+        #modalOverlay .neu-btn:hover { background: rgba(227,227,227,0.08) !important; }
+        #modalOverlay .neu-btn:active { background: rgba(227,227,227,0.12) !important; }
+
+        .config-opacity-control {
+            bottom: 24px;
+            left: 24px;
+            width: 192px;
+        }
+
+        .config-opacity-control input { accent-color: var(--md-primary); }
+
+        #modalOverlay main {
+            scrollbar-width: auto;
+            scrollbar-color: #747875 #1B1B1B;
+        }
+
+        #modalOverlay main::-webkit-scrollbar { width: 16px; }
+        #modalOverlay main::-webkit-scrollbar-track { background: #1B1B1B; }
+        #modalOverlay main::-webkit-scrollbar-thumb {
+            border: 4px solid #1B1B1B;
+            border-radius: 8px;
+            background: #747875;
+        }
+        #modalOverlay main::-webkit-scrollbar-thumb:hover { background: #9A9D9B; }
+
+        @media (max-width: 760px) {
+            .config-shell { --config-slider-length: clamp(96px, calc(100vw - 246px), 480px); }
+            #modalOverlay { padding: 0; }
+            .config-shell { border-radius: 0; }
+
+            .config-shell > header {
+                flex-basis: 64px;
+                min-height: 64px;
+                padding: 0 16px;
+            }
+
+            .config-shell > header h2 { font-size: 20px; line-height: 28px; }
+            #closeModal { left: 16px; }
+
+            .config-shell > .flex.min-h-0.flex-1 { flex-direction: column; }
+
+            #modalOverlay .config-sidebar {
+                flex: 0 0 auto;
+                width: 100%;
+                min-width: 0;
+                padding: 8px 16px;
+                border-right: 0;
+                border-bottom: 1px solid var(--md-outline);
+            }
+
+            #configSectionNav {
+                flex-direction: row;
+                gap: 8px;
+                overflow-x: auto;
+                padding: 0 0 4px;
+            }
+
+            .config-section-nav-btn {
+                width: auto;
+                min-width: 48px;
+                flex: 0 0 auto;
+                justify-content: center;
+                padding: 12px 8px;
+                white-space: nowrap;
+            }
+
+            #modalOverlay main { padding: 24px 16px; }
+            #modalOverlay .neu-list-item { padding: 16px; }
+
+            #modalOverlay .neu-list-item .flex.items-center.gap-4 > span:first-child {
+                flex-basis: 96px;
+                width: 96px;
+                min-width: 96px;
+            }
+
+            #modalOverlay .neu-list-item .flex.items-center.gap-4 > input[type="range"] {
+                max-width: calc(100% - 112px);
+            }
+
+            #themeOption > div,
+            #bgOption > div,
+            #progressOption > div > .space-y-4.border-b,
+            #playerCardOption > div > .border.mb-2,
+            #letterBoxOption > div > .border.mb-2 {
+                grid-template-columns: max-content minmax(0, 1fr);
+                gap: 12px;
+            }
+
+            #playerCardOption > div > .border.mb-2 > .flex.flex-col.gap-2,
+            #letterBoxOption > div > .border.mb-2 > .flex.flex-col.gap-2 {
+                min-width: 0;
+            }
+
+            #playerCardOption > div > .border.mb-2 > .flex.flex-col.gap-2 > span,
+            #letterBoxOption > div > .border.mb-2 > .flex.flex-col.gap-2 > span {
+                font-size: 14px;
+            }
+
+            .config-opacity-control {
+                position: static;
+                width: auto;
+                margin: 0;
+                padding: 8px 16px 16px;
+                background: var(--md-surface-container);
+            }
         }
     </style>
 </head>
@@ -1765,7 +2598,7 @@
             <svg id="configIcon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.4.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.4-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
         </button>
         <span id="configImageDivider" class="player-toolbar-divider" aria-hidden="true"></span>
-        <button id="imagePickerBtn" type="button" class="player-toolbar-btn is-emphasis" title="Añadir imagen" aria-label="Añadir imagen">
+        <button id="imagePickerBtn" type="button" class="player-toolbar-btn" title="Añadir imagen" aria-label="Añadir imagen">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="m21 15-5-5L5 21"></path><path d="M17 5v4"></path><path d="M15 7h4"></path></svg>
         </button>
         <span id="imageAudioDivider" class="player-toolbar-divider hidden" aria-hidden="true"></span>
@@ -1820,10 +2653,29 @@
         </div>
     </div>
 
-    <div id="linkedVinylContainer" class="linked-vinyl hidden absolute z-30 classic">
+    <div id="linkedVinylContainer" class="linked-vinyl hidden absolute z-30 classic" role="button" tabindex="0" aria-label="Vinilo. Arrastra para mover o pulsa para abrir sus opciones">
         <div id="linkedVinylContent" class="linked-vinyl-content">
             <img id="linkedVinylOverlay" class="linked-vinyl-overlay hidden" alt="Imagen del vinilo">
             <img id="linkedVinylBase" class="linked-vinyl-base" src="icons/vinilo.png" alt="Vinilo base">
+        </div>
+    </div>
+
+    <div id="linkedVinylMenu" class="linked-vinyl-menu" role="dialog" aria-label="Opciones del vinilo" hidden>
+        <div class="linked-vinyl-menu-row">
+            <button id="linkedVinylMenuLayer" type="button" class="image-preview-menu-btn image-preview-layer-btn has-custom-tooltip" data-vinyl-layer-toggle data-tooltip="Enviar vinilo detrás de los cuadros" aria-label="Enviar vinilo detrás de los cuadros" aria-pressed="true">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="12" height="12" rx="2"></rect><path d="M5 9H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-1"></path></svg>
+            </button>
+            <input id="linkedVinylMenuSize" type="range" min="10" max="100" step="1" value="24" aria-label="Tamaño del vinilo">
+            <button id="linkedVinylMenuSpin" type="button" class="image-preview-menu-btn has-custom-tooltip" aria-label="Reproducir movimiento" aria-pressed="false">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 5 12 7-12 7z"></path></svg>
+            </button>
+        </div>
+        <div class="linked-vinyl-menu-row">
+            <button id="linkedVinylMenuStyle" type="button" class="image-preview-menu-btn has-custom-tooltip" data-vinyl-style-toggle data-tooltip="Cambiar a estilo moderno" aria-label="Cambiar a estilo moderno" aria-pressed="false">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="2"></circle><path d="M12 3v2M21 12h-2M12 21v-2M3 12h2"></path></svg>
+            </button>
+            <input id="linkedVinylMenuBorderWidth" type="range" min="0" max="40" step="1" value="2" aria-label="Grosor del borde">
+            <input id="linkedVinylMenuBorderColor" class="has-custom-tooltip" type="color" value="#ffffff" aria-label="Color del borde" title="Color del borde" data-tooltip="Color del borde">
         </div>
     </div>
 
@@ -1847,7 +2699,6 @@
                         <button type="button" class="config-section-nav-btn active" data-config-section="general">General</button>
                         <button type="button" class="config-section-nav-btn" data-config-section="apariencia">Apariencia</button>
                         <button type="button" class="config-section-nav-btn" data-config-section="fondo">Fondo</button>
-                        <button type="button" class="config-section-nav-btn" data-config-section="vinilo">Vinilo</button>
                         <button type="button" class="config-section-nav-btn" data-config-section="audio">Audio</button>
                     </nav>
                 </aside>
@@ -1861,8 +2712,8 @@
                             <li id="visibilityOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
                                 <div class="flex flex-col space-y-4">
                                     <span class="font-semibold text-xl">Visibilidad del botón</span>
-                                    <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" id="configVisibility" checked onchange="toggleConfigBtn()"> Mostrar botón de configuración
+                                    <label class="config-switch">
+                                        <input type="checkbox" id="configVisibility" checked onchange="toggleConfigBtn()"><span class="md-switch-track" aria-hidden="true"></span><span>Mostrar botón de configuración</span>
                                     </label>
                                 </div>
                             </li>
@@ -1919,13 +2770,9 @@
                             <li id="themeOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
                                 <div class="flex flex-col space-y-4">
                                     <span class="font-semibold text-xl">Apariencia de Componentes</span>
-                                    <div class="flex items-center gap-4">
-                                        <label class="flex items-center gap-2">
-                                            <input type="radio" name="themeType" value="simple" checked onchange="toggleGradientInputs(false)"> Simple
-                                        </label>
-                                        <label class="flex items-center gap-2">
-                                            <input type="radio" name="themeType" value="gradient" onchange="toggleGradientInputs(true)"> Gradiente
-                                        </label>
+                                    <div class="config-choice-group" role="radiogroup" aria-label="Apariencia de componentes">
+                                        <label class="config-choice"><input type="radio" name="themeType" value="simple" checked onchange="toggleGradientInputs(false)"><span>Simple</span></label>
+                                        <label class="config-choice"><input type="radio" name="themeType" value="gradient" onchange="toggleGradientInputs(true)"><span>Gradiente</span></label>
                                     </div>
                                     <div class="flex gap-4 items-center">
                                         <input type="color" id="color1" value="#262626" class="w-12 h-12 rounded cursor-pointer" oninput="applyTheme()">
@@ -1933,8 +2780,8 @@
                                         <span id="colorLabel" class="text-sm text-gray-400">Color principal</span>
                                     </div>
                                     <div class="flex flex-col gap-4 mt-2 border-t border-gray-700 pt-4">
-                                        <label class="flex items-center gap-2 cursor-pointer">
-                                            <input type="checkbox" id="btnBlurToggle" onchange="applyButtonCustomization()"> Activar efecto Blur (fondo)
+                                        <label class="config-switch">
+                                            <input type="checkbox" id="btnBlurToggle" onchange="applyButtonCustomization()"><span class="md-switch-track" aria-hidden="true"></span><span>Activar efecto Blur (fondo)</span>
                                         </label>
                                         <div class="flex items-center gap-4">
                                             <span class="text-sm text-gray-400 w-24">Intensidad Blur</span>
@@ -1965,14 +2812,12 @@
                                     <span class="font-semibold text-xl">Cuadro de Audio</span>
                                     <div class="border border-gray-700/50 rounded-xl p-5 bg-black/10 flex flex-col gap-4 mb-2 shadow-inner">
                                         <span class="font-semibold text-lg text-gray-300 border-b border-gray-700/50 pb-2">Ajustes de Sombra</span>
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Tipo</span>
-                                            <label class="flex items-center gap-2">
-                                                <input type="radio" name="playerShadowType" value="shadow" checked onchange="togglePlayerShadowType()"> Sombra
-                                            </label>
-                                            <label class="flex items-center gap-2">
-                                                <input type="radio" name="playerShadowType" value="light" onchange="togglePlayerShadowType()"> Luz
-                                            </label>
+                                        <div class="flex flex-col gap-2">
+                                            <span class="text-sm text-gray-400">Tipo</span>
+                                            <div class="config-choice-group" role="radiogroup" aria-label="Tipo de sombra del cuadro de audio">
+                                                <label class="config-choice"><input type="radio" name="playerShadowType" value="shadow" checked onchange="togglePlayerShadowType()"><span>Sombra</span></label>
+                                                <label class="config-choice"><input type="radio" name="playerShadowType" value="light" onchange="togglePlayerShadowType()"><span>Luz</span></label>
+                                            </div>
                                         </div>
                                         <div id="playerLightColorControl" class="hidden flex items-center gap-4">
                                             <span class="text-sm text-gray-400 w-28">Color exterior</span>
@@ -2015,8 +2860,8 @@
                                         <span class="text-sm text-gray-400 w-28">Blur Fondo</span>
                                         <input type="range" id="playerBlur" min="0" max="40" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()">
                                     </div>
-                                    <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" id="playerVisibility" checked onchange="applyPlayerCardSettings()"> Mostrar cuadro de audio
+                                    <label class="config-switch">
+                                        <input type="checkbox" id="playerVisibility" checked onchange="applyPlayerCardSettings()"><span class="md-switch-track" aria-hidden="true"></span><span>Mostrar cuadro de audio</span>
                                     </label>
                                     <div class="flex items-center gap-4">
                                         <span class="text-sm text-gray-400 w-28">Escala Panel</span>
@@ -2030,14 +2875,12 @@
                                     <span class="font-semibold text-xl">Cuadro de Letras</span>
                                     <div class="border border-gray-700/50 rounded-xl p-5 bg-black/10 flex flex-col gap-4 mb-2 shadow-inner">
                                         <span class="font-semibold text-lg text-gray-300 border-b border-gray-700/50 pb-2">Sombra del cuadro</span>
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Tipo</span>
-                                            <label class="flex items-center gap-2">
-                                                <input type="radio" name="letterBoxShadowType" value="shadow" checked onchange="toggleLetterBoxShadowType()"> Sombra
-                                            </label>
-                                            <label class="flex items-center gap-2">
-                                                <input type="radio" name="letterBoxShadowType" value="light" onchange="toggleLetterBoxShadowType()"> Luz
-                                            </label>
+                                        <div class="flex flex-col gap-2">
+                                            <span class="text-sm text-gray-400">Tipo</span>
+                                            <div class="config-choice-group" role="radiogroup" aria-label="Tipo de sombra del cuadro de letras">
+                                                <label class="config-choice"><input type="radio" name="letterBoxShadowType" value="shadow" checked onchange="toggleLetterBoxShadowType()"><span>Sombra</span></label>
+                                                <label class="config-choice"><input type="radio" name="letterBoxShadowType" value="light" onchange="toggleLetterBoxShadowType()"><span>Luz</span></label>
+                                            </div>
                                         </div>
                                         <div id="letterBoxLightColorControl" class="hidden flex items-center gap-4">
                                             <span class="text-sm text-gray-400 w-28">Color exterior</span>
@@ -2097,16 +2940,10 @@
                             <li id="bgOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
                                 <div class="flex flex-col space-y-4">
                                     <span class="font-semibold text-xl">Cambiar fondo</span>
-                                    <div class="flex flex-wrap items-center gap-4">
-                                        <label class="flex items-center gap-2">
-                                            <input type="radio" name="bgType" value="simple" checked onchange="updateBgControls('simple')"> Color
-                                        </label>
-                                        <label class="flex items-center gap-2">
-                                            <input type="radio" name="bgType" value="gradient" onchange="updateBgControls('gradient')"> Gradiente
-                                        </label>
-                                        <label class="flex items-center gap-2">
-                                            <input type="radio" name="bgType" value="image" onchange="updateBgControls('image')"> Imagen
-                                        </label>
+                                    <div class="config-choice-group is-three-options" role="radiogroup" aria-label="Tipo de fondo">
+                                        <label class="config-choice"><input type="radio" name="bgType" value="simple" checked onchange="updateBgControls('simple')"><span>Color</span></label>
+                                        <label class="config-choice"><input type="radio" name="bgType" value="gradient" onchange="updateBgControls('gradient')"><span>Gradiente</span></label>
+                                        <label class="config-choice"><input type="radio" name="bgType" value="image" onchange="updateBgControls('image')"><span>Imagen</span></label>
                                     </div>
                                     <div id="bgControls" class="flex flex-col gap-4">
                                         <div id="simpleBgControl" class="flex gap-4 items-center">
@@ -2126,72 +2963,12 @@
                                         Sincronizar con tema de botones
                                     </button>
                                     <div class="flex flex-col gap-2 mt-4 pt-4 border-t border-gray-700">
-                                        <label class="flex items-center gap-2 cursor-pointer">
-                                            <input type="checkbox" id="blurToggle" onchange="applyBlur()"> Activar efecto Blur
+                                        <label class="config-switch">
+                                            <input type="checkbox" id="blurToggle" onchange="applyBlur()"><span class="md-switch-track" aria-hidden="true"></span><span>Activar efecto Blur</span>
                                         </label>
                                         <div class="flex items-center gap-4">
                                             <span class="text-sm text-gray-400 w-24">Intensidad</span>
                                             <input type="range" id="blurIntensity" min="0" max="20" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyBlur()">
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="config-section-panel" data-config-section="vinilo">
-                        <div class="mb-6">
-                            <h3 class="text-xl font-semibold text-white sm:text-2xl">Vinilo</h3>
-                        </div>
-                        <ul class="space-y-6">
-                            <li id="linkedVinylOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                                <div class="flex flex-col space-y-4">
-                                    <span class="font-semibold text-xl">Vinilo enlazado</span>
-                                    <div class="border border-gray-700/50 rounded-xl p-5 bg-black/10 flex flex-col gap-4 mb-2 shadow-inner">
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Tamaño</span>
-                                            <input type="range" id="linkedVinylSizePercent" min="10" max="100" step="1" value="24" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLinkedVinylSettings()">
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Posición horizontal</span>
-                                            <input type="range" id="linkedVinylHorizontalPosition" min="0" max="100" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLinkedVinylSettings()">
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Posición vertical</span>
-                                            <input type="range" id="linkedVinylVerticalPosition" min="0" max="100" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLinkedVinylSettings()">
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Estilo</span>
-                                            <select id="linkedVinylStyle" class="w-full rounded-xl border border-gray-700/60 bg-black/20 px-3 py-2 text-sm" onchange="applyLinkedVinylSettings()">
-                                                <option value="classic">Clásico</option>
-                                                <option value="modern">Moderno</option>
-                                            </select>
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Tipo de borde</span>
-                                            <select id="linkedVinylBorderType" class="w-full rounded-xl border border-gray-700/60 bg-black/20 px-3 py-2 text-sm" onchange="applyLinkedVinylSettings()">
-                                                <option value="simple">Color simple</option>
-                                                <option value="gradient">Gradiente</option>
-                                            </select>
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Color borde</span>
-                                            <input type="color" id="linkedVinylBorderColor" value="#ffffff" class="w-12 h-12 rounded cursor-pointer" oninput="applyLinkedVinylSettings()">
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Color borde 2</span>
-                                            <input type="color" id="linkedVinylBorderSecondaryColor" value="#808080" class="w-12 h-12 rounded cursor-pointer" oninput="applyLinkedVinylSettings()">
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Grosor borde</span>
-                                            <input type="range" id="linkedVinylBorderWidth" min="0" max="40" step="1" value="2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLinkedVinylSettings()">
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Capa</span>
-                                            <select id="linkedVinylLayerOrder" class="w-full rounded-xl border border-gray-700/60 bg-black/20 px-3 py-2 text-sm" onchange="applyLinkedVinylSettings()">
-                                                <option value="front">Delante del cuadro</option>
-                                                <option value="back">Detrás del cuadro</option>
-                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -2209,13 +2986,9 @@
                                     <span class="font-semibold text-xl">Barra de Audio Personalizada</span>
                                     <div class="space-y-4 border-b border-gray-700/50 pb-4">
                                         <span class="text-sm text-gray-300 font-semibold">Color Principal (Reproducido)</span>
-                                        <div class="flex gap-4 items-center">
-                                            <label class="flex items-center gap-2 text-sm">
-                                                <input type="radio" name="mainBarType" value="simple" checked onchange="toggleBarMainType()"> Simple
-                                            </label>
-                                            <label class="flex items-center gap-2 text-sm">
-                                                <input type="radio" name="mainBarType" value="gradient" onchange="toggleBarMainType()"> Gradiente
-                                            </label>
+                                        <div class="config-choice-group" role="radiogroup" aria-label="Color principal de la barra de audio">
+                                            <label class="config-choice"><input type="radio" name="mainBarType" value="simple" checked onchange="toggleBarMainType()"><span>Simple</span></label>
+                                            <label class="config-choice"><input type="radio" name="mainBarType" value="gradient" onchange="toggleBarMainType()"><span>Gradiente</span></label>
                                         </div>
                                         <div class="flex gap-4 items-center">
                                             <input type="color" id="mainBarColor1" value="#e5e5e5" class="w-10 h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
@@ -2225,13 +2998,9 @@
 
                                     <div class="space-y-4 border-b border-gray-700/50 pb-4">
                                         <span class="text-sm text-gray-300 font-semibold">Color Secundario (No Reproducido)</span>
-                                        <div class="flex gap-4 items-center">
-                                            <label class="flex items-center gap-2 text-sm">
-                                                <input type="radio" name="secBarType" value="simple" checked onchange="toggleBarSecType()"> Simple
-                                            </label>
-                                            <label class="flex items-center gap-2 text-sm">
-                                                <input type="radio" name="secBarType" value="gradient" onchange="toggleBarSecType()"> Gradiente
-                                            </label>
+                                        <div class="config-choice-group" role="radiogroup" aria-label="Color secundario de la barra de audio">
+                                            <label class="config-choice"><input type="radio" name="secBarType" value="simple" checked onchange="toggleBarSecType()"><span>Simple</span></label>
+                                            <label class="config-choice"><input type="radio" name="secBarType" value="gradient" onchange="toggleBarSecType()"><span>Gradiente</span></label>
                                         </div>
                                         <div class="flex gap-4 items-center">
                                             <input type="color" id="secBarColor1" value="#000000" class="w-10 h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
@@ -2453,7 +3222,6 @@ Pero si quieres fuerza y cantar con pasión,
 *La música termina de forma gradual*`,
             size: 30,
             align: 'center',
-            offset: 0,
             horizontalOffset: 0
         };
 
@@ -2467,7 +3235,49 @@ Pero si quieres fuerza y cantar con pasión,
 
         function setCheckedRadioValue(name, value) {
             const radio = document.querySelector(`input[name="${name}"][value="${value}"]`);
-            if (radio) radio.checked = true;
+            if (radio) {
+                radio.checked = true;
+                updateConfigChoiceButton(radio.closest('.config-choice-group'));
+            }
+        }
+
+        function getConfigChoiceLabel(radio) {
+            return radio?.closest('.config-choice')?.querySelector('span')?.textContent.trim() || radio?.value || '';
+        }
+
+        function updateConfigChoiceButton(group) {
+            const button = group?.querySelector('.config-choice-cycle');
+            if (!button) return;
+            const radios = Array.from(group.querySelectorAll('input[type="radio"]'));
+            if (!radios.length) return;
+            const selected = radios.find((radio) => radio.checked) || radios[0];
+            const selectedLabel = getConfigChoiceLabel(selected);
+            const groupLabel = group.getAttribute('aria-label') || 'Opción';
+            button.textContent = selectedLabel;
+            button.setAttribute('aria-label', `${groupLabel}: ${selectedLabel}. Cambiar opción`);
+            button.setAttribute('aria-description', `Siguiente opción: ${getConfigChoiceLabel(radios[(radios.indexOf(selected) + 1) % radios.length])}`);
+        }
+
+        function initializeConfigChoiceButtons() {
+            document.querySelectorAll('.config-choice-group').forEach((group) => {
+                const radios = Array.from(group.querySelectorAll('input[type="radio"]'));
+                if (!radios.length) return;
+
+                group.setAttribute('role', 'group');
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'config-choice-cycle';
+                button.addEventListener('click', () => {
+                    const currentIndex = radios.findIndex((radio) => radio.checked);
+                    const nextRadio = radios[(currentIndex + 1) % radios.length];
+                    nextRadio.checked = true;
+                    nextRadio.dispatchEvent(new Event('change', { bubbles: true }));
+                    updateConfigChoiceButton(group);
+                });
+                radios.forEach((radio) => radio.addEventListener('change', () => updateConfigChoiceButton(group)));
+                group.appendChild(button);
+                updateConfigChoiceButton(group);
+            });
         }
 
         function setElementValue(id, value) {
@@ -2551,6 +3361,7 @@ Pero si quieres fuerza y cantar con pasión,
         const configPanels = Array.from(document.querySelectorAll('.config-section-panel'));
         const configContent = document.querySelector('#modalOverlay main');
         const configOpacityControl = document.getElementById('configOpacityControl');
+        initializeConfigChoiceButtons();
         const configNavigationState = {
             section: 'general',
             scrollTop: 0
@@ -2565,7 +3376,6 @@ Pero si quieres fuerza y cantar con pasión,
             general: 'General',
             apariencia: 'Apariencia',
             fondo: 'Fondo',
-            vinilo: 'Vinilo',
             audio: 'Audio'
         };
 
@@ -2582,7 +3392,7 @@ Pero si quieres fuerza y cantar con pasión,
             });
 
             if (configSectionTitle) {
-                configSectionTitle.textContent = configSectionLabels[nextSection] || 'Configuración';
+                configSectionTitle.textContent = 'Configuración';
             }
         }
 
@@ -2617,11 +3427,6 @@ Pero si quieres fuerza y cantar con pasión,
             configGhostTrigger.addEventListener('click', openConfig);
         }
         closeModal.addEventListener('click', closeConfig);
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) {
-                closeConfig();
-            }
-        });
 
         dropZone.addEventListener('click', () => audioInput.click());
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-white/20'); });
@@ -2645,6 +3450,14 @@ Pero si quieres fuerza y cantar con pasión,
         const linkedVinylBase = document.getElementById('linkedVinylBase');
         const linkedVinylOverlay = document.getElementById('linkedVinylOverlay');
         const linkedVinylContent = document.getElementById('linkedVinylContent');
+        const linkedVinylMenu = document.getElementById('linkedVinylMenu');
+        const linkedVinylMenuLayer = document.getElementById('linkedVinylMenuLayer');
+        const linkedVinylMenuSize = document.getElementById('linkedVinylMenuSize');
+        const linkedVinylMenuSpin = document.getElementById('linkedVinylMenuSpin');
+        const linkedVinylMenuStyle = document.getElementById('linkedVinylMenuStyle');
+        const linkedVinylMenuBorderColor = document.getElementById('linkedVinylMenuBorderColor');
+        const linkedVinylMenuBorderWidth = document.getElementById('linkedVinylMenuBorderWidth');
+        const linkedVinylMenuOptions = Array.from(document.querySelectorAll('[data-vinyl-layer-toggle], [data-vinyl-style-toggle]'));
 
         const MAX_PREVIEW_IMAGES = 5;
         const imagePreviewItems = [];
@@ -2701,13 +3514,30 @@ Pero si quieres fuerza y cantar con pasión,
 
         let linkedVinylImageLoaded = false;
         let isConfigOpen = false;
+        const linkedVinylSettings = {
+            sizePercent: 24,
+            left: null,
+            top: null,
+            layer: 'front',
+            borderColor: '#ffffff',
+            borderWidth: 2,
+            style: 'classic'
+        };
         const linkedVinylSpinState = {
             running: false
+        };
+        const linkedVinylDrag = {
+            pointerId: null,
+            startX: 0,
+            startY: 0,
+            startLeft: 0,
+            startTop: 0,
+            moved: false
         };
 
         function syncLinkedVinylSpinVisual() {
             if (!linkedVinylContent) return;
-            linkedVinylContent.classList.toggle('is-spinning', linkedVinylSpinState.running && !isConfigOpen);
+            linkedVinylContent.classList.toggle('is-spinning', linkedVinylSpinState.running);
         }
 
         function setConfigMode(open) {
@@ -2720,16 +3550,20 @@ Pero si quieres fuerza y cantar con pasión,
             }
         }
 
-        function toggleLinkedVinylSpin() {
-            if (!linkedVinylContainer) return;
-            linkedVinylSpinState.running = !linkedVinylSpinState.running;
-            syncLinkedVinylSpinVisual();
-        }
-
-        linkedVinylContainer.addEventListener('click', toggleLinkedVinylSpin);
+        linkedVinylContainer.addEventListener('pointerdown', startLinkedVinylInteraction);
+        linkedVinylContainer.addEventListener('pointermove', dragLinkedVinyl);
+        linkedVinylContainer.addEventListener('pointerup', finishLinkedVinylInteraction);
+        linkedVinylContainer.addEventListener('pointercancel', cancelLinkedVinylInteraction);
+        linkedVinylContainer.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                openLinkedVinylMenu();
+            }
+        });
         linkedVinylActionBtn.addEventListener('click', () => vinylImageInput.click());
         linkedVinylDeleteBtn.addEventListener('click', () => {
             linkedVinylImageLoaded = false;
+            closeLinkedVinylMenu();
             if (linkedVinylOverlay) {
                 linkedVinylOverlay.removeAttribute('src');
                 linkedVinylOverlay.removeAttribute('data-natural-width');
@@ -2759,7 +3593,7 @@ Pero si quieres fuerza y cantar con pasión,
                     linkedVinylImageLoaded = true;
                     if (linkedVinylContainer) linkedVinylContainer.classList.remove('hidden');
                     updateLinkedVinylActionButtons();
-                    applyLinkedVinylSettings();
+                    updateLinkedVinylVisual(true);
                 };
                 tempImage.src = imageUrl;
             };
@@ -2898,65 +3732,107 @@ Pero si quieres fuerza y cantar con pasión,
             if (linkedVinylDeleteBtn) linkedVinylDeleteBtn.classList.toggle('hidden', !shouldShowDelete);
         }
 
-        function applyLinkedVinylSettings() {
-            if (!linkedVinylContainer) return;
+        function updateLinkedVinylMenuState() {
+            if (!linkedVinylMenu) return;
+            linkedVinylMenuSize.value = String(linkedVinylSettings.sizePercent);
+            const layerIsFront = linkedVinylSettings.layer === 'front';
+            linkedVinylMenuLayer.setAttribute('aria-pressed', String(layerIsFront));
+            linkedVinylMenuLayer.classList.toggle('is-front', layerIsFront);
+            linkedVinylMenuLayer.dataset.tooltip = layerIsFront
+                ? 'Enviar vinilo detrás de los cuadros'
+                : 'Traer vinilo delante de los cuadros';
+            linkedVinylMenuLayer.setAttribute('aria-label', linkedVinylMenuLayer.dataset.tooltip);
+            linkedVinylMenuLayer.innerHTML = layerIsFront
+                ? '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="12" height="12" rx="2"></rect><path d="M5 9H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-1"></path></svg>'
+                : '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="9" width="12" height="12" rx="2"></rect><path d="M19 15h1a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v1"></path></svg>';
+            linkedVinylMenuSpin.setAttribute('aria-pressed', String(linkedVinylSpinState.running));
+            linkedVinylMenuSpin.dataset.tooltip = linkedVinylSpinState.running ? 'Pausar movimiento' : 'Reproducir movimiento';
+            linkedVinylMenuSpin.setAttribute('aria-label', linkedVinylMenuSpin.dataset.tooltip);
+            linkedVinylMenuSpin.innerHTML = linkedVinylSpinState.running
+                ? '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5h3v14H8zM15 5h3v14h-3z"></path></svg>'
+                : '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 5 12 7-12 7z"></path></svg>';
+            const styleIsModern = linkedVinylSettings.style === 'modern';
+            linkedVinylMenuStyle.setAttribute('aria-pressed', String(styleIsModern));
+            linkedVinylMenuStyle.dataset.tooltip = styleIsModern ? 'Cambiar a estilo clásico' : 'Cambiar a estilo moderno';
+            linkedVinylMenuStyle.setAttribute('aria-label', linkedVinylMenuStyle.dataset.tooltip);
+            linkedVinylMenuStyle.innerHTML = styleIsModern
+                ? '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"></rect><circle cx="12" cy="12" r="3"></circle></svg>'
+                : '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="2"></circle><path d="M12 3v2M21 12h-2M12 21v-2M3 12h2"></path></svg>';
+            linkedVinylMenuBorderColor.value = linkedVinylSettings.borderColor;
+            linkedVinylMenuBorderWidth.value = String(linkedVinylSettings.borderWidth);
+        }
 
-            const shouldShowLinkedVinyl = linkedVinylImageLoaded && linkedVinylOverlay?.getAttribute('src');
-            if (!shouldShowLinkedVinyl) {
+        function positionLinkedVinylMenu() {
+            if (!linkedVinylMenu || linkedVinylMenu.hidden || !linkedVinylContainer) return;
+            const vinylRect = linkedVinylContainer.getBoundingClientRect();
+            const menuRect = linkedVinylMenu.getBoundingClientRect();
+            const gap = 12;
+            let left = vinylRect.right + gap;
+            if (left + menuRect.width > window.innerWidth - 12) left = vinylRect.left - menuRect.width - gap;
+            left = Math.max(12, Math.min(left, window.innerWidth - menuRect.width - 12));
+            const top = Math.max(12, Math.min(vinylRect.top, window.innerHeight - menuRect.height - 12));
+            linkedVinylMenu.style.left = `${left}px`;
+            linkedVinylMenu.style.top = `${top}px`;
+        }
+
+        function openLinkedVinylMenu() {
+            if (!linkedVinylImageLoaded || !linkedVinylMenu) return;
+            if (!linkedVinylMenu.hidden) {
+                closeLinkedVinylMenu();
+                return;
+            }
+            updateLinkedVinylMenuState();
+            linkedVinylMenu.hidden = false;
+            positionLinkedVinylMenu();
+        }
+
+        function closeLinkedVinylMenu() {
+            if (linkedVinylMenu) linkedVinylMenu.hidden = true;
+        }
+
+        function updateLinkedVinylVisual(centerIfUnset = false) {
+            if (!linkedVinylContainer) return;
+            if (!linkedVinylImageLoaded || !linkedVinylOverlay?.getAttribute('src')) {
                 linkedVinylSpinState.running = false;
                 linkedVinylContainer.classList.add('hidden');
+                closeLinkedVinylMenu();
                 return;
             }
 
             linkedVinylContainer.classList.remove('hidden');
-
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
-            const sizePercent = Number(document.getElementById('linkedVinylSizePercent')?.value || 24);
             const maxAllowedSize = Math.max(120, Math.min(viewportWidth * 2, viewportHeight * 2));
-            const sizeByWidth = Math.round((viewportWidth * sizePercent) / 100);
-            const sizeByHeight = Math.round((viewportHeight * sizePercent) / 100);
+            const sizeByWidth = Math.round((viewportWidth * linkedVinylSettings.sizePercent) / 100);
+            const sizeByHeight = Math.round((viewportHeight * linkedVinylSettings.sizePercent) / 100);
             const baseSize = Math.max(120, Math.min(Math.max(sizeByWidth, sizeByHeight), maxAllowedSize));
-            const horizontalPercent = Number(document.getElementById('linkedVinylHorizontalPosition')?.value || 50);
-            const verticalPercent = Number(document.getElementById('linkedVinylVerticalPosition')?.value || 50);
-            const nextLeft = ((horizontalPercent / 100) * (viewportWidth + baseSize)) - baseSize;
-            const nextTop = ((verticalPercent / 100) * (viewportHeight + baseSize)) - baseSize;
 
-            const layerOrder = document.getElementById('linkedVinylLayerOrder')?.value || 'front';
-            const style = document.getElementById('linkedVinylStyle')?.value || 'classic';
-            const borderType = document.getElementById('linkedVinylBorderType')?.value || 'simple';
-            const borderColor = document.getElementById('linkedVinylBorderColor')?.value || '#ffffff';
-            const borderSecondaryColor = document.getElementById('linkedVinylBorderSecondaryColor')?.value || '#808080';
-            const borderWidth = Number(document.getElementById('linkedVinylBorderWidth')?.value || 2);
+            if (centerIfUnset || linkedVinylSettings.left === null || linkedVinylSettings.top === null) {
+                linkedVinylSettings.left = (viewportWidth - baseSize) / 2;
+                linkedVinylSettings.top = (viewportHeight - baseSize) / 2;
+            }
 
             linkedVinylContainer.style.width = `${Math.round(baseSize)}px`;
             linkedVinylContainer.style.height = `${Math.round(baseSize)}px`;
-            linkedVinylContainer.style.left = `${Math.round(nextLeft)}px`;
-            linkedVinylContainer.style.top = `${Math.round(nextTop)}px`;
-            linkedVinylContainer.style.zIndex = layerOrder === 'back' ? '5' : '40';
+            linkedVinylContainer.style.left = `${Math.round(linkedVinylSettings.left)}px`;
+            linkedVinylContainer.style.top = `${Math.round(linkedVinylSettings.top)}px`;
+            linkedVinylContainer.style.zIndex = linkedVinylSettings.layer === 'back' ? '5' : '39';
             linkedVinylContainer.style.borderRadius = '9999px';
+            linkedVinylContainer.style.border = `${linkedVinylSettings.borderWidth}px solid ${linkedVinylSettings.borderColor}`;
+            linkedVinylContainer.style.background = 'transparent';
             linkedVinylContainer.style.boxShadow = 'none';
-            linkedVinylContainer.classList.toggle('classic', style === 'classic');
-            linkedVinylContainer.classList.toggle('modern', style === 'modern');
+            linkedVinylContainer.classList.toggle('classic', linkedVinylSettings.style === 'classic');
+            linkedVinylContainer.classList.toggle('modern', linkedVinylSettings.style === 'modern');
             syncLinkedVinylSpinVisual();
 
-            if (borderType === 'gradient') {
-                linkedVinylContainer.style.border = `${borderWidth}px solid transparent`;
-                linkedVinylContainer.style.background = `linear-gradient(white, white) padding-box, linear-gradient(135deg, ${borderColor}, ${borderSecondaryColor}) border-box`;
-            } else {
-                linkedVinylContainer.style.border = `${borderWidth}px solid ${borderColor}`;
-                linkedVinylContainer.style.background = 'transparent';
-            }
-
+            const style = linkedVinylSettings.style;
             const overlayBaseSize = style === 'modern' ? Math.max(24, Math.round(baseSize)) : Math.max(24, Math.round(baseSize * 0.4));
             if (linkedVinylOverlay) {
                 const naturalWidth = Number(linkedVinylOverlay.dataset.naturalWidth || 1920);
                 const naturalHeight = Number(linkedVinylOverlay.dataset.naturalHeight || 1080);
                 const aspectRatio = naturalWidth / naturalHeight;
-
                 let overlayWidth = overlayBaseSize;
                 let overlayHeight = overlayBaseSize;
-
                 if (naturalWidth >= naturalHeight) {
                     overlayHeight = style === 'modern' ? overlayBaseSize : overlayBaseSize * 0.85;
                     overlayWidth = overlayHeight * aspectRatio;
@@ -2964,20 +3840,106 @@ Pero si quieres fuerza y cantar con pasión,
                     overlayWidth = style === 'modern' ? overlayBaseSize : overlayBaseSize * 0.85;
                     overlayHeight = overlayWidth / aspectRatio;
                 }
-
-                const overlayScale = 1.1;
-                linkedVinylOverlay.style.width = `${Math.round(overlayWidth * overlayScale)}px`;
-                linkedVinylOverlay.style.height = `${Math.round(overlayHeight * overlayScale)}px`;
+                linkedVinylOverlay.style.width = `${Math.round(overlayWidth * 1.1)}px`;
+                linkedVinylOverlay.style.height = `${Math.round(overlayHeight * 1.1)}px`;
                 linkedVinylOverlay.style.maxWidth = '100%';
                 linkedVinylOverlay.style.maxHeight = '100%';
                 linkedVinylOverlay.style.borderRadius = '9999px';
                 linkedVinylOverlay.style.objectFit = style === 'modern' ? 'cover' : 'contain';
             }
-
-            if (linkedVinylBase) {
-                linkedVinylBase.classList.toggle('hidden', style !== 'classic');
-            }
+            if (linkedVinylBase) linkedVinylBase.classList.toggle('hidden', style !== 'classic');
         }
+
+        function startLinkedVinylInteraction(event) {
+            if (!linkedVinylImageLoaded || event.button !== 0) return;
+            event.preventDefault();
+            event.stopPropagation();
+            linkedVinylDrag.pointerId = event.pointerId;
+            linkedVinylDrag.startX = event.clientX;
+            linkedVinylDrag.startY = event.clientY;
+            linkedVinylDrag.startLeft = Number.parseFloat(linkedVinylContainer.style.left) || 0;
+            linkedVinylDrag.startTop = Number.parseFloat(linkedVinylContainer.style.top) || 0;
+            linkedVinylDrag.moved = false;
+            linkedVinylContainer.setPointerCapture?.(event.pointerId);
+        }
+
+        function dragLinkedVinyl(event) {
+            if (linkedVinylDrag.pointerId !== event.pointerId) return;
+            const deltaX = event.clientX - linkedVinylDrag.startX;
+            const deltaY = event.clientY - linkedVinylDrag.startY;
+            if (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4) {
+                linkedVinylDrag.moved = true;
+                linkedVinylContainer.classList.add('is-dragging');
+                closeLinkedVinylMenu();
+            }
+            if (!linkedVinylDrag.moved) return;
+            linkedVinylSettings.left = linkedVinylDrag.startLeft + deltaX;
+            linkedVinylSettings.top = linkedVinylDrag.startTop + deltaY;
+            updateLinkedVinylVisual();
+        }
+
+        function finishLinkedVinylInteraction(event) {
+            if (linkedVinylDrag.pointerId !== event.pointerId) return;
+            const wasDragged = linkedVinylDrag.moved;
+            linkedVinylDrag.pointerId = null;
+            linkedVinylContainer.classList.remove('is-dragging');
+            linkedVinylContainer.releasePointerCapture?.(event.pointerId);
+            if (!wasDragged) openLinkedVinylMenu();
+        }
+
+        function cancelLinkedVinylInteraction(event) {
+            if (linkedVinylDrag.pointerId !== event.pointerId) return;
+            linkedVinylDrag.pointerId = null;
+            linkedVinylContainer.classList.remove('is-dragging');
+        }
+
+        linkedVinylMenu?.addEventListener('pointerdown', (event) => event.stopPropagation());
+        linkedVinylMenuSize?.addEventListener('input', () => {
+            const rect = linkedVinylContainer.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            linkedVinylSettings.sizePercent = Number(linkedVinylMenuSize.value);
+            updateLinkedVinylVisual();
+            const resizedRect = linkedVinylContainer.getBoundingClientRect();
+            linkedVinylSettings.left = centerX - resizedRect.width / 2;
+            linkedVinylSettings.top = centerY - resizedRect.height / 2;
+            updateLinkedVinylVisual();
+        });
+        linkedVinylMenuSpin?.addEventListener('click', () => {
+            linkedVinylSpinState.running = !linkedVinylSpinState.running;
+            syncLinkedVinylSpinVisual();
+            updateLinkedVinylMenuState();
+        });
+        linkedVinylMenuBorderColor?.addEventListener('input', () => {
+            linkedVinylSettings.borderColor = linkedVinylMenuBorderColor.value;
+            updateLinkedVinylVisual();
+        });
+        linkedVinylMenuBorderWidth?.addEventListener('input', () => {
+            linkedVinylSettings.borderWidth = Number(linkedVinylMenuBorderWidth.value);
+            updateLinkedVinylVisual();
+        });
+        linkedVinylMenuOptions.forEach((button) => {
+            button.addEventListener('click', () => {
+                if (button.hasAttribute('data-vinyl-layer-toggle')) {
+                    linkedVinylSettings.layer = linkedVinylSettings.layer === 'back' ? 'front' : 'back';
+                }
+                if (button.hasAttribute('data-vinyl-style-toggle')) {
+                    linkedVinylSettings.style = linkedVinylSettings.style === 'modern' ? 'classic' : 'modern';
+                }
+                updateLinkedVinylVisual();
+                updateLinkedVinylMenuState();
+            });
+        });
+        document.addEventListener('pointerdown', (event) => {
+            if (event.target instanceof Element
+                && !event.target.closest('#linkedVinylMenu')
+                && !event.target.closest('#linkedVinylContainer')) {
+                closeLinkedVinylMenu();
+            }
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeLinkedVinylMenu();
+        });
 
         function stopImageInteraction() {
             isDraggingImage = false;
@@ -3610,185 +4572,285 @@ Pero si quieres fuerza y cantar con pasión,
             document.body.appendChild(menu);
         }
 
+        let letterBoxGroupElements = [];
+        let letterBoxGroupCenterPixels = [];
+        let letterBoxLineTimes = [];
+        let letterBoxTimelineDuration = 0;
+        let letterBoxManualDrag = null;
+
+        function appendLetterBoxLineContent(container, lineText) {
+            const parts = lineText.split(/(\[[^\]]+\]|\([^\)]+\)|\*\*[^*]+\*\*|\*[^*]+\*)/g);
+            parts.forEach((part) => {
+                if (!part) return;
+                if (/^\[[^\]]+\]$/.test(part)) {
+                    const tagText = part.slice(1, -1).trim();
+                    const tagKey = extractLetterBoxTagKey(tagText);
+                    const paletteState = getLetterBoxTagPaletteState(tagText);
+                    const tag = document.createElement('span');
+                    tag.className = 'letter-box-tag';
+                    tag.dataset.tagKey = tagKey;
+                    tag.textContent = tagText.toUpperCase();
+                    const currentColor = paletteState.color;
+                    const backgroundValue = adjustColorBrightness(currentColor, letterBoxTagGlobalState.brightness, letterBoxTagGlobalState.opacity);
+                    tag.style.background = backgroundValue;
+                    tag.style.color = currentColor;
+                    tag.style.borderColor = currentColor;
+                    tag.style.setProperty('--tag-bg', backgroundValue);
+                    tag.style.setProperty('--tag-text', currentColor);
+                    tag.style.setProperty('--tag-border', currentColor);
+                    tag.addEventListener('click', (event) => toggleLetterBoxTagMenu(tag, event));
+                    tag.addEventListener('pointerdown', (event) => {
+                        event.stopPropagation();
+                        event.stopImmediatePropagation();
+                    });
+                    container.appendChild(tag);
+                } else if (/^\(([^)]+)\)$/.test(part)) {
+                    const tagText = part.slice(1, -1).trim();
+                    const tag = document.createElement('span');
+                    tag.className = 'letter-box-tag letter-box-parenthetical-tag';
+                    tag.textContent = tagText;
+                    applyParentheticalTagStyle(tag);
+                    tag.addEventListener('click', (event) => toggleLetterBoxParentheticalTagMenu(tag, event));
+                    tag.addEventListener('pointerdown', (event) => {
+                        event.stopPropagation();
+                        event.stopImmediatePropagation();
+                    });
+                    container.appendChild(tag);
+                } else if (/^\*\*([^*]+)\*\*$/.test(part)) {
+                    const span = document.createElement('span');
+                    span.style.fontWeight = '700';
+                    span.textContent = part.replace(/^\*\*|\*\*$/g, '');
+                    container.appendChild(span);
+                } else if (/^\*([^*]+)\*$/.test(part)) {
+                    const span = document.createElement('span');
+                    span.style.fontStyle = 'italic';
+                    span.textContent = part.replace(/^\*|\*$/g, '');
+                    container.appendChild(span);
+                } else {
+                    container.appendChild(document.createTextNode(part));
+                }
+            });
+        }
+
         function renderLetterBoxText() {
             if (!letterBoxText) return;
-            letterBoxText.innerHTML = '';
+            letterBoxText.replaceChildren();
             letterBoxText.style.fontSize = `${letterBoxTextState.size}px`;
             letterBoxText.style.textAlign = letterBoxTextState.align;
+            letterBoxGroupElements = [];
+            letterBoxGroupCenterPixels = [];
 
-            if (!letterBoxTextState.value.trim()) {
-                letterBoxText.innerHTML = '';
-            } else {
+            if (letterBoxTextState.value.length) {
                 const fragment = document.createDocumentFragment();
-                const parts = letterBoxTextState.value.split(/(\[[^\]]+\]|\([^\)]+\)|\*\*[^*]+\*\*|\*[^*]+\*)/g);
+                const sourceLines = letterBoxTextState.value.split(/\r?\n/);
+                const standaloneTagPattern = /^\s*\[[^\]]+\]\s*$/;
+                const justifyContent = letterBoxTextState.align === 'left'
+                    ? 'flex-start'
+                    : letterBoxTextState.align === 'right' ? 'flex-end' : 'center';
+                const transformOrigin = letterBoxTextState.align === 'left'
+                    ? 'left center'
+                    : letterBoxTextState.align === 'right' ? 'right center' : 'center center';
 
-                parts.forEach((part) => {
-                    if (!part) return;
-                    if (/^\[[^\]]+\]$/.test(part)) {
-                        const tagText = part.slice(1, -1).trim();
-                        const tagKey = extractLetterBoxTagKey(tagText);
-                        const paletteState = getLetterBoxTagPaletteState(tagText);
-                        const tag = document.createElement('span');
-                        tag.className = 'letter-box-tag';
-                        tag.dataset.tagKey = tagKey;
-                        tag.textContent = tagText.toUpperCase();
-                        const currentColor = paletteState.color;
-                        const backgroundValue = adjustColorBrightness(currentColor, letterBoxTagGlobalState.brightness, letterBoxTagGlobalState.opacity);
-                        tag.style.background = backgroundValue;
-                        tag.style.color = currentColor;
-                        tag.style.borderColor = currentColor;
-                        tag.style.setProperty('--tag-bg', backgroundValue);
-                        tag.style.setProperty('--tag-text', currentColor);
-                        tag.style.setProperty('--tag-border', currentColor);
-                        tag.addEventListener('click', (event) => toggleLetterBoxTagMenu(tag, event));
-                        tag.addEventListener('pointerdown', (event) => {
-                            event.stopPropagation();
-                            event.stopImmediatePropagation();
-                        });
-                        fragment.appendChild(tag);
-                    } else if (/^\(([^)]+)\)$/.test(part)) {
-                        const tagText = part.slice(1, -1).trim();
-                        const tag = document.createElement('span');
-                        tag.className = 'letter-box-tag letter-box-parenthetical-tag';
-                        tag.textContent = tagText;
-                        applyParentheticalTagStyle(tag);
-                        tag.addEventListener('click', (event) => toggleLetterBoxParentheticalTagMenu(tag, event));
-                        tag.addEventListener('pointerdown', (event) => {
-                            event.stopPropagation();
-                            event.stopImmediatePropagation();
-                        });
-                        fragment.appendChild(tag);
-                    } else if (/^\*\*([^*]+)\*\*$/.test(part)) {
-                        const span = document.createElement('span');
-                        span.style.fontWeight = '700';
-                        span.textContent = part.replace(/^\*\*|\*\*$/g, '');
-                        fragment.appendChild(span);
-                    } else if (/^\*([^*]+)\*$/.test(part)) {
-                        const span = document.createElement('span');
-                        span.style.fontStyle = 'italic';
-                        span.textContent = part.replace(/^\*|\*$/g, '');
-                        fragment.appendChild(span);
-                    } else {
-                        fragment.appendChild(document.createTextNode(part));
+                for (let index = 0; index < sourceLines.length; index += 1) {
+                    if (!sourceLines[index].trim()) continue;
+
+                    const groupLines = [{ text: sourceLines[index], sourceIndex: index }];
+                    if (standaloneTagPattern.test(sourceLines[index])) {
+                        let nextContentIndex = index + 1;
+                        while (nextContentIndex < sourceLines.length && !sourceLines[nextContentIndex].trim()) {
+                            nextContentIndex += 1;
+                        }
+                        if (nextContentIndex < sourceLines.length
+                            && !standaloneTagPattern.test(sourceLines[nextContentIndex])) {
+                            for (let blankIndex = index + 1; blankIndex < nextContentIndex; blankIndex += 1) {
+                                groupLines.push({ text: '', sourceIndex: blankIndex });
+                            }
+                            groupLines.push({ text: sourceLines[nextContentIndex], sourceIndex: nextContentIndex });
+                            index = nextContentIndex;
+                        }
                     }
-                });
 
+                    const group = document.createElement('div');
+                    group.className = 'letter-box-group';
+                    group.dataset.groupIndex = String(letterBoxGroupElements.length);
+                    group.dataset.firstSourceIndex = String(groupLines[0].sourceIndex);
+                    group.dataset.lastSourceIndex = String(groupLines[groupLines.length - 1].sourceIndex);
+                    group.style.setProperty('--letter-line-transform-origin', transformOrigin);
+
+                    groupLines.forEach(({ text: lineText }) => {
+                        const line = document.createElement('div');
+                        const content = document.createElement('span');
+                        line.className = 'letter-box-line';
+                        line.style.justifyContent = justifyContent;
+                        content.className = 'letter-box-line-content';
+                        if (lineText.trim()) appendLetterBoxLineContent(content, lineText);
+                        line.appendChild(content);
+                        group.appendChild(line);
+                    });
+
+                    fragment.appendChild(group);
+                    letterBoxGroupElements.push(group);
+                }
                 letterBoxText.appendChild(fragment);
             }
 
-            if (letterBoxTextWrap) {
-                letterBoxTextWrap.style.alignItems = 'flex-start';
-                letterBoxTextWrap.style.justifyContent = letterBoxTextState.align === 'left' ? 'flex-start' : letterBoxTextState.align === 'right' ? 'flex-end' : 'center';
+            recalculateLetterBoxGroupLayout();
+            rebuildLetterBoxTimeline();
+            updateLetterBoxTextScrollByAudio();
+        }
+
+        function recalculateLetterBoxGroupLayout() {
+            const lineHeight = Math.max(18, Number(letterBoxTextState.size) * 1.15);
+            letterBoxGroupCenterPixels = [];
+            if (!letterBoxGroupElements.length) return;
+
+            const getGroupHeight = (group) => Math.max(lineHeight, group.offsetHeight || group.children.length * lineHeight);
+            letterBoxGroupCenterPixels[0] = 0;
+            for (let index = 1; index < letterBoxGroupElements.length; index += 1) {
+                const previousGroup = letterBoxGroupElements[index - 1];
+                const currentGroup = letterBoxGroupElements[index];
+                const previousLastLine = Number(previousGroup.dataset.lastSourceIndex);
+                const currentFirstLine = Number(currentGroup.dataset.firstSourceIndex);
+                const blankLineCount = Math.max(0, currentFirstLine - previousLastLine - 1);
+                const spacing = getGroupHeight(previousGroup) / 2
+                    + blankLineCount * lineHeight
+                    + getGroupHeight(currentGroup) / 2;
+                letterBoxGroupCenterPixels[index] = letterBoxGroupCenterPixels[index - 1] + spacing;
             }
-            const bounds = getLetterBoxTextScrollBounds();
-            letterBoxTextState.offset = bounds.startOffset;
-            clampLetterBoxTextOffset();
-            applyLetterBoxTextOffset();
         }
 
-        function getLetterBoxTextScrollBounds() {
-            if (!letterBoxTextLayer || !letterBoxText) {
-                return { containerHeight: 0, contentHeight: 0, startOffset: 0, endOffset: 0 };
-            }
-
-            const containerHeight = Math.max(40, letterBoxTextLayer.clientHeight - 32);
-            const contentHeight = Math.max(containerHeight, letterBoxText.scrollHeight);
-            const lineHeight = Math.max(letterBoxTextState.size * 1.15, 18);
-            const startOffset = Math.round(containerHeight / 2 - lineHeight / 2);
-            const endOffset = Math.round(containerHeight / 2 - contentHeight + lineHeight / 2);
-
-            return { containerHeight, contentHeight, startOffset, endOffset };
-        }
-
-        function applyLetterBoxTextOffset() {
-            if (!letterBoxTextWrap) return;
-            const bounds = getLetterBoxTextScrollBounds();
-            const minOffset = Math.min(bounds.startOffset, bounds.endOffset);
-            const maxOffset = Math.max(bounds.startOffset, bounds.endOffset);
-            const safeOffset = Math.max(minOffset, Math.min(maxOffset, Number(letterBoxTextState.offset) || bounds.startOffset));
-            const safeHorizontalOffset = Math.max(-1200, Math.min(1200, Number(letterBoxTextState.horizontalOffset) || 0));
-            letterBoxTextWrap.style.transform = `translateX(${safeHorizontalOffset}px) translateY(${safeOffset}px)`;
-        }
-
-        function clampLetterBoxTextOffset() {
-            if (!letterBoxTextLayer || !letterBoxText) return;
-            const bounds = getLetterBoxTextScrollBounds();
-            const minOffset = Math.min(bounds.startOffset, bounds.endOffset);
-            const maxOffset = Math.max(bounds.startOffset, bounds.endOffset);
-            letterBoxTextState.offset = Math.max(minOffset, Math.min(maxOffset, Number(letterBoxTextState.offset) || bounds.startOffset));
-            applyLetterBoxTextOffset();
-        }
-
-        function getLetterBoxTimelinePoints() {
-            return [...letterBoxCutState.cuts].sort((a, b) => a.time - b.time);
-        }
-
-        function getLetterBoxTimelinePoints() {
-            if (!letterBoxTextLayer || !audio || !audio.duration) {
-                return [];
+        function rebuildLetterBoxTimeline() {
+            const lineCount = letterBoxGroupElements.length;
+            const duration = Number.isFinite(audio?.duration) ? Math.max(0, audio.duration) : 0;
+            letterBoxTimelineDuration = duration;
+            if (!lineCount || duration <= 0) {
+                letterBoxLineTimes = lineCount ? [0] : [];
+                return;
             }
 
-            const bounds = getLetterBoxTextScrollBounds();
-            const controlPoints = [...letterBoxCutState.cuts].sort((a, b) => a.time - b.time);
-            const finalTime = Math.max(0, Number(audio.duration) || 0);
-            const finalOffset = bounds.endOffset;
+            const lastIndex = lineCount - 1;
+            const anchors = [
+                { time: 0, lineIndex: 0, mode: 'start' },
+                ...letterBoxCutState.cuts
+                    .filter((point) => Number.isFinite(point.time) && point.time > 0 && point.time < duration)
+                    .map((point) => ({
+                        time: Math.max(0, Math.min(duration, point.time)),
+                        lineIndex: Math.max(0, Math.min(lastIndex, Math.round(Number(point.lineIndex) || 0))),
+                        mode: point.mode
+                    })),
+                { time: duration, lineIndex: lastIndex, mode: 'end' }
+            ].sort((first, second) => first.time - second.time);
 
-            return [
-                { time: 0, offset: bounds.startOffset, mode: 'start' },
-                ...controlPoints,
-                { time: finalTime, offset: finalOffset, mode: 'end' }
-            ].sort((a, b) => a.time - b.time);
+            letterBoxLineTimes = Array(lineCount).fill(Number.NaN);
+            anchors.forEach((anchor, anchorIndex) => {
+                const next = anchors[anchorIndex + 1];
+                if (!next) {
+                    letterBoxLineTimes[anchor.lineIndex] = anchor.time;
+                    return;
+                }
+
+                const from = anchor.lineIndex;
+                const to = next.lineIndex;
+                const steps = Math.abs(to - from);
+                if (anchor.mode === 'cut') {
+                    letterBoxLineTimes[from] = anchor.time;
+                    if (next.mode === 'resume') letterBoxLineTimes[to] = next.time;
+                    return;
+                }
+
+                if (!steps) {
+                    letterBoxLineTimes[from] = anchor.time;
+                    return;
+                }
+                for (let step = 0; step <= steps; step += 1) {
+                    const lineIndex = from + Math.sign(to - from) * step;
+                    const progress = step / steps;
+                    letterBoxLineTimes[lineIndex] = anchor.time + (next.time - anchor.time) * progress;
+                }
+            });
+
+            for (let index = 0; index < lineCount; index += 1) {
+                if (Number.isFinite(letterBoxLineTimes[index])) continue;
+                let previousIndex = index - 1;
+                while (previousIndex >= 0 && !Number.isFinite(letterBoxLineTimes[previousIndex])) previousIndex -= 1;
+                let nextIndex = index + 1;
+                while (nextIndex < lineCount && !Number.isFinite(letterBoxLineTimes[nextIndex])) nextIndex += 1;
+                if (previousIndex >= 0 && nextIndex < lineCount) {
+                    const ratio = (index - previousIndex) / (nextIndex - previousIndex);
+                    letterBoxLineTimes[index] = letterBoxLineTimes[previousIndex]
+                        + (letterBoxLineTimes[nextIndex] - letterBoxLineTimes[previousIndex]) * ratio;
+                } else if (previousIndex >= 0) {
+                    letterBoxLineTimes[index] = letterBoxLineTimes[previousIndex];
+                } else {
+                    letterBoxLineTimes[index] = duration * index / Math.max(1, lastIndex);
+                }
+            }
+        }
+
+        function getLetterBoxScheduledPosition(currentTime) {
+            const lineCount = letterBoxGroupElements.length;
+            if (lineCount < 2) return 0;
+
+            const sortedCuts = [...letterBoxCutState.cuts].sort((first, second) => first.time - second.time);
+            let latestControl = null;
+            for (const control of sortedCuts) {
+                if (control.time > currentTime) break;
+                latestControl = control;
+            }
+            if (latestControl?.mode === 'cut') {
+                return Math.max(0, Math.min(lineCount - 1, Number(latestControl.lineIndex) || 0));
+            }
+
+            let activeIndex = 0;
+            for (let index = 1; index < lineCount; index += 1) {
+                if (letterBoxLineTimes[index] <= currentTime) activeIndex = index;
+            }
+            if (activeIndex >= lineCount - 1) return lineCount - 1;
+
+            const nextChangeTime = letterBoxLineTimes[activeIndex + 1];
+            const previousChangeTime = letterBoxLineTimes[activeIndex];
+            const transitionStart = nextChangeTime - 0.2;
+            if (currentTime < transitionStart || nextChangeTime <= previousChangeTime) return activeIndex;
+            const progress = Math.max(0, Math.min(1, (currentTime - transitionStart) / (nextChangeTime - transitionStart)));
+            return activeIndex + progress;
+        }
+
+        function getLetterBoxGroupCenterAtPosition(position) {
+            if (!letterBoxGroupCenterPixels.length) return 0;
+            const boundedPosition = Math.max(0, Math.min(letterBoxGroupCenterPixels.length - 1, position));
+            const lowerIndex = Math.floor(boundedPosition);
+            const upperIndex = Math.min(letterBoxGroupCenterPixels.length - 1, lowerIndex + 1);
+            const progress = boundedPosition - lowerIndex;
+            return letterBoxGroupCenterPixels[lowerIndex]
+                + (letterBoxGroupCenterPixels[upperIndex] - letterBoxGroupCenterPixels[lowerIndex]) * progress;
         }
 
         function updateLetterBoxTextScrollByAudio() {
-            if (!letterBoxText || !letterBoxTextLayer || !audio || !audio.duration) {
-                return;
-            }
-            if (letterBoxTextManualDragActive) {
-                applyLetterBoxTextOffset();
-                return;
-            }
-            if (!letterBoxTextState.value.trim()) {
-                letterBoxTextState.offset = getLetterBoxTextScrollBounds().startOffset;
-                applyLetterBoxTextOffset();
-                return;
-            }
+            if (!letterBoxText || !letterBoxTextLayer) return;
+            const currentTime = Math.max(0, Math.min(Number(audio?.currentTime) || 0, letterBoxTimelineDuration || Number(audio?.duration) || 0));
+            const scheduledPosition = getLetterBoxScheduledPosition(currentTime);
+            const visualPosition = letterBoxManualDrag?.previewPosition ?? scheduledPosition;
+            const activeIndex = Math.max(0, Math.min(letterBoxGroupElements.length - 1, letterBoxManualDrag?.candidateIndex ?? Math.round(visualPosition)));
+            const fraction = Math.max(0, Math.min(1, visualPosition - Math.floor(visualPosition)));
+            const lowerIndex = Math.floor(visualPosition);
+            const upperIndex = Math.min(letterBoxGroupElements.length - 1, lowerIndex + 1);
+            const horizontalOffset = Math.max(-1200, Math.min(1200, Number(letterBoxTextState.horizontalOffset) || 0));
+            letterBoxText.style.transform = `translateX(${horizontalOffset}px)`;
+            const scheduledCenter = getLetterBoxGroupCenterAtPosition(scheduledPosition);
 
-            const bounds = getLetterBoxTextScrollBounds();
-            const points = getLetterBoxTimelinePoints();
-            const currentTime = Math.max(0, Math.min(Number(audio.currentTime) || 0, Number(audio.duration) || 0));
-
-            if (!points.length) {
-                letterBoxTextState.offset = bounds.startOffset;
-                applyLetterBoxTextOffset();
-                return;
-            }
-
-            let previousPoint = points[0];
-            let nextPoint = points[points.length - 1];
-
-            for (let index = 0; index < points.length - 1; index += 1) {
-                const point = points[index];
-                const followingPoint = points[index + 1];
-                if (currentTime >= point.time && currentTime <= followingPoint.time) {
-                    previousPoint = point;
-                    nextPoint = followingPoint;
-                    break;
-                }
-            }
-
-            if (previousPoint.mode === 'cut' && currentTime < nextPoint.time) {
-                letterBoxTextState.offset = previousPoint.offset;
-                applyLetterBoxTextOffset();
-                return;
-            }
-
-            const segmentDuration = Math.max(0.1, nextPoint.time - previousPoint.time);
-            const progress = Math.max(0, Math.min(1, (currentTime - previousPoint.time) / segmentDuration));
-            const nextOffset = previousPoint.offset + (nextPoint.offset - previousPoint.offset) * progress;
-
-            letterBoxTextState.offset = nextOffset;
-            applyLetterBoxTextOffset();
+            letterBoxGroupElements.forEach((group, index) => {
+                let emphasis = 0;
+                if (index === lowerIndex) emphasis = 1 - fraction;
+                if (index === upperIndex && upperIndex !== lowerIndex) emphasis = fraction;
+                const scale = 0.65 + emphasis * 0.35;
+                const opacity = 0.5 + emphasis * 0.5;
+                const dragOffset = letterBoxManualDrag?.deltaY || 0;
+                const verticalOffset = letterBoxGroupCenterPixels[index] - scheduledCenter + dragOffset;
+                group.style.opacity = String(opacity);
+                group.style.transform = `translateY(calc(-50% + ${verticalOffset}px)) scale(${scale})`;
+                group.classList.toggle('is-snap-candidate', Boolean(letterBoxManualDrag) && index === letterBoxManualDrag.candidateIndex);
+                group.setAttribute('aria-current', index === activeIndex ? 'true' : 'false');
+            });
         }
 
         function getActiveLetterBoxCut() {
@@ -3822,35 +4884,36 @@ Pero si quieres fuerza y cantar con pasión,
                 }
                 letterBoxCutBtn.dataset.tooltip = actionLabel;
                 letterBoxCutBtn.setAttribute('aria-label', actionLabel);
-                letterBoxCutBtn.classList.toggle('is-emphasis', shouldResume);
             }
         }
 
         function findLetterBoxControlPointIndex(time, mode = 'cut') {
             const targetTime = Number(time);
             const tolerance = 0.05;
-            return letterBoxCutState.cuts.findIndex((cut) => cut.mode === mode && Math.abs(Number(cut.time) - targetTime) <= tolerance);
+            return letterBoxCutState.cuts.findIndex((cut) => Math.abs(Number(cut.time) - targetTime) <= tolerance);
         }
 
-        function addLetterBoxControlPoint(mode = 'cut') {
+        function addLetterBoxControlPoint(mode = 'cut', selectedLineIndex = null) {
             if (!audio || !Number.isFinite(audio.currentTime) || !Number.isFinite(audio.duration) || audio.duration <= 0) {
                 return;
             }
-
-            const bounds = getLetterBoxTextScrollBounds();
-            const activeOffset = Number(letterBoxTextState.offset) || bounds.startOffset;
+            const currentTime = Number(audio.currentTime);
+            const lineIndex = Math.max(0, Math.min(letterBoxGroupElements.length - 1,
+                Number.isFinite(selectedLineIndex) ? Math.round(selectedLineIndex) : Math.round(getLetterBoxScheduledPosition(currentTime))));
             const existingIndex = findLetterBoxControlPointIndex(audio.currentTime, mode);
 
             if (existingIndex >= 0) {
-                letterBoxCutState.cuts[existingIndex].offset = activeOffset;
+                letterBoxCutState.cuts[existingIndex].lineIndex = lineIndex;
+                letterBoxCutState.cuts[existingIndex].mode = mode;
             } else {
                 letterBoxCutState.cuts.push({
-                    time: Number(audio.currentTime),
-                    offset: activeOffset,
+                    time: currentTime,
+                    lineIndex,
                     mode
                 });
             }
 
+            rebuildLetterBoxTimeline();
             updateLetterBoxCutButtons();
             updateLetterBoxTextScrollByAudio();
         }
@@ -3866,6 +4929,7 @@ Pero si quieres fuerza y cantar con pasión,
             }
 
             letterBoxCutState.cuts.pop();
+            rebuildLetterBoxTimeline();
             updateLetterBoxCutButtons();
             updateLetterBoxTextScrollByAudio();
         }
@@ -3945,7 +5009,6 @@ Pero si quieres fuerza y cantar con pasión,
 
         function clearLetterBoxEditor() {
             letterBoxTextState.value = '';
-            letterBoxTextState.offset = 0;
             letterBoxTextState.horizontalOffset = 0;
             if (letterBoxTextInput) letterBoxTextInput.value = '';
             renderLetterBoxText();
@@ -3963,57 +5026,63 @@ Pero si quieres fuerza y cantar con pasión,
         }
 
         function startLetterBoxTextDrag(event) {
-            if (!letterBoxTextLayer || !letterBoxTextState.value.trim()) return;
+            if (!letterBoxTextLayer || !letterBoxTextState.value.trim() || !audio?.paused) return;
             if (event.button !== 0) return;
             event.preventDefault();
             event.stopPropagation();
             letterBoxTextManualDragActive = true;
             letterBoxTextLayer.classList.add('letter-box-text-dragging');
             letterBoxTextLayer.setPointerCapture?.(event.pointerId);
-            const bounds = getLetterBoxTextScrollBounds();
-            const minOffset = Math.min(bounds.startOffset, bounds.endOffset);
-            const maxOffset = Math.max(bounds.startOffset, bounds.endOffset);
-            letterBoxTextState.offset = Math.max(minOffset, Math.min(maxOffset, Number(letterBoxTextState.offset) || bounds.startOffset));
-            letterBoxTextLayer.dataset.dragStartY = String(event.clientY);
-            letterBoxTextLayer.dataset.dragStartOffset = String(letterBoxTextState.offset);
-            letterBoxTextLayer.dataset.dragTargetTime = String(Number(audio?.currentTime || 0));
-            delete letterBoxTextLayer.dataset.dragMoved;
+            const startPosition = getLetterBoxScheduledPosition(Number(audio.currentTime) || 0);
+            letterBoxManualDrag = {
+                pointerId: event.pointerId,
+                startY: event.clientY,
+                startPosition,
+                startCenterPixels: getLetterBoxGroupCenterAtPosition(startPosition),
+                deltaY: 0,
+                previewPosition: startPosition,
+                candidateIndex: Math.round(startPosition),
+                moved: false
+            };
+            updateLetterBoxTextScrollByAudio();
         }
 
         function dragLetterBoxText(event) {
-            if (!letterBoxTextLayer || !letterBoxTextLayer.dataset.dragStartY) return;
+            if (!letterBoxManualDrag || event.pointerId !== letterBoxManualDrag.pointerId) return;
             event.preventDefault();
-            const startY = Number(letterBoxTextLayer.dataset.dragStartY || event.clientY);
-            const startOffset = Number(letterBoxTextLayer.dataset.dragStartOffset || 0);
-            const deltaY = event.clientY - startY;
-            const bounds = getLetterBoxTextScrollBounds();
-            const minOffset = Math.min(bounds.startOffset, bounds.endOffset);
-            const maxOffset = Math.max(bounds.startOffset, bounds.endOffset);
-            letterBoxTextState.offset = Math.max(minOffset, Math.min(maxOffset, startOffset + deltaY));
-            letterBoxTextLayer.dataset.dragMoved = 'true';
-            applyLetterBoxTextOffset();
+            const deltaY = event.clientY - letterBoxManualDrag.startY;
+            const lastIndex = Math.max(0, letterBoxGroupElements.length - 1);
+            const targetCenter = Math.max(0, Math.min(letterBoxGroupCenterPixels[lastIndex] || 0,
+                letterBoxManualDrag.startCenterPixels - deltaY));
+            let lowerIndex = 0;
+            while (lowerIndex < lastIndex - 1 && letterBoxGroupCenterPixels[lowerIndex + 1] < targetCenter) lowerIndex += 1;
+            const upperIndex = Math.min(lastIndex, lowerIndex + 1);
+            const lowerCenter = letterBoxGroupCenterPixels[lowerIndex] || 0;
+            const upperCenter = letterBoxGroupCenterPixels[upperIndex] ?? lowerCenter;
+            const progress = upperCenter > lowerCenter ? (targetCenter - lowerCenter) / (upperCenter - lowerCenter) : 0;
+            const previewPosition = lowerIndex + Math.max(0, Math.min(1, progress));
+            letterBoxManualDrag.deltaY = deltaY;
+            letterBoxManualDrag.previewPosition = previewPosition;
+            letterBoxManualDrag.candidateIndex = targetCenter - lowerCenter <= upperCenter - targetCenter ? lowerIndex : upperIndex;
+            letterBoxManualDrag.moved ||= Math.abs(deltaY) > 2;
+            updateLetterBoxTextScrollByAudio();
         }
 
-        function stopLetterBoxTextDrag(event) {
-            if (!letterBoxTextLayer) return;
+        function stopLetterBoxTextDrag(event, cancelled = false) {
+            if (!letterBoxTextLayer || !letterBoxManualDrag) return;
+            if (event?.pointerId !== undefined && event.pointerId !== letterBoxManualDrag.pointerId) return;
+            const drag = letterBoxManualDrag;
             letterBoxTextManualDragActive = false;
             letterBoxTextLayer.classList.remove('letter-box-text-dragging');
-            const didMove = letterBoxTextLayer.dataset.dragMoved === 'true';
-            delete letterBoxTextLayer.dataset.dragStartY;
-            delete letterBoxTextLayer.dataset.dragStartOffset;
-            delete letterBoxTextLayer.dataset.dragMoved;
-            delete letterBoxTextLayer.dataset.dragTargetTime;
             if (event?.pointerId !== undefined) {
                 letterBoxTextLayer.releasePointerCapture?.(event.pointerId);
             }
-
-            if (!didMove || !audio || !audio.duration || !audio.paused || !Number.isFinite(audio.currentTime)) {
-                return;
+            letterBoxManualDrag = null;
+            if (!cancelled && drag.moved && audio?.paused && Number.isFinite(audio.currentTime)) {
+                addLetterBoxControlPoint('resume', drag.candidateIndex);
+            } else {
+                updateLetterBoxTextScrollByAudio();
             }
-
-            // Arrastrar con el audio en pausa reposiciona y continúa la letra;
-            // no añade otra pausa que la deje inmóvil al reanudar el audio.
-            addLetterBoxControlPoint('resume');
         }
 
         function applyBackground() {
@@ -4112,6 +5181,8 @@ Pero si quieres fuerza y cantar con pasión,
             letterBox.style.height = `${Math.round(nextHeight)}px`;
             letterBox.style.left = `${Math.round(nextLeft)}px`;
             letterBox.style.top = `${Math.round(nextTop)}px`;
+            recalculateLetterBoxGroupLayout();
+            updateLetterBoxTextScrollByAudio();
         }
 
         function toggleLetterBoxShadowType() {
@@ -4401,13 +5472,18 @@ Pero si quieres fuerza y cantar con pasión,
             letterBoxTextLayer.addEventListener('pointerdown', startLetterBoxTextDrag);
             letterBoxTextLayer.addEventListener('pointermove', dragLetterBoxText);
             letterBoxTextLayer.addEventListener('pointerup', stopLetterBoxTextDrag);
-            letterBoxTextLayer.addEventListener('pointerleave', stopLetterBoxTextDrag);
-            letterBoxTextLayer.addEventListener('pointercancel', stopLetterBoxTextDrag);
+            letterBoxTextLayer.addEventListener('pointercancel', (event) => stopLetterBoxTextDrag(event, true));
         }
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && letterBoxManualDrag) {
+                stopLetterBoxTextDrag(null, true);
+            }
+        });
         window.addEventListener('resize', () => {
             checkAllOverflows();
-            clampLetterBoxTextOffset();
-            applyLinkedVinylSettings();
+            recalculateLetterBoxGroupLayout();
+            updateLetterBoxTextScrollByAudio();
+            updateLinkedVinylVisual();
         });
 
         setTextValue('right', '');
@@ -4450,7 +5526,10 @@ Pero si quieres fuerza y cantar con pasión,
             updateLetterBoxCutButtons();
         });
 
-        audio.addEventListener('seeked', updateLetterBoxCutButtons);
+        audio.addEventListener('seeked', () => {
+            updateLetterBoxCutButtons();
+            updateLetterBoxTextScrollByAudio();
+        });
 
         audio.addEventListener('loadedmetadata', () => {
             updateTimeDisplays();
@@ -4487,20 +5566,20 @@ Pero si quieres fuerza y cantar con pasión,
         applyControlSizeSettings();
         applyTimeChipSettings();
         applyLetterBoxSettings();
-        applyLinkedVinylSettings();
+        updateLinkedVinylVisual();
         updateImagePickerState();
         updateLinkedVinylActionButtons();
         toggleConfigBtn();
         requestAnimationFrame(() => {
             updatePlayerLayoutScale();
             applyLetterBoxSettings();
-            applyLinkedVinylSettings();
+            updateLinkedVinylVisual();
             renderLetterBoxText();
         });
         window.addEventListener('resize', () => {
             updatePlayerLayoutScale();
             applyLetterBoxSettings();
-            applyLinkedVinylSettings();
+            updateLinkedVinylVisual();
         });
     </script>
 </body>
