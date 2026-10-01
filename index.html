@@ -2053,7 +2053,7 @@
         #modalOverlay .neu-list-item {
             padding: 24px;
             border: 1px solid var(--md-outline);
-            border-radius: 12px;
+            border-radius: 32px;
             background: var(--md-surface-container);
             box-shadow: none;
             color: var(--md-on-surface);
@@ -2082,7 +2082,7 @@
         #modalOverlay .neu-list-item .border {
             padding: 16px;
             border: 1px solid var(--md-outline) !important;
-            border-radius: 8px;
+            border-radius: 24px;
             background: var(--md-surface-container-high) !important;
             box-shadow: none;
         }
@@ -2112,8 +2112,11 @@
         }
 
         #modalOverlay .config-switch {
+            display: flex;
+            flex-direction: row;
             min-height: 48px;
             gap: 12px;
+            justify-content: flex-start;
             color: var(--md-on-surface-variant);
             font-family: inherit;
             font-size: 16px;
@@ -2211,7 +2214,7 @@
         #modalOverlay input[type="file"] {
             min-height: 48px;
             border-color: var(--md-outline) !important;
-            border-radius: 8px;
+            border-radius: 16px;
             background: var(--md-surface-container-high) !important;
             color: var(--md-on-surface);
             font-family: inherit;
@@ -2251,26 +2254,14 @@
             transition: background-color 160ms ease, border-color 160ms ease;
         }
 
-        #modalOverlay .config-choice-cycle::after {
-            content: '';
-            width: 9px;
-            height: 9px;
-            margin: 0 4px 4px 16px;
-            flex: 0 0 auto;
-            border-right: 2px solid var(--md-on-surface-variant);
-            border-bottom: 2px solid var(--md-on-surface-variant);
-            transform: rotate(45deg);
-            transition: transform 160ms ease;
-        }
-
         #modalOverlay .config-choice-cycle:hover { background: #3A3C3E; }
-        #modalOverlay .config-choice-cycle:hover::after { transform: rotate(225deg); }
         #modalOverlay .config-choice-cycle:active { background: #414345; }
 
         #modalOverlay .config-switch {
             display: flex;
-            flex-direction: row-reverse;
-            justify-content: space-between;
+            flex-direction: row;
+            justify-content: flex-start;
+            gap: 12px;
             width: 100%;
         }
 
@@ -2304,6 +2295,7 @@
         #bgOption #bgControls > div {
             flex-wrap: wrap;
             gap: 8px;
+            justify-content: flex-start;
         }
 
         #themeOption > div > .flex.flex-col.gap-4.mt-2,
@@ -2313,7 +2305,15 @@
         }
 
         #themeOption > div > .flex.flex-col.gap-4.mt-2 { margin-top: 0; }
-        #bgOption > div > button { justify-self: start; margin-top: 0; }
+        #bgOption > div > button {
+            justify-self: start;
+            width: fit-content;
+            max-width: 100%;
+            margin-top: 0;
+            white-space: normal;
+        }
+
+        #modalOverlay .neu-btn { border-radius: 999px; }
 
         #progressOption > div > .space-y-4.border-b {
             display: grid;
@@ -2330,11 +2330,48 @@
 
         #progressOption .config-choice-group + .flex.gap-4.items-center {
             grid-column: 2;
-            justify-self: end;
+            justify-self: start;
             flex-wrap: wrap;
-            justify-content: flex-end;
+            justify-content: flex-start;
             gap: 8px;
         }
+
+        #pauseBtnConfig .grid.gap-4 {
+            grid-template-columns: minmax(0, 1fr) max-content;
+            align-items: center;
+            gap: 16px 24px;
+        }
+
+        #pauseBtnConfig .grid.gap-4 > div {
+            min-width: 0;
+            gap: 8px;
+        }
+
+        #pauseBtnConfig .grid.gap-4 > div:nth-child(1) { grid-column: 2; grid-row: 1; }
+        #pauseBtnConfig .grid.gap-4 > div:nth-child(2) { grid-column: 2; grid-row: 2; }
+        #pauseBtnConfig .grid.gap-4 > div:nth-child(3) { grid-column: 2; grid-row: 3; }
+        #pauseBtnConfig .grid.gap-4 > div:nth-child(4) { grid-column: 1; grid-row: 1; }
+        #pauseBtnConfig .grid.gap-4 > div:nth-child(5) { grid-column: 1; grid-row: 2; }
+        #pauseBtnConfig .grid.gap-4 > div:nth-child(6) { grid-column: 1; grid-row: 3; }
+
+        #progressOption .space-y-4 > .grid.grid-cols-2 {
+            grid-template-columns: minmax(0, 1fr) max-content;
+            align-items: center;
+            gap: 16px 24px;
+        }
+
+        #progressOption .space-y-4 > .grid.grid-cols-2 > div:first-child {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 48px;
+            align-items: center;
+            gap: 8px;
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        #progressOption .space-y-4 > .grid.grid-cols-2 > div:nth-child(2) { grid-column: 1; grid-row: 1; }
+        #progressOption .space-y-4 > .grid.grid-cols-2 > div:nth-child(3) { grid-column: 1; grid-row: 2; }
+        #progressOption .space-y-4 > .grid.grid-cols-2 > div:nth-child(4) { grid-column: 1; grid-row: 3; }
 
         #playerCardOption > div > .border.mb-2,
         #letterBoxOption > div > .border.mb-2 {
@@ -2362,29 +2399,33 @@
         #modalOverlay #playerLightColorControl:not(.hidden),
         #modalOverlay #letterBoxLightColorControl:not(.hidden) {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 48px;
+            grid-template-columns: 48px max-content;
             align-items: center;
+            align-self: end;
             grid-column: 2;
             gap: 8px;
-            width: 100%;
+            justify-self: start;
+            width: max-content;
             min-width: 0;
         }
 
         #modalOverlay #playerLightColorControl span,
         #modalOverlay #letterBoxLightColorControl span {
+            grid-column: 2;
+            grid-row: 1;
             width: auto;
             min-width: 0;
         }
 
         #modalOverlay #playerLightColorControl input[type="color"],
         #modalOverlay #letterBoxLightColorControl input[type="color"] {
-            grid-column: 2;
+            grid-column: 1;
             grid-row: 1;
         }
 
         #modalOverlay #playerLightGradientControl:not(.hidden),
         #modalOverlay #letterBoxLightGradientControl:not(.hidden) {
-            grid-column: 2;
+            grid-column: 1 / -1;
             width: 100%;
             min-width: 0;
             flex-wrap: wrap;
@@ -2400,7 +2441,7 @@
         #modalOverlay .neu-btn {
             min-height: 48px;
             border-color: var(--md-outline);
-            border-radius: 8px;
+            border-radius: 999px;
             color: var(--md-on-surface);
             font-family: inherit;
             font-size: 16px;
@@ -2485,6 +2526,28 @@
 
             #modalOverlay .neu-list-item .flex.items-center.gap-4 > input[type="range"] {
                 max-width: calc(100% - 112px);
+            }
+
+            #pauseBtnConfig .grid.gap-4,
+            #progressOption .space-y-4 > .grid.grid-cols-2 {
+                grid-template-columns: minmax(0, 1fr) max-content;
+                gap: 8px;
+            }
+
+            #pauseBtnConfig .grid.gap-4 > div > span:first-child {
+                flex-basis: 80px;
+                width: 80px;
+                min-width: 80px;
+                font-size: 14px;
+            }
+
+            #pauseBtnConfig .grid.gap-4 > div > input[type="range"] {
+                max-width: calc(100% - 88px);
+            }
+
+            #progressOption .space-y-4 > .grid.grid-cols-2 > div:first-child {
+                grid-template-columns: minmax(0, 1fr) 48px;
+                gap: 4px;
             }
 
             #themeOption > div,
