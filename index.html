@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Neumórfica</title>
+    <title>Reproductor de letras</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,6 +39,24 @@
             color: var(--text-color);
             font-family: 'Inter', sans-serif;
             transition: background 0.5s ease, color 0.3s ease;
+        }
+
+        #fileDropOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: grid;
+            place-items: center;
+            background: rgba(34, 197, 94, 0.88);
+            color: #ffffff;
+            font-size: clamp(1.5rem, 5vw, 3rem);
+            font-weight: 700;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        #fileDropOverlay[hidden] {
+            display: none;
         }
 
         /* Modificación para excluir los iconos del botón de pausa del selector global */
@@ -328,6 +346,37 @@
             transform: translateZ(0);
         }
 
+        #customSlider {
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #customSliderFill {
+            transition: width 0.22s linear;
+        }
+
+        #customSliderThumb {
+            transition: left 0.22s linear, box-shadow 0.2s ease;
+        }
+
+        body.is-seeking-audio #customSliderFill,
+        body.is-seeking-audio #customSliderThumb {
+            transition: none;
+        }
+
+        #customSlider::before {
+            position: absolute;
+            inset: -16px 0;
+            content: "";
+        }
+
+        body.is-seeking-audio,
+        body.is-seeking-audio * {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+        }
+
         #cuadro-de-audio {
             border: 1px solid var(--player-outline-color);
             padding: calc(2rem * var(--player-layout-scale));
@@ -393,6 +442,58 @@
         #audioCardScaleHandle.is-dragging::after { opacity: 1; }
 
         #audioCardScaleHandle:focus-visible { outline: 2px solid rgba(227, 227, 227, 0.56); }
+
+        #letterBoxControlPointMarkers {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        #letterBoxControlPointMarkers[hidden] { display: none; }
+
+        .letter-box-control-point-marker {
+            position: absolute;
+            top: 50%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: #ff9f43;
+            cursor: pointer;
+            pointer-events: auto;
+            transform: translate(-50%, -100%);
+        }
+
+        .letter-box-control-point-marker svg {
+            display: block;
+            width: 35px;
+            height: 35px;
+            overflow: visible;
+            color: inherit !important;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.75));
+            transition: color 120ms ease, transform 120ms ease;
+            transform-origin: bottom center;
+        }
+
+        .letter-box-control-point-marker:hover svg { transform: scale(1.15); }
+        .letter-box-control-point-marker.is-below {
+            align-items: flex-start;
+            transform: translate(-50%, 0%);
+        }
+
+        .letter-box-control-point-marker.is-below svg {
+            transform: rotate(180deg);
+            transform-origin: center;
+        }
+
+        .letter-box-control-point-marker.is-below:hover svg { transform: rotate(180deg) scale(1.15); }
+        .letter-box-control-point-marker.is-selected { color: #ff6b00; }
+        .letter-box-control-point-marker:focus-visible { outline: 2px solid currentColor; }
 
         .letter-box-content {
             position: absolute;
@@ -703,6 +804,7 @@
 
         .letter-box-move-handle {
             position: fixed;
+            z-index: 49;
             display: grid;
             place-items: center;
             width: 38px;
@@ -723,6 +825,16 @@
         .letter-box-move-handle.is-visible { opacity: 1; visibility: visible; }
         .letter-box-move-handle:active { cursor: grabbing; }
         .letter-box-move-handle svg { width: 100%; height: 100%; color: inherit !important; }
+
+        body.is-interface-invisible #audioCardScaleHandle::after,
+        body.is-interface-invisible .letter-box-resize-handle::after,
+        body.is-interface-invisible .letter-box-move-handle.is-visible {
+            opacity: 0 !important;
+        }
+
+        body.is-interface-invisible #audioCardScaleHandle:focus-visible {
+            outline: none;
+        }
 
         #letterBoxSnapGuides {
             position: fixed;
@@ -1186,9 +1298,6 @@
             display: block;
         }
 
-        [data-pause-shadow-option][hidden],
-        #playerCardShadowControls[hidden],
-        #letterBoxShadowControls[hidden],
         #progressThumbShadowControls[hidden] {
             display: none !important;
         }
@@ -1415,17 +1524,44 @@
             -webkit-backdrop-filter: blur(14px);
         }
 
-        .player-action-toolbar-left { left: 1.5rem; }
+        .player-action-toolbar-left {
+            left: 1.5rem;
+            flex-direction: column;
+        }
         .player-action-toolbar-right { right: 1.5rem; }
+
+        .player-media-toolbar {
+            left: calc(1.5rem + 3.5625rem + 0.9375rem);
+        }
+
+        .player-action-toolbar-left .player-toolbar-divider {
+            width: 1.75rem;
+            height: 1px;
+            margin: 0.18rem 0;
+        }
+
+        .mobile-undo-button {
+            display: none;
+        }
+
+        .player-visibility-toolbar {
+            right: 1.5rem;
+            flex-direction: column;
+        }
+
+        .player-visibility-toolbar .player-visibility-divider {
+            width: 1.75rem;
+            height: 1px;
+            margin: 0.18rem 0;
+        }
 
         .player-action-toolbar-group-right {
             position: fixed;
             top: 1.5rem;
-            right: 1.5rem;
+            right: calc(1.5rem + 4.5rem);
             z-index: 40;
             display: flex;
             align-items: center;
-            gap: 0.65rem;
         }
 
         .player-action-toolbar-group-right .player-action-toolbar-right {
@@ -1473,24 +1609,30 @@
             opacity: 0.42;
         }
 
+        .player-toolbar-btn.mobile-undo-button {
+            display: none;
+        }
+
+        @media (max-width: 760px) {
+            .player-toolbar-btn.mobile-undo-button:not(.hidden) {
+                display: inline-flex;
+            }
+        }
+
         .player-toolbar-btn.is-danger {
             color: #ffb4ab;
         }
 
-        #letterBoxAutoModeBtn {
-            width: calc(2.75rem + 0.7rem + 2px);
-            height: calc(2.75rem + 0.7rem + 2px);
-            flex: 0 0 calc(2.75rem + 0.7rem + 2px);
-            border-radius: 1.15rem;
-            border: 1px solid rgba(220, 220, 220, 0.16);
-            background: rgba(33, 33, 33, 0.92);
-            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.26);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
+        #letterBoxControlPointVisibilityBtn.is-markers-visible {
+            background: rgba(240, 240, 240, 0.12);
         }
 
-        #letterBoxAutoModeBtn:hover:not(:disabled) {
-            background: rgba(33, 33, 33, 0.92);
+        #letterBoxControlPointVisibilityBtn.is-markers-visible:hover:not(:disabled) {
+            background: rgba(240, 240, 240, 0.12);
+        }
+
+        #letterBoxAutoModeBtn {
+            flex: 0 0 2.75rem;
         }
 
         .letter-box-auto-mode-icon {
@@ -1524,7 +1666,9 @@
 
         /* Diálogo de eliminación: compacto y alineado con las superficies
            Material 3 de la configuración. */
-        #deleteModalOverlay {
+        #deleteModalOverlay,
+        #replaceAudioModalOverlay,
+        #textEditorModal {
             background: rgb(0 0 0 / 0.42);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
@@ -1585,9 +1729,31 @@
             line-height: 1.25;
         }
 
+        .text-editor-dialog textarea {
+            display: block;
+            width: 100%;
+            min-height: 8rem;
+            margin-top: 1.25rem;
+            padding: 0.9rem 1rem;
+            border: 1px solid rgba(220, 220, 220, 0.22);
+            border-radius: 0.8rem;
+            outline: none;
+            background: #2c2c2c;
+            color: #f0f0f0;
+            font: inherit;
+            line-height: 1.5;
+            resize: vertical;
+        }
+
+        .text-editor-dialog textarea:focus {
+            border-color: rgba(227, 227, 227, 0.7);
+            box-shadow: 0 0 0 2px rgba(227, 227, 227, 0.16);
+        }
+
         .delete-audio-actions {
             clear: both;
             display: flex;
+            flex-wrap: wrap;
             justify-content: flex-end;
             gap: 0.5rem;
         }
@@ -1617,6 +1783,15 @@
         }
 
         .delete-audio-confirm:hover {
+            filter: brightness(1.12);
+        }
+
+        .delete-audio-save {
+            background: #27864e;
+            color: #ffffff;
+        }
+
+        .delete-audio-save:hover {
             filter: brightness(1.12);
         }
 
@@ -1915,47 +2090,14 @@
             text-align: center;
             pointer-events: none;
             opacity: 0;
-            transform: translate(-50%, -0.25rem);
+            transform: translate(calc(-50% + var(--tooltip-shift-x, 0px)), -0.25rem);
             transition: opacity 0.16s ease, transform 0.16s ease;
         }
 
         .has-custom-tooltip:hover::after,
         .has-custom-tooltip:focus-visible::after {
             opacity: 1;
-            transform: translate(-50%, 0);
-        }
-
-        /* Las barras están en los extremos: el tooltip crece siempre hacia dentro. */
-        .player-action-toolbar-left .has-custom-tooltip::after {
-            left: 0;
-            transform: translate(0, -0.25rem);
-        }
-
-        .player-action-toolbar-left .has-custom-tooltip:hover::after,
-        .player-action-toolbar-left .has-custom-tooltip:focus-visible::after {
-            transform: translate(0, 0);
-        }
-
-        .player-action-toolbar-right .has-custom-tooltip::after {
-            right: 0;
-            left: auto;
-            transform: translate(0, -0.25rem);
-        }
-
-        .player-action-toolbar-right .has-custom-tooltip:hover::after,
-        .player-action-toolbar-right .has-custom-tooltip:focus-visible::after {
-            transform: translate(0, 0);
-        }
-
-        /* El botón de cierre está en el extremo izquierdo del encabezado. */
-        #closeModal.has-custom-tooltip::after {
-            left: 0;
-            transform: translate(0, -0.25rem);
-        }
-
-        #closeModal.has-custom-tooltip:hover::after,
-        #closeModal.has-custom-tooltip:focus-visible::after {
-            transform: translate(0, 0);
+            transform: translate(calc(-50% + var(--tooltip-shift-x, 0px)), 0);
         }
 
         /* Controles Material 3, sin las apariencias nativas del navegador. */
@@ -2171,22 +2313,23 @@
         @media (max-width: 700px) {
             .player-action-toolbar { top: 0.85rem; }
             .player-action-toolbar-left { left: 0.85rem; }
+            .player-media-toolbar { left: calc(0.85rem + 3.5625rem + 0.9375rem); }
             .player-action-toolbar-right { right: auto; flex-direction: row; }
             .player-action-toolbar-group-right {
                 top: 0.85rem;
-                right: 0.85rem;
+                right: calc(0.85rem + 4.5rem);
                 align-items: center;
                 gap: 0.5rem;
             }
             .player-action-toolbar-group-right .player-action-toolbar-right {
                 right: auto;
             }
-            #letterBoxAutoModeBtn {
-                width: calc(2.75rem + 0.7rem + 2px);
-                height: calc(2.75rem + 0.7rem + 2px);
-                flex: 0 0 calc(2.75rem + 0.7rem + 2px);
-            }
             .player-toolbar-divider { width: 1px; height: 1.75rem; margin: 0 0.18rem; }
+            .player-action-toolbar-left .player-toolbar-divider {
+                width: 1.75rem;
+                height: 1px;
+                margin: 0.18rem 0;
+            }
         }
 
         #modalOverlay {
@@ -2481,46 +2624,29 @@
             gap: 16px 24px;
         }
 
-        #modalOverlay .config-subsection-option[data-option-id="pauseBtnConfig"] > .config-switch { grid-column: 1; width: max-content; }
         #modalOverlay .config-subsection-option[data-option-id="pauseBtnConfig"] > .flex.flex-col.gap-4 { display: contents; }
-        #modalOverlay .config-subsection-option[data-option-id="pauseBtnConfig"] .flex.items-center.gap-4:first-child { grid-column: 2; }
-        #modalOverlay .config-subsection-option[data-option-id="pauseBtnConfig"] .flex.items-center.gap-4:not(:first-child) { grid-column: 1 / -1; }
+        #modalOverlay .config-subsection-option[data-option-id="pauseBtnConfig"] .config-choice-group { grid-column: 1; }
+        #modalOverlay .config-subsection-option[data-option-id="pauseBtnConfig"] #pauseShadowColorRow { grid-column: 2; }
 
         #modalOverlay .config-subsection-controls[data-layout="panel-shadow"] { gap: 16px; }
 
         #modalOverlay .config-subsection-option[data-option-id="playerShadowOption"],
         #modalOverlay .config-subsection-option[data-option-id="letterBoxShadowOption"] {
             display: grid;
-            grid-template-columns: max-content max-content minmax(0, 1fr);
+            grid-template-columns: max-content minmax(0, 1fr);
             align-items: center;
             gap: 16px 20px;
         }
 
-        #modalOverlay .config-subsection-option[data-option-id="playerShadowOption"] > .config-switch,
-        #modalOverlay .config-subsection-option[data-option-id="letterBoxShadowOption"] > .config-switch { grid-column: 1; width: max-content; }
-
-        #modalOverlay #playerCardShadowControls,
-        #modalOverlay #letterBoxShadowControls { display: contents; }
-
-        #modalOverlay #playerCardShadowControls[hidden],
-        #modalOverlay #letterBoxShadowControls[hidden] { display: none !important; }
-
-        #modalOverlay .config-subsection-option[data-option-id="playerShadowOption"] .flex.flex-col.gap-2,
-        #modalOverlay .config-subsection-option[data-option-id="letterBoxShadowOption"] .flex.flex-col.gap-2 {
+        #modalOverlay .config-subsection-option[data-option-id="playerShadowOption"] .config-choice-group,
+        #modalOverlay .config-subsection-option[data-option-id="letterBoxShadowOption"] .config-choice-group { grid-column: 1; }
+        #modalOverlay .config-subsection-option[data-option-id="playerShadowOption"] #playerLightColorControl:not(.hidden),
+        #modalOverlay .config-subsection-option[data-option-id="letterBoxShadowOption"] #letterBoxLightColorControl:not(.hidden) {
+            grid-column: 2;
             display: flex;
-            flex-direction: row;
             align-items: center;
             gap: 10px;
         }
-
-        #modalOverlay .config-subsection-option[data-option-id="playerShadowOption"] #playerLightColorControl:not(.hidden),
-        #modalOverlay .config-subsection-option[data-option-id="letterBoxShadowOption"] #letterBoxLightColorControl:not(.hidden) { grid-column: 3; }
-
-        #modalOverlay .config-subsection-option[data-option-id="playerShadowOption"] #playerLightGradientControl:not(.hidden),
-        #modalOverlay .config-subsection-option[data-option-id="letterBoxShadowOption"] #letterBoxLightGradientControl:not(.hidden) { grid-column: 1 / -1; }
-
-        #modalOverlay .config-subsection-option[data-option-id="playerShadowOption"] .flex.items-center.gap-4,
-        #modalOverlay .config-subsection-option[data-option-id="letterBoxShadowOption"] .flex.items-center.gap-4 { grid-column: 1 / -1; }
 
         #modalOverlay .config-subsection-controls[data-layout="counters"] {
             display: flex;
@@ -2550,12 +2676,10 @@
         #modalOverlay #secBarColorControls .config-choice-group { flex: 0 0 auto; }
         #modalOverlay #thumbControls {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) max-content;
+            grid-template-columns: minmax(0, 1fr);
             align-items: center;
             gap: 16px;
         }
-        #modalOverlay #thumbControls > div:first-child { order: 1; }
-        #modalOverlay #thumbControls > div:last-child { order: 2; }
         #modalOverlay #thumbControls > div:last-child { flex-direction: row; align-items: center; }
         #modalOverlay #progressThumbShadowSettings {
             display: grid;
@@ -2564,11 +2688,14 @@
             gap: 12px 20px;
         }
         #modalOverlay #progressThumbShadowSettings > .text-sm { grid-column: 1 / -1; }
-        #modalOverlay #progressThumbShadowControls,
-        #modalOverlay #progressThumbShadowControls > #thumbShadowControls { display: contents; }
-        #modalOverlay #progressThumbShadowControls[hidden] { display: none !important; }
-        #modalOverlay #thumbShadowControls > div:first-child { grid-column: 2; }
-        #modalOverlay #thumbShadowControls > div:not(:first-child) { grid-column: 1 / -1; }
+        #modalOverlay #progressThumbShadowControls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            grid-column: 1 / -1;
+        }
+        #modalOverlay #progressThumbShadowControls .config-choice-group { flex: 0 0 auto; }
+        #modalOverlay #progressThumbShadowControls #thumbShadowColorRow { flex: 0 0 auto; }
 
         #modalOverlay .config-subsection-heading {
             display: flex;
@@ -2940,14 +3067,6 @@
             grid-row: 1;
         }
 
-        #modalOverlay #playerLightGradientControl:not(.hidden),
-        #modalOverlay #letterBoxLightGradientControl:not(.hidden) {
-            grid-column: 1 / -1;
-            width: 100%;
-            min-width: 0;
-            flex-wrap: wrap;
-        }
-
         #modalOverlay input:focus-visible,
         #modalOverlay select:focus-visible,
         #modalOverlay button:focus-visible {
@@ -3081,15 +3200,6 @@
             #modalOverlay .config-subsection-controls[data-layout="pause-shadow"] {
                 grid-template-columns: max-content minmax(0, 1fr);
             }
-            #modalOverlay .config-subsection-option[data-option-id="pauseBtnConfig"] .flex.items-center.gap-4:first-child {
-                grid-column: 2;
-            }
-            #modalOverlay .config-subsection-option[data-option-id="pauseBtnConfig"] [data-pause-shadow-option]:first-child > span:first-child {
-                display: none;
-            }
-            #modalOverlay .config-subsection-option[data-option-id="pauseBtnConfig"] .flex.items-center.gap-4:not(:first-child) {
-                grid-column: 1 / -1;
-            }
             #modalOverlay .config-subsection-controls[data-layout="audio-panel"] {
                 grid-template-columns: max-content minmax(0, 1fr);
             }
@@ -3139,6 +3249,7 @@
 
 <body class="h-screen w-screen flex items-center justify-center relative overflow-hidden">
     <div id="bgWrapper" class="fixed inset-0 -z-10 w-full h-full transition-all duration-300"></div>
+    <div id="fileDropOverlay" hidden aria-hidden="true">Suelta el archivo aquí</div>
 
     <div id="appContainer" class="w-full h-full flex items-center justify-center">
         <div id="homeView" class="w-full flex flex-col items-center justify-center p-6">
@@ -3183,7 +3294,8 @@
                 <div id="customSlider" class="absolute bottom-[31px] left-1/2 -translate-x-1/2 h-[7px] z-20 cursor-pointer" aria-label="Progreso de la canción" style="bottom: calc(31px * var(--player-layout-scale)); width: 1019px; height: calc(7px * var(--player-layout-scale));">
                     <div id="customSliderBg" class="absolute inset-0 w-full h-full rounded-full" style="background: #000000;"></div>
                     <div id="customSliderFill" class="absolute left-0 top-0 h-full rounded-full pointer-events-none" style="width: 0%; background: #e5e5e5;"></div>
-                    <div id="customSliderThumb" class="absolute top-1/2 rounded-full bg-[#e5e5e5] pointer-events-none transition-shadow" style="left: 0%; width: calc(20px * var(--player-layout-scale)); height: calc(20px * var(--player-layout-scale)); transform: translate(-50%, -50%); box-shadow: 0 0 5px 2px rgba(0,0,0,0.5);"></div>
+                    <div id="customSliderThumb" class="absolute top-1/2 rounded-full bg-[#e5e5e5] pointer-events-none transition-shadow" style="left: 0%; width: calc(14px * var(--player-layout-scale)); height: calc(14px * var(--player-layout-scale)); transform: translate(-50%, -50%); box-shadow: 0 0 5px 2px rgba(0,0,0,0.5);"></div>
+                    <div id="letterBoxControlPointMarkers" hidden aria-label="Puntos de control de la letra"></div>
                 </div>
 
                 <div id="authorContainer" class="absolute flex items-center justify-end overflow-hidden" style="top: 20.725%; right: 2.185%; width: 24.59%; height: 16.58%; container-type: size;">
@@ -3225,10 +3337,10 @@
         <button type="button" class="letter-box-resize-handle" data-resize-edge="ne" aria-label="Cambiar tamaño desde la esquina superior derecha" tabindex="-1"></button>
         <button type="button" class="letter-box-resize-handle" data-resize-edge="sw" aria-label="Cambiar tamaño desde la esquina inferior izquierda" tabindex="-1"></button>
         <button type="button" class="letter-box-resize-handle" data-resize-edge="se" aria-label="Cambiar tamaño desde la esquina inferior derecha" tabindex="-1"></button>
-        <button type="button" id="letterBoxMoveHandle" class="letter-box-move-handle" aria-label="Mover cuadro de letras" tabindex="-1">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.6"/><circle cx="12" cy="5" r="1.6"/><circle cx="19" cy="5" r="1.6"/><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/><circle cx="5" cy="19" r="1.6"/><circle cx="12" cy="19" r="1.6"/><circle cx="19" cy="19" r="1.6"/></svg>
-        </button>
     </div>
+    <button type="button" id="letterBoxMoveHandle" class="letter-box-move-handle" aria-label="Mover cuadro de letras" tabindex="-1">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="1.6"/><circle cx="12" cy="5" r="1.6"/><circle cx="19" cy="5" r="1.6"/><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/><circle cx="5" cy="19" r="1.6"/><circle cx="12" cy="19" r="1.6"/><circle cx="19" cy="19" r="1.6"/></svg>
+    </button>
     <div id="letterBoxSnapGuides" hidden aria-hidden="true">
         <span id="letterBoxSnapGuideX" class="letter-box-snap-guide"></span>
         <span id="letterBoxSnapGuideY" class="letter-box-snap-guide"></span>
@@ -3242,39 +3354,52 @@
         <button id="configBtn" type="button" class="player-toolbar-btn" title="Abrir configuración" aria-label="Abrir configuración">
             <svg id="configIcon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.4.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.4-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
         </button>
-        <span id="configImageDivider" class="player-toolbar-divider" aria-hidden="true"></span>
-        <button id="imagePickerBtn" type="button" class="player-toolbar-btn" title="Añadir imagen" aria-label="Añadir imagen">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="m21 15-5-5L5 21"></path><path d="M17 5v4"></path><path d="M15 7h4"></path></svg>
-        </button>
         <span id="imageAudioDivider" class="player-toolbar-divider hidden" aria-hidden="true"></span>
         <button id="borrar-cancion" type="button" onclick="showDeleteModal()" class="player-toolbar-btn is-danger hidden" title="Eliminar audio" aria-label="Eliminar audio">
             <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
         </button>
     </div>
 
-    <div id="letterBoxActionToolbarGroup" class="player-action-toolbar-group-right">
-        <button id="letterBoxAutoModeBtn" type="button" class="player-toolbar-btn" title="Activar avance automático de la letra" aria-label="Activar avance automático de la letra" aria-pressed="false">
-            <span class="letter-box-auto-mode-icon" aria-hidden="true">
-                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path></svg>
-            </span>
+    <div id="playerMediaToolbar" class="player-action-toolbar player-media-toolbar hidden" aria-label="Acciones de vinilo e imágenes">
+        <button id="linkedVinylActionBtn" type="button" class="player-toolbar-btn hidden" title="Añadir imagen al vinilo" aria-label="Añadir imagen al vinilo">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"></circle><circle cx="12" cy="12" r="2"></circle></svg>
         </button>
+        <button id="linkedVinylDeleteBtn" type="button" class="player-toolbar-btn is-danger hidden" title="Eliminar imagen del vinilo" aria-label="Eliminar imagen del vinilo">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"></circle><circle cx="12" cy="12" r="2"></circle><path d="m5.3 5.3 13.4 13.4"></path></svg>
+        </button>
+        <span class="player-toolbar-divider" aria-hidden="true"></span>
+        <button id="imagePickerBtn" type="button" class="player-toolbar-btn hidden" title="Añadir imagen" aria-label="Añadir imagen">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="m21 15-5-5L5 21"></path></svg>
+        </button>
+    </div>
+
+    <div id="playerVisibilityToolbar" class="player-action-toolbar player-visibility-toolbar" aria-label="Visibilidad de interfaz y puntos de control">
+        <button id="interfaceVisibilityBtn" type="button" class="player-toolbar-btn" title="Ocultar interfaz" aria-label="Ocultar interfaz" aria-pressed="true">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        </button>
+        <span id="playerVisibilityDivider" class="player-toolbar-divider player-visibility-divider hidden" aria-hidden="true"></span>
+        <button id="letterBoxControlPointVisibilityBtn" type="button" class="player-toolbar-btn hidden is-markers-visible" title="Ocultar puntos de control" aria-label="Ocultar puntos de control" aria-pressed="true">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 1v3M12 20v3M1 12h3M20 12h3"></path></svg>
+        </button>
+    </div>
+
+    <div id="letterBoxActionToolbarGroup" class="player-action-toolbar-group-right hidden">
         <div class="player-action-toolbar player-action-toolbar-right" aria-label="Acciones de letra y vinilo">
-            <button id="letterBoxEditBtn" type="button" class="player-toolbar-btn" title="Editar texto de la letra" aria-label="Editar texto de la letra">
+            <button id="letterBoxEditBtn" type="button" class="player-toolbar-btn hidden" title="Editar texto de la letra" aria-label="Editar texto de la letra">
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>
             </button>
             <span id="letterBoxManualDivider" class="player-toolbar-divider" aria-hidden="true"></span>
-            <button id="letterBoxNextParagraphBtn" type="button" class="player-toolbar-btn" title="Avanzar al siguiente párrafo en este punto" aria-label="Avanzar al siguiente párrafo en este punto">
+            <button id="letterBoxNextParagraphBtn" type="button" class="player-toolbar-btn hidden" title="Avanzar al siguiente párrafo en este punto" aria-label="Avanzar al siguiente párrafo en este punto">
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v15"></path><path d="m6 13 6 6 6-6"></path></svg>
             </button>
-            <button id="letterBoxUndoCutBtn" type="button" class="player-toolbar-btn" title="Deshacer último punto" aria-label="Deshacer último punto">
+            <button id="letterBoxUndoCutBtn" type="button" class="player-toolbar-btn mobile-undo-button hidden" title="Deshacer último punto" aria-label="Deshacer último punto">
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10a6 6 0 0 1 6 6v1"></path></svg>
             </button>
-            <span class="player-toolbar-divider" aria-hidden="true"></span>
-            <button id="linkedVinylActionBtn" type="button" class="player-toolbar-btn" title="Añadir imagen al vinilo" aria-label="Añadir imagen al vinilo">
-                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="2"></circle><path d="M19 4v4"></path><path d="M17 6h4"></path></svg>
-            </button>
-            <button id="linkedVinylDeleteBtn" type="button" class="player-toolbar-btn is-danger hidden" title="Eliminar imagen del vinilo" aria-label="Eliminar imagen del vinilo">
-                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
+            <span id="letterBoxAutoModeDivider" class="player-toolbar-divider hidden" aria-hidden="true"></span>
+            <button id="letterBoxAutoModeBtn" type="button" class="player-toolbar-btn hidden" title="Activar avance automático de la letra" aria-label="Activar avance automático de la letra" aria-pressed="false">
+                <span class="letter-box-auto-mode-icon" aria-hidden="true">
+                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path></svg>
+                </span>
             </button>
         </div>
     </div>
@@ -3292,7 +3417,7 @@
                     </div>
                     <div class="letter-editor-sliders">
                         <div class="letter-editor-slider-row"><label for="letterBoxTextSize">Tamaño</label><input id="letterBoxTextSize" type="range" min="18" max="120" step="1" value="30"><output id="letterBoxTextSizeValue">30px</output></div>
-                        <div class="letter-editor-slider-row"><label for="letterBoxTextHorizontalOffset">Posición</label><input id="letterBoxTextHorizontalOffset" type="range" min="-1200" max="1200" step="1" value="0"><output id="letterBoxTextHorizontalOffsetValue">0px</output></div>
+                        <div class="letter-editor-slider-row"><label for="letterBoxTextHorizontalOffset">Posición</label><input id="letterBoxTextHorizontalOffset" type="range" min="-100" max="100" step="1" value="0"><output id="letterBoxTextHorizontalOffsetValue">0px</output></div>
                     </div>
                 </div>
             </section>
@@ -3370,26 +3495,16 @@
 
                             <li id="pauseBtnConfig" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
                                 <div class="flex flex-col space-y-4">
-                                    <span class="font-semibold text-xl">Sombra del botón de pausa</span>
-                                    <label class="config-switch">
-                                        <input type="checkbox" id="pauseShadowToggle" checked onchange="togglePauseShadow()"><span class="md-switch-track" aria-hidden="true"></span><span>Añadir sombra</span>
-                                    </label>
+                                    <span class="font-semibold text-xl">Efecto del botón de pausa</span>
                                     <div class="flex flex-col gap-4">
-                                        <div class="flex items-center gap-4" data-pause-shadow-option>
-                                            <span class="text-sm text-gray-400 w-28">Color de sombra</span>
+                                        <div class="config-choice-group" role="radiogroup" aria-label="Efecto del botón de pausa">
+                                            <label class="config-choice"><input type="radio" name="pauseShadowType" value="light" onchange="togglePauseShadowType()"><span>Luz</span></label>
+                                            <label class="config-choice"><input type="radio" name="pauseShadowType" value="off" onchange="togglePauseShadowType()"><span>Desactivado</span></label>
+                                            <label class="config-choice"><input type="radio" name="pauseShadowType" value="shadow" checked onchange="togglePauseShadowType()"><span>Sombra</span></label>
+                                        </div>
+                                        <div id="pauseShadowColorRow" class="hidden flex items-center gap-4">
+                                            <span class="text-sm text-gray-400 w-28">Color de luz</span>
                                             <input type="color" id="pauseShadowColor" value="#000000" class="w-12 h-12 rounded cursor-pointer" oninput="applyPauseButtonSettings()">
-                                        </div>
-                                        <div class="flex items-center gap-4" data-pause-shadow-option>
-                                            <span class="text-sm text-gray-400 w-28">Opacidad de sombra</span>
-                                            <input type="range" id="pauseShadowOpacity" min="0" max="1" step="0.05" value="0.2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPauseButtonSettings()">
-                                        </div>
-                                        <div class="flex items-center gap-4" data-pause-shadow-option>
-                                            <span class="text-sm text-gray-400 w-28">Fuerza de sombra</span>
-                                            <input type="range" id="pauseShadowBlur" min="0" max="100" step="1" value="80" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPauseButtonSettings()">
-                                        </div>
-                                        <div class="flex items-center gap-4" data-pause-shadow-option>
-                                            <span class="text-sm text-gray-400 w-28">Tamaño de sombra</span>
-                                            <input type="range" id="pauseShadowSpread" min="0" max="50" step="1" value="2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPauseButtonSettings()">
                                         </div>
                                     </div>
                                 </div>
@@ -3456,37 +3571,14 @@
                                         <input type="range" id="playerCardColorOpacity" min="0" max="1" step="0.05" value="1" aria-label="Opacidad del color del cuadro de audio" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardColorSettings()">
                                     </div>
                                     <div id="playerShadowOption" class="flex flex-col gap-4">
-                                        <label class="config-switch">
-                                            <input type="checkbox" id="playerCardShadowToggle" checked onchange="togglePlayerCardShadow()"><span class="md-switch-track" aria-hidden="true"></span><span>Con sombra</span>
-                                        </label>
-                                        <div id="playerCardShadowControls">
-                                        <div class="flex flex-col gap-2">
-                                            <div class="config-choice-group" role="radiogroup" aria-label="Tipo de sombra del cuadro de audio">
-                                                <label class="config-choice"><input type="radio" name="playerShadowType" value="shadow" checked onchange="togglePlayerShadowType()"><span>Sombra</span></label>
-                                                <label class="config-choice"><input type="radio" name="playerShadowType" value="light" onchange="togglePlayerShadowType()"><span>Luz</span></label>
-                                            </div>
+                                        <div class="config-choice-group" role="radiogroup" aria-label="Efecto del cuadro de audio">
+                                            <label class="config-choice"><input type="radio" name="playerShadowType" value="light" onchange="togglePlayerShadowType()"><span>Luz</span></label>
+                                            <label class="config-choice"><input type="radio" name="playerShadowType" value="off" onchange="togglePlayerShadowType()"><span>Desactivado</span></label>
+                                            <label class="config-choice"><input type="radio" name="playerShadowType" value="shadow" checked onchange="togglePlayerShadowType()"><span>Sombra</span></label>
                                         </div>
                                         <div id="playerLightColorControl" class="hidden flex items-center gap-4">
                                             <span class="text-sm text-gray-400 w-28">Color de luz</span>
                                             <input type="color" id="playerShadowColor" value="#000000" class="w-12 h-12 rounded cursor-pointer" oninput="applyPlayerCardSettings()">
-                                        </div>
-                                        <div id="playerLightGradientControl" class="hidden flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Posición de luz</span>
-                                            <input type="range" id="playerShadowGradientStart" min="0" max="99" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()" title="0 = centro, 50 = mitad del borde, 99 = casi borde">
-                                            <span id="playerShadowGradientStartValue" class="text-sm text-gray-400 min-w-[2.5rem] text-right">50%</span>
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <span id="playerShadowOpacityLabel" class="text-sm text-gray-400 w-28">Opacidad de sombra</span>
-                                            <input type="range" id="playerShadowOpacity" min="0" max="1" step="0.05" value="0.5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()">
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <span id="playerShadowBlurLabel" class="text-sm text-gray-400 w-28">Tamaño de sombra</span>
-                                            <input type="range" id="playerShadowBlur" min="0" max="400" step="1" value="40" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()" title="De 0 a 400px">
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <span id="playerShadowSpreadLabel" class="text-sm text-gray-400 w-28">Fuerza de sombra</span>
-                                            <input type="range" id="playerShadowSpread" min="-50" max="150" step="1" value="5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()" title="Crecimiento simétrico">
-                                        </div>
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-4 mt-2">
@@ -3511,36 +3603,14 @@
                                     </div>
                                     <button id="syncAudioToLetterBtn" type="button" class="config-choice-cycle" aria-label="Sincronizar colores del cuadro de letras con el cuadro de audio">Sincronizar colores</button>
                                     <div id="letterBoxShadowOption" class="flex flex-col gap-4">
-                                        <label class="config-switch">
-                                            <input type="checkbox" id="letterBoxShadowToggle" checked onchange="toggleLetterBoxShadow()"><span class="md-switch-track" aria-hidden="true"></span><span>Con sombra</span>
-                                        </label>
-                                        <div id="letterBoxShadowControls">
-                                        <div class="flex flex-col gap-2">
-                                            <div class="config-choice-group" role="radiogroup" aria-label="Tipo de sombra del cuadro de letras">
-                                                <label class="config-choice"><input type="radio" name="letterBoxShadowType" value="shadow" checked onchange="toggleLetterBoxShadowType()"><span>Sombra</span></label>
-                                                <label class="config-choice"><input type="radio" name="letterBoxShadowType" value="light" onchange="toggleLetterBoxShadowType()"><span>Luz</span></label>
-                                            </div>
+                                        <div class="config-choice-group" role="radiogroup" aria-label="Efecto del cuadro de letras">
+                                            <label class="config-choice"><input type="radio" name="letterBoxShadowType" value="light" checked onchange="toggleLetterBoxShadowType()"><span>Luz</span></label>
+                                            <label class="config-choice"><input type="radio" name="letterBoxShadowType" value="off" onchange="toggleLetterBoxShadowType()"><span>Desactivado</span></label>
+                                            <label class="config-choice"><input type="radio" name="letterBoxShadowType" value="shadow" onchange="toggleLetterBoxShadowType()"><span>Sombra</span></label>
                                         </div>
                                         <div id="letterBoxLightColorControl" class="hidden flex items-center gap-4">
                                             <span class="text-sm text-gray-400 w-28">Color de luz</span>
                                             <input type="color" id="letterBoxShadowColor" value="#000000" class="w-12 h-12 rounded cursor-pointer" oninput="applyLetterBoxSettings()">
-                                        </div>
-                                        <div id="letterBoxLightGradientControl" class="hidden flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Posición de luz</span>
-                                            <input type="range" id="letterBoxShadowGradientStart" min="0" max="99" step="1" value="50" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <span id="letterBoxShadowOpacityLabel" class="text-sm text-gray-400 w-28">Opacidad de sombra</span>
-                                            <input type="range" id="letterBoxShadowOpacity" min="0" max="1" step="0.05" value="0.45" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <span id="letterBoxShadowBlurLabel" class="text-sm text-gray-400 w-28">Tamaño de sombra</span>
-                                            <input type="range" id="letterBoxShadowBlur" min="0" max="400" step="1" value="40" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <span id="letterBoxShadowSpreadLabel" class="text-sm text-gray-400 w-28">Fuerza de sombra</span>
-                                            <input type="range" id="letterBoxShadowSpread" min="-50" max="150" step="1" value="5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
-                                        </div>
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-4">
@@ -3647,11 +3717,7 @@
                                     </div>
                                     <div class="space-y-4 border-b border-gray-700/50 pb-4">
                                         <span class="text-sm text-gray-300 font-semibold">Círculo (Thumb)</span>
-                                        <div id="thumbControls" class="grid grid-cols-2 gap-4">
-                                            <div class="flex items-center gap-4">
-                                                <span class="text-xs text-gray-400 w-24">Tamaño</span>
-                                                <input type="range" id="customThumbSize" min="10" max="50" value="20" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyCustomSliderSettings()">
-                                            </div>
+                                        <div id="thumbControls" class="grid grid-cols-1 gap-4">
                                             <div class="flex items-center gap-2">
                                                 <span class="text-xs text-gray-400">Color</span>
                                                 <input type="color" id="customThumbColor" value="#e5e5e5" class="w-12 h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
@@ -3659,29 +3725,17 @@
                                         </div>
                                     </div>
                                     <div id="progressThumbShadowSettings" class="space-y-4">
-                                        <span class="text-sm text-gray-300 font-semibold">Sombra del Círculo</span>
-                                        <label class="config-switch">
-                                            <input type="checkbox" id="progressThumbShadowToggle" checked onchange="toggleProgressThumbShadow()"><span class="md-switch-track" aria-hidden="true"></span><span>Sombra del círculo</span>
-                                        </label>
+                                        <span class="text-sm text-gray-300 font-semibold">Efecto del círculo</span>
                                         <div id="progressThumbShadowControls">
-                                        <div id="thumbShadowControls" class="grid grid-cols-2 gap-4">
-                                            <div class="flex flex-col gap-2">
-                                                <span class="text-xs text-gray-400">Color Sombra</span>
-                                                <input type="color" id="customThumbShadowColor" value="#000000" class="w-full h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
+                                            <div class="config-choice-group" role="radiogroup" aria-label="Efecto del círculo">
+                                                <label class="config-choice"><input type="radio" name="progressThumbShadowType" value="light" checked onchange="toggleProgressThumbShadowType()"><span>Luz</span></label>
+                                                <label class="config-choice"><input type="radio" name="progressThumbShadowType" value="off" onchange="toggleProgressThumbShadowType()"><span>Desactivado</span></label>
+                                                <label class="config-choice"><input type="radio" name="progressThumbShadowType" value="shadow" onchange="toggleProgressThumbShadowType()"><span>Sombra</span></label>
                                             </div>
-                                            <div class="flex items-center gap-4">
-                                                <span class="text-xs text-gray-400 w-24">Transparencia</span>
-                                                <input type="range" id="customThumbShadowOpacity" min="0" max="1" step="0.05" value="0.5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyCustomSliderSettings()">
+                                            <div id="thumbShadowColorRow" class="flex items-center gap-2">
+                                                <span class="text-xs text-gray-400 w-24">Color de luz</span>
+                                                <input type="color" id="customThumbShadowColor" value="#000000" class="w-12 h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
                                             </div>
-                                            <div class="flex items-center gap-4">
-                                                <span class="text-xs text-gray-400 w-24">Intensidad Blur</span>
-                                                <input type="range" id="customThumbShadowBlur" min="0" max="30" value="5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyCustomSliderSettings()">
-                                            </div>
-                                            <div class="flex items-center gap-4">
-                                                <span class="text-xs text-gray-400 w-24">Tamaño (Spread)</span>
-                                                <input type="range" id="customThumbShadowSize" min="-10" max="20" value="2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyCustomSliderSettings()">
-                                            </div>
-                                        </div>
                                         </div>
                                     </div>
                                 </div>
@@ -3738,13 +3792,16 @@
         </div>
     </div>
 
-    <div id="textEditorModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-6 backdrop-blur-sm z-[60] transition-opacity">
-        <div class="neu-card max-w-md w-full p-8 border border-gray-700/50 shadow-2xl">
-            <h3 class="text-2xl font-bold mb-4 text-white">Editar texto</h3>
-            <textarea id="textEditorInput" rows="4" class="w-full rounded-xl border border-gray-700/60 bg-black/20 p-4 text-white outline-none resize-none" placeholder="Escribe el texto que quieres mostrar"></textarea>
-            <div class="flex justify-end gap-3 mt-6">
-                <button id="textEditorCancel" class="px-5 py-3 rounded-xl bg-gray-600 hover:bg-gray-500 text-white font-semibold transition">Cancelar</button>
-                <button id="textEditorAccept" class="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition">Aceptar</button>
+    <div id="textEditorModal" class="fixed inset-0 hidden items-center justify-center p-6 z-[60] transition-opacity">
+        <div class="delete-audio-dialog text-editor-dialog" role="dialog" aria-modal="true" aria-labelledby="textEditorTitle">
+            <div class="delete-audio-dialog-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>
+            </div>
+            <h3 id="textEditorTitle">Editar texto</h3>
+            <textarea id="textEditorInput" rows="4" placeholder="Escribe el texto que quieres mostrar" aria-label="Texto del cuadro de audio"></textarea>
+            <div class="delete-audio-actions mt-5">
+                <button id="textEditorCancel" type="button" class="delete-audio-cancel">Cancelar</button>
+                <button id="textEditorAccept" type="button" class="delete-audio-save">Guardar</button>
             </div>
         </div>
     </div>
@@ -3755,10 +3812,53 @@
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
             </div>
             <h3 id="deleteAudioDialogTitle">¿Eliminar audio?</h3>
-            <p id="deleteAudioDialogDescription">El audio actual se eliminará sin guardar.</p>
+            <p id="deleteAudioDialogDescription">El audio, la letra y las imágenes actuales se eliminarán. Puedes guardar la canción antes de continuar.</p>
             <div class="delete-audio-actions">
                 <button type="button" onclick="hideDeleteModal()" class="delete-audio-cancel">Cancelar</button>
                 <button type="button" onclick="confirmDelete()" class="delete-audio-confirm">Eliminar</button>
+                <button id="deleteAudioSaveBtn" type="button" class="delete-audio-save">Guardar canción</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="replaceAudioModalOverlay" class="fixed inset-0 hidden flex items-center justify-center p-6 z-50">
+        <div class="delete-audio-dialog" role="dialog" aria-modal="true" aria-labelledby="replaceAudioDialogTitle" aria-describedby="replaceAudioDialogDescription">
+            <div class="delete-audio-dialog-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9"></path><path d="M14 3l-4 4 4 4"></path><path d="M4 17h9"></path><path d="M10 13l4 4-4 4"></path></svg>
+            </div>
+            <h3 id="replaceAudioDialogTitle">¿Deseas reemplazar el audio?</h3>
+            <p id="replaceAudioDialogDescription">Se cambiará el audio actual. La letra, el vinilo, las imágenes y sus ajustes se conservarán.</p>
+            <div class="delete-audio-actions">
+                <button type="button" onclick="hideReplaceAudioModal()" class="delete-audio-cancel">Cancelar</button>
+                <button type="button" onclick="confirmAudioReplacement()" class="delete-audio-save">Reemplazar audio</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="droppedJsonModalOverlay" class="fixed inset-0 hidden flex items-center justify-center p-6 z-50">
+        <div class="delete-audio-dialog" role="dialog" aria-modal="true" aria-labelledby="droppedJsonDialogTitle" aria-describedby="droppedJsonDialogDescription">
+            <div class="delete-audio-dialog-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg>
+            </div>
+            <h3 id="droppedJsonDialogTitle"></h3>
+            <p id="droppedJsonDialogDescription"></p>
+            <div class="delete-audio-actions">
+                <button type="button" onclick="hideDroppedJsonModal()" class="delete-audio-cancel">Cancelar</button>
+                <button id="droppedJsonConfirmBtn" type="button" onclick="confirmDroppedJsonImport()" class="delete-audio-save"></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="replaceLyricsModalOverlay" class="fixed inset-0 hidden flex items-center justify-center p-6 z-50">
+        <div class="delete-audio-dialog" role="dialog" aria-modal="true" aria-labelledby="replaceLyricsDialogTitle" aria-describedby="replaceLyricsDialogDescription">
+            <div class="delete-audio-dialog-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9"></path><path d="M14 3l-4 4 4 4"></path><path d="M4 17h9"></path><path d="M10 13l4 4-4 4"></path></svg>
+            </div>
+            <h3 id="replaceLyricsDialogTitle">¿Deseas reemplazar la letra?</h3>
+            <p id="replaceLyricsDialogDescription">La letra actual y sus puntos de control se reemplazarán con el texto del archivo.</p>
+            <div class="delete-audio-actions">
+                <button type="button" onclick="hideReplaceLyricsModal()" class="delete-audio-cancel">Cancelar</button>
+                <button type="button" onclick="confirmLyricsReplacement()" class="delete-audio-save">Reemplazar letra</button>
             </div>
         </div>
     </div>
@@ -3771,6 +3871,9 @@
             closeModal: document.getElementById('closeModal'),
             modalOverlay: document.getElementById('modalOverlay'),
             deleteModalOverlay: document.getElementById('deleteModalOverlay'),
+            replaceAudioModalOverlay: document.getElementById('replaceAudioModalOverlay'),
+            droppedJsonModalOverlay: document.getElementById('droppedJsonModalOverlay'),
+            replaceLyricsModalOverlay: document.getElementById('replaceLyricsModalOverlay'),
             bgWrapper: document.getElementById('bgWrapper'),
             homeView: document.getElementById('homeView'),
             playerView: document.getElementById('playerView'),
@@ -3821,6 +3924,9 @@
         const closeModal = refs.closeModal;
         const modalOverlay = refs.modalOverlay;
         const deleteModalOverlay = refs.deleteModalOverlay;
+        const replaceAudioModalOverlay = refs.replaceAudioModalOverlay;
+        const droppedJsonModalOverlay = refs.droppedJsonModalOverlay;
+        const replaceLyricsModalOverlay = refs.replaceLyricsModalOverlay;
         const bgWrapper = refs.bgWrapper;
         const homeView = refs.homeView;
         const playerView = refs.playerView;
@@ -3828,6 +3934,11 @@
         const audioInput = refs.audioInput;
         const audio = refs.audioPlayer;
         let currentAudioFile = null;
+        let currentAudioObjectUrl = null;
+        let audioMetadataRequestId = 0;
+        let pendingAudioReplacement = null;
+        let pendingDroppedJsonImport = null;
+        let pendingLyricsReplacement = null;
         const playIcon = refs.playIcon;
         const pauseIcon = refs.pauseIcon;
         const elapsedTimeText = refs.elapsedTimeText;
@@ -3835,10 +3946,13 @@
         const customSlider = refs.customSlider;
         const customSliderFill = refs.customSliderFill;
         const customSliderThumb = refs.customSliderThumb;
-        const pauseShadowToggle = document.getElementById('pauseShadowToggle');
-        const playerCardShadowToggle = document.getElementById('playerCardShadowToggle');
-        const letterBoxShadowToggle = document.getElementById('letterBoxShadowToggle');
-        const progressThumbShadowToggle = document.getElementById('progressThumbShadowToggle');
+        const letterBoxControlPointMarkers = document.getElementById('letterBoxControlPointMarkers');
+        let activePauseShadowType = 'shadow';
+        const progressThumbShadowSettings = {
+            shadow: { opacity: 0.1, blur: 13.5, spread: 6.5 },
+            light: { opacity: 0.6, blur: 28.5, spread: -1 }
+        };
+        let activeProgressThumbShadowType = 'light';
         const playerCard = refs.playerCard;
         const audioCardBleed = document.getElementById('audioCardBleed');
         const audioCardScaleHandle = document.getElementById('audioCardScaleHandle');
@@ -3932,7 +4046,14 @@ Pero si quieres fuerza y cantar con pasión,
         const letterBoxCutState = {
             cuts: []
         };
+        const letterBoxControlPointHistory = {
+            undo: [],
+            redo: [],
+            limit: 20
+        };
         let isLetterBoxAutoMode = false;
+        let areLetterBoxControlPointMarkersVisible = true;
+        let selectedLetterBoxControlPointTime = null;
 
         function getCheckedRadioValue(name) {
             return document.querySelector(`input[name="${name}"]:checked`)?.value ?? null;
@@ -4007,32 +4128,15 @@ Pero si quieres fuerza y cantar con pasión,
 
         const shadowStyleCache = new WeakMap();
 
-        function togglePauseShadow() {
-            document.querySelectorAll('[data-pause-shadow-option]').forEach((option) => {
-                option.hidden = !pauseShadowToggle.checked;
-            });
+        function togglePauseShadowType() {
+            activePauseShadowType = getCheckedRadioValue('pauseShadowType') || 'shadow';
+            document.getElementById('pauseShadowColorRow').classList.toggle('hidden', activePauseShadowType !== 'light');
             applyPauseButtonSettings();
         }
 
-        function togglePlayerCardShadow() {
-            document.getElementById('playerCardShadowControls').hidden = !playerCardShadowToggle.checked;
-            applyPlayerCardSettings();
-        }
-
-        function toggleLetterBoxShadow() {
-            document.getElementById('letterBoxShadowControls').hidden = !letterBoxShadowToggle.checked;
-            applyLetterBoxSettings();
-        }
-
-        function updatePanelShadowLabels(prefix, type) {
-            const isLight = type === 'light';
-            document.getElementById(`${prefix}ShadowOpacityLabel`).textContent = isLight ? 'Opacidad de luz' : 'Opacidad de sombra';
-            document.getElementById(`${prefix}ShadowBlurLabel`).textContent = isLight ? 'Tamaño de luz' : 'Tamaño de sombra';
-            document.getElementById(`${prefix}ShadowSpreadLabel`).textContent = isLight ? 'Fuerza de luz' : 'Fuerza de sombra';
-        }
-
-        function toggleProgressThumbShadow() {
-            document.getElementById('progressThumbShadowControls').hidden = !progressThumbShadowToggle.checked;
+        function toggleProgressThumbShadowType() {
+            activeProgressThumbShadowType = getCheckedRadioValue('progressThumbShadowType') || 'light';
+            document.getElementById('thumbShadowColorRow').classList.toggle('hidden', activeProgressThumbShadowType !== 'light');
             applyCustomSliderSettings();
         }
 
@@ -4166,14 +4270,14 @@ Pero si quieres fuerza y cantar con pasión,
 
             letterList.append(
                 createConfigSubsectionCard('Panel de letra', ['letterBoxOption'], optionElements, 'letter-panel'),
-                createConfigSubsectionCard('Sombra del panel', ['letterBoxShadowOption'], optionElements, 'panel-shadow')
+                createConfigSubsectionCard('Efecto del panel', ['letterBoxShadowOption'], optionElements, 'panel-shadow')
             );
 
             audioList.append(
                 createConfigSubsectionCard('Panel de audio', ['playerCardOption'], optionElements, 'audio-panel'),
-                createConfigSubsectionCard('Sombra del panel', ['playerShadowOption'], optionElements, 'panel-shadow'),
+                createConfigSubsectionCard('Efecto del panel', ['playerShadowOption'], optionElements, 'panel-shadow'),
                 createConfigSubsectionCard('Botón de pausa', ['pauseButtonColorOption'], optionElements, 'pause-button', true),
-                createConfigSubsectionCard('Sombra del botón de pausa', ['pauseBtnConfig'], optionElements, 'pause-shadow', true),
+                createConfigSubsectionCard('Efecto del botón de pausa', ['pauseBtnConfig'], optionElements, 'pause-shadow', true),
                 createConfigSubsectionCard('Contadores', ['counterOption', 'timeChipOption'], optionElements, 'counters'),
                 createConfigSubsectionCard('Barra de audio', ['progressOption'], optionElements, 'progress-bar')
             );
@@ -4223,6 +4327,7 @@ Pero si quieres fuerza y cantar con pasión,
         const exportSongBtn = document.getElementById('exportSongBtn');
         const importSongBtn = document.getElementById('importSongBtn');
         const importSongFile = document.getElementById('importSongFile');
+        let isApplyingImportedTheme = false;
 
         function createConfigExport() {
             const controls = {};
@@ -4237,11 +4342,10 @@ Pero si quieres fuerza y cantar con pasión,
 
             return {
                 format: 'karaoke-app-settings',
-                version: 2,
+                version: 3,
                 exportedAt: new Date().toISOString(),
                 controls,
                 radios,
-                backgroundImage: bgWrapper.style.backgroundImage,
                 audioScale: playerCardScaleState.value,
                 vinyl: {
                     size: linkedVinylSettings.sizePercent,
@@ -4273,25 +4377,42 @@ Pero si quieres fuerza y cantar con pasión,
         }
 
         function importConfig(settings) {
-            if (!settings || settings.format !== 'karaoke-app-settings' || ![1, 2].includes(settings.version)
+            if (!settings || settings.format !== 'karaoke-app-settings' || ![1, 2, 3].includes(settings.version)
                 || !settings.controls || !settings.radios || !settings.vinyl) {
                 throw new Error('El archivo no tiene un formato de configuración compatible.');
             }
 
-            Object.entries(settings.controls).forEach(([id, value]) => {
-                const control = document.getElementById(id);
-                if (!control || control.type === 'file' || control.type === 'radio') return;
-                if (control.type === 'checkbox') control.checked = Boolean(value);
-                else control.value = String(value);
-            });
-            Object.entries(settings.radios).forEach(([name, value]) => {
-                const radio = document.querySelector(`#modalOverlay input[type="radio"][name="${CSS.escape(name)}"][value="${CSS.escape(String(value))}"]`);
-                if (radio) radio.checked = true;
-            });
+            isApplyingImportedTheme = true;
+            try {
+                Object.entries(settings.controls).forEach(([id, value]) => {
+                    const control = document.getElementById(id);
+                    if (!control || control.type === 'file' || control.type === 'radio') return;
+                    if (control.type === 'checkbox') control.checked = Boolean(value);
+                    else control.value = String(value);
+                });
+                Object.entries(settings.radios).forEach(([name, value]) => {
+                    const radio = document.querySelector(`#modalOverlay input[type="radio"][name="${CSS.escape(name)}"][value="${CSS.escape(String(value))}"]`);
+                    if (radio) radio.checked = true;
+                });
+                [
+                    ['pauseShadowToggle', 'pauseShadowType'],
+                    ['playerCardShadowToggle', 'playerShadowType'],
+                    ['letterBoxShadowToggle', 'letterBoxShadowType']
+                ].forEach(([legacyToggleId, radioName]) => {
+                    const legacyToggle = settings.controls[legacyToggleId];
+                    if (legacyToggle !== false && legacyToggle !== 'false') return;
+                    const disabledOption = document.querySelector(
+                        `#modalOverlay input[type="radio"][name="${radioName}"][value="off"]`
+                    );
+                    if (disabledOption) disabledOption.checked = true;
+                });
 
-            document.querySelectorAll('#modalOverlay input:not([type="file"])').forEach((control) => {
-                control.dispatchEvent(new Event(control.type === 'radio' || control.type === 'checkbox' ? 'change' : 'input', { bubbles: true }));
-            });
+                document.querySelectorAll('#modalOverlay input:not([type="file"])').forEach((control) => {
+                    control.dispatchEvent(new Event(control.type === 'radio' || control.type === 'checkbox' ? 'change' : 'input', { bubbles: true }));
+                });
+            } finally {
+                isApplyingImportedTheme = false;
+            }
 
             playerCardScaleState.value = Math.max(0.5, Math.min(1.5, Number(settings.audioScale) || 1));
             const letterTextSettings = settings.letterTextSettings || settings.letterText || {};
@@ -4324,7 +4445,7 @@ Pero si quieres fuerza y cantar con pasión,
             applyPlayerCardSettings();
             applyCustomSliderSettings();
             applyBackground();
-            if (settings.backgroundImage) bgWrapper.style.backgroundImage = settings.backgroundImage;
+            if (getCheckedRadioValue('bgType') === 'image') bgWrapper.style.backgroundImage = 'none';
             applyBlur();
             renderLetterBoxText();
             captureLetterBoxTextReferenceWidth();
@@ -4355,37 +4476,17 @@ Pero si quieres fuerza y cantar con pasión,
             });
         }
 
-        async function createSongExport() {
-            if (!currentAudioFile) throw new Error('Carga un audio antes de guardar la canción.');
-
-            const images = await Promise.all(imagePreviewItems.map(async (previewBox) => ({
-                data: await readBlobAsDataUrl(await (await fetch(previewBox.querySelector('img').src)).blob()),
-                left: Number.parseFloat(previewBox.style.left) || 0,
-                top: Number.parseFloat(previewBox.style.top) || 0,
-                width: Number.parseFloat(previewBox.style.width) || 220,
-                layer: previewBox.dataset.layer === 'back' ? 'back' : 'front'
-            })));
-            const vinylImage = linkedVinylImageLoaded && linkedVinylOverlay?.src
-                ? await readBlobAsDataUrl(await (await fetch(linkedVinylOverlay.src)).blob())
-                : null;
-
+        function createSongExport() {
             return {
                 format: 'karaoke-song',
-                version: 1,
+                version: 3,
                 exportedAt: new Date().toISOString(),
                 viewport: { width: window.innerWidth, height: window.innerHeight },
-                audio: {
-                    name: currentAudioFile.name,
-                    type: currentAudioFile.type,
-                    data: await readBlobAsDataUrl(currentAudioFile)
-                },
                 audioTexts: {
                     right: textState.right.value,
                     left: textState.left.value
                 },
-                images,
                 vinyl: {
-                    image: vinylImage,
                     size: linkedVinylSettings.sizePercent,
                     left: linkedVinylSettings.left,
                     top: linkedVinylSettings.top,
@@ -4396,6 +4497,7 @@ Pero si quieres fuerza y cantar con pasión,
                 },
                 lyrics: {
                     value: letterBoxTextState.value,
+                    autoMode: isLetterBoxAutoMode,
                     align: letterBoxTextState.align,
                     horizontalOffset: letterBoxTextState.horizontalOffset,
                     size: letterBoxTextState.size,
@@ -4418,11 +4520,11 @@ Pero si quieres fuerza y cantar con pasión,
 
         async function exportSong() {
             try {
-                const content = JSON.stringify(await createSongExport());
+                const content = JSON.stringify(createSongExport());
                 const url = URL.createObjectURL(new Blob([content], { type: 'application/json' }));
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = `${currentAudioFile.name.replace(/\.[^.]+$/, '') || 'cancion'}.karaoke.json`;
+                link.download = `${currentAudioFile?.name.replace(/\.[^.]+$/, '') || 'cancion'}.karaoke.json`;
                 link.click();
                 URL.revokeObjectURL(url);
             } catch (error) {
@@ -4430,50 +4532,41 @@ Pero si quieres fuerza y cantar con pasión,
             }
         }
 
-        function waitForAudioMetadata() {
-            return new Promise((resolve, reject) => {
-                const cleanup = () => {
-                    audio.removeEventListener('loadedmetadata', handleLoaded);
-                    audio.removeEventListener('error', handleError);
-                };
-                const handleLoaded = () => { cleanup(); resolve(); };
-                const handleError = () => { cleanup(); reject(new Error('No se pudo cargar el audio de la canción.')); };
-                audio.addEventListener('loadedmetadata', handleLoaded, { once: true });
-                audio.addEventListener('error', handleError, { once: true });
-            });
-        }
-
-        function loadSongImage(source) {
-            return new Promise((resolve, reject) => {
-                const image = new Image();
-                image.onload = () => resolve(image);
-                image.onerror = () => reject(new Error('No se pudo cargar una de las imágenes de la canción.'));
-                image.src = source;
-            });
-        }
+        document.getElementById('deleteAudioSaveBtn')?.addEventListener('click', exportSong);
 
         async function importSong(song) {
-            if (!song || song.format !== 'karaoke-song' || song.version !== 1
-                || !song.audio?.data || !Array.isArray(song.images) || !song.vinyl || !song.lyrics) {
+            if (!song || song.format !== 'karaoke-song' || ![1, 2, 3].includes(song.version)
+                || !song.lyrics || typeof song.lyrics !== 'object') {
                 throw new Error('El archivo no tiene un formato de canción compatible.');
             }
 
-            const audioBlob = await (await fetch(song.audio.data)).blob();
-            const audioFile = new File([audioBlob], song.audio.name || 'cancion', {
-                type: song.audio.type || audioBlob.type || 'application/octet-stream'
-            });
             letterBoxTextState.value = String(song.lyrics.value ?? '');
             letterBoxTextState.align = ['left', 'center', 'right'].includes(song.lyrics.align) ? song.lyrics.align : 'center';
             letterBoxTextState.horizontalOffset = Number(song.lyrics.horizontalOffset) || 0;
             letterBoxTextState.size = Number(song.lyrics.size) || 30;
+            isLetterBoxAutoMode = song.lyrics.autoMode === true;
+            updateLetterBoxAutoModeButton();
             setTextValue('right', String(song.audioTexts?.right ?? ''));
             setTextValue('left', String(song.audioTexts?.left ?? ''));
-            letterBoxCutState.cuts = Array.isArray(song.lyrics.cuts)
+            const importedCuts = Array.isArray(song.lyrics.cuts)
                 ? song.lyrics.cuts.filter((point) => Number.isFinite(Number(point.time))
                     && Number.isFinite(Number(point.lineIndex) - 0)
                     && point.mode === 'resume')
-                    .map((point) => ({ time: Number(point.time), lineIndex: Number(point.lineIndex), mode: point.mode }))
+                    .map((point) => ({
+                        time: Number(point.time),
+                        lineIndex: Number(point.lineIndex) + (song.version === 1 ? 1 : 0),
+                        mode: point.mode
+                    }))
                 : [];
+            letterBoxCutState.cuts = [];
+            selectedLetterBoxControlPointTime = null;
+            letterBoxControlPointHistory.undo = [];
+            letterBoxControlPointHistory.redo = [];
+            importedCuts.forEach((point) => {
+                const existingIndex = findLetterBoxControlPointIndex(point.time);
+                if (existingIndex >= 0) letterBoxCutState.cuts[existingIndex] = point;
+                else letterBoxCutState.cuts.push(point);
+            });
 
             if (song.lyrics.box) {
                 document.getElementById('letterBoxHeightPercent').value = String(song.lyrics.box.height);
@@ -4499,55 +4592,27 @@ Pero si quieres fuerza y cantar con pasión,
                 Object.assign(letterBoxParentheticalTagState, song.labels.parenthetical || {});
             }
 
-            closeImagePreviewMenu();
-            imagePreviewItems.splice(0).forEach((previewBox) => previewBox.remove());
-            activeImagePreview = null;
             const viewportWidth = Number(song.viewport?.width) || window.innerWidth;
             const viewportHeight = Number(song.viewport?.height) || window.innerHeight;
-            const imageScale = Math.min(window.innerWidth / viewportWidth, window.innerHeight / viewportHeight);
-            song.images.slice(0, MAX_PREVIEW_IMAGES).forEach((image) => {
-                if (!image?.data) return;
-                const previewBox = createImagePreview(image.data);
-                if (!previewBox) return;
-                previewBox.style.left = `${Number(image.left) * window.innerWidth / viewportWidth}px`;
-                previewBox.style.top = `${Number(image.top) * window.innerHeight / viewportHeight}px`;
-                setImagePreviewLayer(previewBox, image.layer);
-                applyImageSize(previewBox, Number(image.width) * imageScale);
-            });
-
-            Object.assign(linkedVinylSettings, {
-                sizePercent: Number(song.vinyl.size) || 24,
-                left: song.vinyl.left !== null && Number.isFinite(Number(song.vinyl.left))
-                    ? Number(song.vinyl.left) * window.innerWidth / viewportWidth : null,
-                top: song.vinyl.top !== null && Number.isFinite(Number(song.vinyl.top))
-                    ? Number(song.vinyl.top) * window.innerHeight / viewportHeight : null,
-                borderColor: /^#[0-9a-f]{6}$/i.test(song.vinyl.borderColor) ? song.vinyl.borderColor : '#ffffff',
-                borderWidth: Number(song.vinyl.borderWidth) || 0,
-                layer: song.vinyl.layer === 'back' ? 'back' : 'front',
-                style: song.vinyl.style === 'modern' ? 'modern' : 'classic'
-            });
-
-            const metadataLoaded = waitForAudioMetadata();
-            handleAudioFile(audioFile);
-            await metadataLoaded;
+            if (song.vinyl && typeof song.vinyl === 'object') {
+                Object.assign(linkedVinylSettings, {
+                    sizePercent: Number(song.vinyl.size) || 24,
+                    left: song.vinyl.left !== null && Number.isFinite(Number(song.vinyl.left))
+                        ? Number(song.vinyl.left) * window.innerWidth / viewportWidth : null,
+                    top: song.vinyl.top !== null && Number.isFinite(Number(song.vinyl.top))
+                        ? Number(song.vinyl.top) * window.innerHeight / viewportHeight : null,
+                    borderColor: /^#[0-9a-f]{6}$/i.test(song.vinyl.borderColor) ? song.vinyl.borderColor : '#ffffff',
+                    borderWidth: Number(song.vinyl.borderWidth) || 0,
+                    layer: song.vinyl.layer === 'back' ? 'back' : 'front',
+                    style: song.vinyl.style === 'modern' ? 'modern' : 'classic'
+                });
+            }
 
             applyLetterBoxSettings();
             captureLetterBoxTextReferenceWidth();
             rebuildLetterBoxTimeline();
             updateLetterBoxUndoButton();
             updateImagePickerState();
-            if (song.vinyl.image) {
-                const vinylImage = await loadSongImage(song.vinyl.image);
-                linkedVinylOverlay.src = song.vinyl.image;
-                linkedVinylOverlay.dataset.naturalWidth = String(vinylImage.naturalWidth);
-                linkedVinylOverlay.dataset.naturalHeight = String(vinylImage.naturalHeight);
-                linkedVinylOverlay.classList.remove('hidden');
-                linkedVinylImageLoaded = true;
-            } else {
-                linkedVinylOverlay.removeAttribute('src');
-                linkedVinylOverlay.classList.add('hidden');
-                linkedVinylImageLoaded = false;
-            }
             updateLinkedVinylActionButtons();
             updateLinkedVinylVisual();
         }
@@ -4623,7 +4688,6 @@ Pero si quieres fuerza y cantar con pasión,
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
             dropZone.classList.remove('border-white/20');
-            if (e.dataTransfer.files.length) handleAudioFile(e.dataTransfer.files[0]);
         });
         audioInput.addEventListener('change', (e) => {
             if (e.target.files.length) handleAudioFile(e.target.files[0]);
@@ -4693,14 +4757,69 @@ Pero si quieres fuerza y cantar con pasión,
         imageInput.addEventListener('change', (e) => {
             const file = e.target.files && e.target.files[0];
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                createImagePreview(event.target.result);
-            };
-            reader.readAsDataURL(file);
-            // Permite volver a seleccionar el mismo archivo.
+            addImageFiles([file]).catch((error) => alert(error.message));
             e.target.value = '';
         });
+
+        async function addImageFiles(files) {
+            for (const file of files) {
+                if (!file.type.startsWith('image/')) continue;
+                if (!currentAudioFile || imagePreviewItems.length >= MAX_PREVIEW_IMAGES) break;
+                createImagePreview(await readBlobAsDataUrl(file));
+            }
+        }
+
+        const fileDropOverlay = document.getElementById('fileDropOverlay');
+        let fileDragDepth = 0;
+        const isDraggingFiles = (event) => Array.from(event.dataTransfer?.types || []).includes('Files');
+        const hideFileDropOverlay = () => {
+            fileDragDepth = 0;
+            fileDropOverlay.hidden = true;
+        };
+        document.addEventListener('dragenter', (event) => {
+            if (!isDraggingFiles(event)) return;
+            event.preventDefault();
+            fileDragDepth += 1;
+            fileDropOverlay.hidden = false;
+        }, true);
+        document.addEventListener('dragleave', (event) => {
+            if (!isDraggingFiles(event)) return;
+            fileDragDepth = Math.max(0, fileDragDepth - 1);
+            if (fileDragDepth === 0 || event.clientX <= 0 || event.clientY <= 0
+                || event.clientX >= window.innerWidth || event.clientY >= window.innerHeight) {
+                hideFileDropOverlay();
+            }
+        }, true);
+        window.addEventListener('dragover', (event) => {
+            if (!isDraggingFiles(event)) return;
+            event.preventDefault();
+            fileDropOverlay.hidden = false;
+        });
+        window.addEventListener('dragend', hideFileDropOverlay);
+        window.addEventListener('blur', hideFileDropOverlay);
+        document.addEventListener('drop', (event) => {
+            hideFileDropOverlay();
+            const droppedFiles = Array.from(event.dataTransfer?.files || []);
+            const imageFiles = droppedFiles
+                .filter((file) => file.type.startsWith('image/'));
+            const jsonFile = droppedFiles.find(isJsonFile);
+            const textFile = droppedFiles.find(isTextFile);
+            const audioFile = droppedFiles.find((file) => !file.type.startsWith('image/')
+                && !isJsonFile(file) && !isTextFile(file));
+            if (!imageFiles.length && !jsonFile && !textFile && !audioFile) return;
+            event.preventDefault();
+            if (imageFiles.length) {
+                addImageFiles(imageFiles).catch((error) => alert(error.message));
+            }
+            if (jsonFile) {
+                processDroppedJsonFile(jsonFile).catch((error) => alert(error.message));
+            } else if (textFile) {
+                showReplaceLyricsModal(textFile);
+            } else if (audioFile) {
+                if (currentAudioFile) showReplaceAudioModal(audioFile);
+                else handleAudioFile(audioFile);
+            }
+        }, true);
 
         let linkedVinylImageLoaded = false;
         let isConfigOpen = false;
@@ -4917,8 +5036,9 @@ Pero si quieres fuerza y cantar con pasión,
         }
 
         function updateLinkedVinylActionButtons() {
-            const shouldShowDelete = linkedVinylImageLoaded && linkedVinylOverlay?.getAttribute('src');
-            if (linkedVinylActionBtn) linkedVinylActionBtn.classList.toggle('hidden', shouldShowDelete);
+            const hasAudioLoaded = Boolean(currentAudioFile);
+            const shouldShowDelete = hasAudioLoaded && linkedVinylImageLoaded && linkedVinylOverlay?.getAttribute('src');
+            if (linkedVinylActionBtn) linkedVinylActionBtn.classList.toggle('hidden', !hasAudioLoaded || shouldShowDelete);
             if (linkedVinylDeleteBtn) linkedVinylDeleteBtn.classList.toggle('hidden', !shouldShowDelete);
         }
 
@@ -5127,9 +5247,6 @@ Pero si quieres fuerza y cantar con pasión,
                 closeLinkedVinylMenu();
             }
         });
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') closeLinkedVinylMenu();
-        });
 
         function stopImageInteraction() {
             isDraggingImage = false;
@@ -5146,9 +5263,28 @@ Pero si quieres fuerza y cantar con pasión,
         });
 
 
+        function updateAudioDependentControls(hasAudioLoaded) {
+            [
+                imagePickerBtn,
+                letterBoxAutoModeBtn,
+                letterBoxEditBtn,
+                letterBoxNextParagraphBtn,
+                letterBoxUndoCutBtn,
+                linkedVinylActionBtn,
+                document.getElementById('letterBoxControlPointVisibilityBtn')
+            ].forEach((button) => button?.classList.toggle('hidden', !hasAudioLoaded));
+            document.getElementById('letterBoxAutoModeDivider')?.classList.toggle('hidden', !hasAudioLoaded);
+            document.getElementById('playerVisibilityDivider')?.classList.toggle('hidden', !hasAudioLoaded);
+            document.getElementById('letterBoxActionToolbarGroup')?.classList.toggle('hidden', !hasAudioLoaded);
+            document.getElementById('playerMediaToolbar')?.classList.toggle('hidden', !hasAudioLoaded);
+            document.getElementById('imageAudioDivider')?.classList.toggle('hidden', !hasAudioLoaded);
+            document.getElementById('borrar-cancion')?.classList.toggle('hidden', !hasAudioLoaded);
+        }
+
         function toggleConfigBtn() {
             const isVisible = document.getElementById('configVisibility').checked;
-            const hasAudioLoaded = !playerView.classList.contains('hidden');
+            const hasAudioLoaded = Boolean(currentAudioFile);
+            document.body.classList.toggle('is-interface-invisible', !isVisible);
             document.querySelectorAll('.player-action-toolbar').forEach((toolbar) => {
                 toolbar.classList.toggle('is-visually-hidden', !isVisible);
             });
@@ -5158,27 +5294,220 @@ Pero si quieres fuerza y cantar con pasión,
             // Restaura elementos que podían haber quedado ocultos por la
             // lógica anterior; el estado visual ahora se controla en la barra.
             configBtn.classList.remove('hidden');
-            document.getElementById('configImageDivider')?.classList.remove('hidden');
-            document.getElementById('imageAudioDivider')?.classList.toggle('hidden', !hasAudioLoaded);
-            const borrarBtn = document.getElementById('borrar-cancion');
-            if (borrarBtn) borrarBtn.classList.toggle('hidden', !hasAudioLoaded);
-            if (letterBoxEditBtn) letterBoxEditBtn.classList.remove('hidden');
-            if (letterBoxAutoModeBtn) letterBoxAutoModeBtn.classList.remove('hidden');
-            if (letterBoxNextParagraphBtn) letterBoxNextParagraphBtn.classList.remove('hidden');
-            if (letterBoxUndoCutBtn) letterBoxUndoCutBtn.classList.remove('hidden');
+            updateAudioDependentControls(hasAudioLoaded);
             configGhostTrigger?.classList.add('hidden');
             updateLetterBoxAutoModeButton();
             updateLinkedVinylActionButtons();
+            const interfaceVisibilityBtn = document.getElementById('interfaceVisibilityBtn');
+            const visibilityLabel = isVisible ? 'Ocultar interfaz' : 'Mostrar interfaz';
+            if (interfaceVisibilityBtn) interfaceVisibilityBtn.dataset.tooltip = visibilityLabel;
+            interfaceVisibilityBtn?.setAttribute('aria-label', visibilityLabel);
+            interfaceVisibilityBtn?.removeAttribute('title');
+            interfaceVisibilityBtn?.setAttribute('aria-pressed', String(isVisible));
+            updateLetterBoxControlPointMarkers();
+        }
+
+        function decodeAudioTagText(bytes, encoding = 3) {
+            const decoders = {
+                0: 'windows-1252',
+                1: 'utf-16',
+                2: 'utf-16be',
+                3: 'utf-8'
+            };
+            const text = new TextDecoder(decoders[encoding] || 'utf-8').decode(bytes);
+            return text.replace(/\0/g, '').trim();
+        }
+
+        function parseId3AudioTags(bytes) {
+            if (bytes.length < 10 || String.fromCharCode(...bytes.subarray(0, 3)) !== 'ID3') return {};
+            const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+            const version = bytes[3];
+            const tagSize = (bytes[6] << 21) | (bytes[7] << 14) | (bytes[8] << 7) | bytes[9];
+            const end = Math.min(bytes.length, 10 + tagSize);
+            let offset = 10;
+            if (bytes[5] & 0x40) {
+                const extendedHeaderSize = version === 4
+                    ? (bytes[10] << 21) | (bytes[11] << 14) | (bytes[12] << 7) | bytes[13]
+                    : view.getUint32(10);
+                offset += version === 4 ? extendedHeaderSize : extendedHeaderSize + 4;
+            }
+            const tags = {};
+            while (offset + 10 <= end) {
+                const frameId = String.fromCharCode(...bytes.subarray(offset, offset + (version === 2 ? 3 : 4)));
+                if (!frameId.trim()) break;
+                const headerSize = version === 2 ? 6 : 10;
+                const frameSize = version === 2
+                    ? (bytes[offset + 3] << 16) | (bytes[offset + 4] << 8) | bytes[offset + 5]
+                    : version === 4
+                        ? (bytes[offset + 4] << 21) | (bytes[offset + 5] << 14) | (bytes[offset + 6] << 7) | bytes[offset + 7]
+                        : view.getUint32(offset + 4);
+                const contentStart = offset + headerSize;
+                const contentEnd = Math.min(end, contentStart + frameSize);
+                if (frameSize <= 0 || contentEnd <= contentStart) break;
+                const frameBytes = bytes.subarray(contentStart, contentEnd);
+                const titleFrame = version === 2 ? 'TT2' : 'TIT2';
+                const artistFrame = version === 2 ? 'TP1' : 'TPE1';
+                if ((frameId === titleFrame || frameId === artistFrame) && frameBytes.length > 1) {
+                    const value = decodeAudioTagText(frameBytes.subarray(1), frameBytes[0]);
+                    if (value) tags[frameId === titleFrame ? 'title' : 'artist'] = value;
+                }
+                offset = contentStart + frameSize;
+            }
+            return tags;
+        }
+
+        function parseFlacAudioTags(bytes) {
+            if (String.fromCharCode(...bytes.subarray(0, 4)) !== 'fLaC') return {};
+            let offset = 4;
+            while (offset + 4 <= bytes.length) {
+                const blockType = bytes[offset] & 0x7f;
+                const blockSize = (bytes[offset + 1] << 16) | (bytes[offset + 2] << 8) | bytes[offset + 3];
+                const blockStart = offset + 4;
+                const blockEnd = blockStart + blockSize;
+                if (blockEnd > bytes.length) break;
+                if (blockType === 4 && blockSize >= 8) {
+                    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+                    let cursor = blockStart;
+                    const vendorLength = view.getUint32(cursor, true);
+                    cursor += 4 + vendorLength;
+                    const commentCount = view.getUint32(cursor, true);
+                    cursor += 4;
+                    const tags = {};
+                    for (let index = 0; index < commentCount && cursor + 4 <= blockEnd; index += 1) {
+                        const length = view.getUint32(cursor, true);
+                        cursor += 4;
+                        if (cursor + length > blockEnd) break;
+                        const comment = decodeAudioTagText(bytes.subarray(cursor, cursor + length));
+                        cursor += length;
+                        const separator = comment.indexOf('=');
+                        if (separator < 0) continue;
+                        const key = comment.slice(0, separator).toUpperCase();
+                        if (key === 'TITLE' || key === 'ARTIST') {
+                            tags[key === 'TITLE' ? 'title' : 'artist'] ||= comment.slice(separator + 1).trim();
+                        }
+                    }
+                    return tags;
+                }
+                offset = blockEnd;
+                if (bytes[offset - 4] & 0x80) break;
+            }
+            return {};
+        }
+
+        function parseWavAudioTags(bytes) {
+            if (bytes.length < 12 || String.fromCharCode(...bytes.subarray(0, 4)) !== 'RIFF'
+                || String.fromCharCode(...bytes.subarray(8, 12)) !== 'WAVE') return {};
+            const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+            let offset = 12;
+            while (offset + 8 <= bytes.length) {
+                const chunkId = String.fromCharCode(...bytes.subarray(offset, offset + 4));
+                const chunkSize = view.getUint32(offset + 4, true);
+                const chunkStart = offset + 8;
+                const chunkEnd = Math.min(bytes.length, chunkStart + chunkSize);
+                if (chunkEnd <= chunkStart) break;
+                if (chunkId === 'LIST' && chunkSize >= 4
+                    && String.fromCharCode(...bytes.subarray(chunkStart, chunkStart + 4)) === 'INFO') {
+                    const tags = {};
+                    let cursor = chunkStart + 4;
+                    while (cursor + 8 <= chunkEnd) {
+                        const infoId = String.fromCharCode(...bytes.subarray(cursor, cursor + 4));
+                        const infoSize = view.getUint32(cursor + 4, true);
+                        const valueStart = cursor + 8;
+                        const valueEnd = Math.min(chunkEnd, valueStart + infoSize);
+                        const value = decodeAudioTagText(bytes.subarray(valueStart, valueEnd), 0);
+                        if (infoId === 'INAM' && value) tags.title = value;
+                        if (infoId === 'IART' && value) tags.artist = value;
+                        cursor = valueStart + infoSize + (infoSize & 1);
+                    }
+                    return tags;
+                }
+                offset = chunkStart + chunkSize + (chunkSize & 1);
+            }
+            return {};
+        }
+
+        function parseMp4AudioTags(bytes) {
+            const tags = {};
+            const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+            const text = (start, length) => String.fromCharCode(...bytes.subarray(start, start + length));
+            const containers = new Set(['moov', 'udta', 'ilst', 'trak', 'mdia', 'minf', 'stbl', 'meta']);
+            const visit = (start, end, parent = '') => {
+                let offset = start;
+                while (offset + 8 <= end) {
+                    let size = view.getUint32(offset);
+                    const type = text(offset + 4, 4);
+                    let headerSize = 8;
+                    if (size === 1 && offset + 16 <= end) {
+                        const largeSize = view.getBigUint64(offset + 8);
+                        if (largeSize > BigInt(Number.MAX_SAFE_INTEGER)) break;
+                        size = Number(largeSize);
+                        headerSize = 16;
+                    } else if (size === 0) {
+                        size = end - offset;
+                    }
+                    if (size < headerSize || offset + size > end) break;
+                    const contentStart = offset + headerSize;
+                    const atomEnd = offset + size;
+                    if (parent === 'ilst' && (type === '\u00a9nam' || type === '\u00a9ART')) {
+                        let dataOffset = contentStart;
+                        while (dataOffset + 16 <= atomEnd) {
+                            const dataSize = view.getUint32(dataOffset);
+                            const dataType = text(dataOffset + 4, 4);
+                            if (dataSize < 16 || dataOffset + dataSize > atomEnd) break;
+                            if (dataType === 'data') {
+                                const value = decodeAudioTagText(bytes.subarray(dataOffset + 16, dataOffset + dataSize));
+                                if (value) tags[type === '\u00a9nam' ? 'title' : 'artist'] = value;
+                                break;
+                            }
+                            dataOffset += dataSize;
+                        }
+                    } else if (containers.has(type)) {
+                        visit(contentStart + (type === 'meta' ? 4 : 0), atomEnd, type);
+                    }
+                    offset = atomEnd;
+                }
+            };
+            visit(0, bytes.length);
+            return tags;
+        }
+
+        async function readAudioMetadata(file) {
+            const metadataBytes = file.slice(0, 32 * 1024 * 1024);
+            const bytes = new Uint8Array(await metadataBytes.arrayBuffer());
+            const tags = {
+                ...parseMp4AudioTags(bytes),
+                ...parseWavAudioTags(bytes),
+                ...parseFlacAudioTags(bytes),
+                ...parseId3AudioTags(bytes)
+            };
+            if ((!tags.title || !tags.artist) && file.size >= 128) {
+                const legacyTag = new Uint8Array(await file.slice(-128).arrayBuffer());
+                if (String.fromCharCode(...legacyTag.subarray(0, 3)) !== 'TAG') return tags;
+                const legacyText = (start, end) => decodeAudioTagText(legacyTag.subarray(start, end), 0);
+                tags.title ||= legacyText(3, 33);
+                tags.artist ||= legacyText(33, 63);
+            }
+            return tags;
         }
 
         function handleAudioFile(file) {
+            currentAudioFile = file;
+            const metadataRequestId = ++audioMetadataRequestId;
+            readAudioMetadata(file).then(({ title, artist }) => {
+                if (metadataRequestId !== audioMetadataRequestId || currentAudioFile !== file) return;
+                if (title) setTextValue('left', title);
+                if (artist) setTextValue('right', artist);
+            }).catch((error) => {
+                console.warn('No se pudieron leer los metadatos del audio.', error);
+            });
             homeView.classList.add('hidden');
             playerView.classList.remove('hidden');
             toggleConfigBtn();
             syncLetterBoxManipulationHandles();
 
-            currentAudioFile = file;
-            audio.src = URL.createObjectURL(file);
+            if (currentAudioObjectUrl) URL.revokeObjectURL(currentAudioObjectUrl);
+            currentAudioObjectUrl = URL.createObjectURL(file);
+            audio.src = currentAudioObjectUrl;
             audio.load();
             requestAnimationFrame(() => {
                 updatePlayerLayoutScale();
@@ -5228,14 +5557,60 @@ Pero si quieres fuerza y cantar con pasión,
             const rect = event.currentTarget.getBoundingClientRect();
             const clickX = event.clientX - rect.left;
             const isLeftSide = clickX < rect.width / 2;
-            const deltaSeconds = isLeftSide ? -10 : 10;
-            const nextTime = Math.max(0, Math.min(audio.duration || 0, audio.currentTime + deltaSeconds));
+            seekAudioBy(isLeftSide ? -10 : 10);
+        }
+
+        function seekAudioBy(deltaSeconds) {
+            if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
+            const nextTime = Math.max(0, Math.min(audio.duration, audio.currentTime + deltaSeconds));
             audio.currentTime = nextTime;
         }
 
+        let keyboardSeekState = null;
+
+        function stopKeyboardSeek() {
+            if (!keyboardSeekState) return;
+            clearTimeout(keyboardSeekState.cooldownTimeout);
+            if (keyboardSeekState.interval !== null) clearInterval(keyboardSeekState.interval);
+            keyboardSeekState = null;
+        }
+
+        function startKeyboardSeek(key) {
+            if (!currentAudioFile || playerView.classList.contains('hidden')) return;
+            if (keyboardSeekState?.key === key) return;
+            stopKeyboardSeek();
+
+            const direction = key === 'arrowleft' ? -1 : 1;
+            seekAudioBy(direction * 10);
+            keyboardSeekState = {
+                key,
+                direction,
+                stepSeconds: 1,
+                jumpsAtStep: 0,
+                interval: null,
+                cooldownTimeout: setTimeout(() => {
+                    if (!keyboardSeekState || keyboardSeekState.key !== key) return;
+                    keyboardSeekState.interval = setInterval(() => {
+                        seekAudioBy(keyboardSeekState.direction * keyboardSeekState.stepSeconds);
+                        keyboardSeekState.jumpsAtStep += 1;
+                        if (keyboardSeekState.jumpsAtStep === 10) {
+                            keyboardSeekState.stepSeconds = Math.min(10, keyboardSeekState.stepSeconds * 2);
+                            keyboardSeekState.jumpsAtStep = 0;
+                        }
+                    }, 100);
+                }, 400)
+            };
+        }
+
         function resetApp() {
+            stopKeyboardSeek();
             audio.pause();
-            audio.src = '';
+            audio.removeAttribute('src');
+            audio.load();
+            if (currentAudioObjectUrl) {
+                URL.revokeObjectURL(currentAudioObjectUrl);
+                currentAudioObjectUrl = null;
+            }
             currentAudioFile = null;
             playIcon.classList.remove('hidden');
             pauseIcon.classList.add('hidden');
@@ -5243,10 +5618,34 @@ Pero si quieres fuerza y cantar con pasión,
             updateAudioCardScaleHandle();
             homeView.classList.remove('hidden');
             syncLetterBoxManipulationHandles();
-            document.getElementById('borrar-cancion')?.classList.add('hidden');
-            document.getElementById('imageAudioDivider')?.classList.add('hidden');
+
+            closeImagePreviewMenu();
+            imagePreviewItems.splice(0).forEach((previewBox) => previewBox.remove());
+            activeImagePreview = null;
+            updateImagePickerState();
+
+            closeLinkedVinylMenu();
+            linkedVinylImageLoaded = false;
+            linkedVinylSpinState.running = false;
+            linkedVinylOverlay?.removeAttribute('src');
+            linkedVinylOverlay?.removeAttribute('data-natural-width');
+            linkedVinylOverlay?.removeAttribute('data-natural-height');
+            linkedVinylOverlay?.classList.add('hidden');
+            linkedVinylContainer?.classList.add('hidden');
+            updateLinkedVinylActionButtons();
+
+            letterBoxTextState.value = '';
+            letterBoxTextInput.value = '';
+            letterBoxCutState.cuts = [];
+            letterBoxControlPointHistory.undo = [];
+            letterBoxControlPointHistory.redo = [];
+            selectedLetterBoxControlPointTime = null;
+            letterBoxEditorPanel?.classList.add('hidden');
+            renderLetterBoxText();
+            updateLetterBoxUndoButton();
             setTextValue('right', '');
             setTextValue('left', '');
+            toggleConfigBtn();
         }
 
         function showDeleteModal() {
@@ -5258,14 +5657,114 @@ Pero si quieres fuerza y cantar con pasión,
             syncLetterBoxManipulationHandles();
         }
         function confirmDelete() { hideDeleteModal(); resetApp(); }
+        function showReplaceAudioModal(file) {
+            pendingAudioReplacement = file;
+            replaceAudioModalOverlay.classList.remove('hidden');
+            syncLetterBoxManipulationHandles();
+        }
+        function hideReplaceAudioModal() {
+            replaceAudioModalOverlay.classList.add('hidden');
+            pendingAudioReplacement = null;
+            syncLetterBoxManipulationHandles();
+        }
+        function confirmAudioReplacement() {
+            if (!pendingAudioReplacement) return;
+            const file = pendingAudioReplacement;
+            hideReplaceAudioModal();
+            audio.pause();
+            playIcon.classList.remove('hidden');
+            pauseIcon.classList.add('hidden');
+            handleAudioFile(file);
+        }
+        function isJsonFile(file) {
+            return file.type === 'application/json'
+                || file.type.endsWith('+json')
+                || /\.json$/i.test(file.name);
+        }
+        function isTextFile(file) {
+            return file.type === 'text/plain' || /\.txt$/i.test(file.name);
+        }
+        function showReplaceLyricsModal(file) {
+            pendingLyricsReplacement = file;
+            replaceLyricsModalOverlay.classList.remove('hidden');
+            syncLetterBoxManipulationHandles();
+        }
+        function hideReplaceLyricsModal() {
+            replaceLyricsModalOverlay.classList.add('hidden');
+            pendingLyricsReplacement = null;
+            syncLetterBoxManipulationHandles();
+        }
+        async function confirmLyricsReplacement() {
+            if (!pendingLyricsReplacement) return;
+            const file = pendingLyricsReplacement;
+            hideReplaceLyricsModal();
+            try {
+                await loadDroppedTextFile(file);
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+        async function loadDroppedTextFile(file) {
+            const text = await file.text();
+            letterBoxTextState.value = text;
+            letterBoxTextInput.value = text;
+            letterBoxCutState.cuts = [];
+            letterBoxControlPointHistory.undo = [];
+            letterBoxControlPointHistory.redo = [];
+            selectedLetterBoxControlPointTime = null;
+            renderLetterBoxText();
+            updateLetterBoxUndoButton();
+            syncLetterBoxEditorControls();
+        }
+        async function processDroppedJsonFile(file) {
+            let data;
+            try {
+                data = JSON.parse(await file.text());
+            } catch (error) {
+                if (error instanceof SyntaxError) throw new Error('El archivo seleccionado no contiene JSON válido.');
+                throw error;
+            }
+
+            let importType;
+            if (data?.format === 'karaoke-app-settings') importType = 'theme';
+            else if (data?.format === 'karaoke-song') importType = 'song';
+            else throw new Error('El JSON no es un archivo de tema ni una canción compatible.');
+
+            pendingDroppedJsonImport = { type: importType, data };
+            document.getElementById('droppedJsonDialogTitle').textContent = importType === 'theme'
+                ? '¿Deseas aplicar este tema?'
+                : '¿Deseas cargar esta canción?';
+            document.getElementById('droppedJsonDialogDescription').textContent = importType === 'theme'
+                ? 'Se aplicará la configuración visual. Las imágenes de fondo no se guardan ni se cargan desde el JSON.'
+                : 'Se cargarán la letra, los puntos de control y los ajustes guardados. Los archivos de audio e imagen actuales no se cambiarán.';
+            document.getElementById('droppedJsonConfirmBtn').textContent = importType === 'theme'
+                ? 'Aplicar tema'
+                : 'Cargar canción';
+            droppedJsonModalOverlay.classList.remove('hidden');
+            syncLetterBoxManipulationHandles();
+        }
+        function hideDroppedJsonModal() {
+            droppedJsonModalOverlay.classList.add('hidden');
+            pendingDroppedJsonImport = null;
+            syncLetterBoxManipulationHandles();
+        }
+        async function confirmDroppedJsonImport() {
+            if (!pendingDroppedJsonImport) return;
+            const request = pendingDroppedJsonImport;
+            hideDroppedJsonModal();
+            try {
+                if (request.type === 'theme') importConfig(request.data);
+                else await importSong(request.data);
+            } catch (error) {
+                alert(error.message);
+            }
+        }
 
         function applyPauseButtonSettings() {
             const bgColor = document.getElementById('pauseBgColor').value;
             const iconColor = document.getElementById('pauseIconColor').value;
-            const shadowColor = document.getElementById('pauseShadowColor').value;
-            const opacity = document.getElementById('pauseShadowOpacity').value;
-            const blur = 100 - Number(document.getElementById('pauseShadowBlur').value);
-            const spread = document.getElementById('pauseShadowSpread').value;
+            const isLight = activePauseShadowType === 'light';
+            const shadowColor = isLight ? document.getElementById('pauseShadowColor').value : '#000000';
 
             refs.playPauseBtn.style.setProperty('--pause-bg', bgColor);
             refs.playPauseBtn.style.setProperty('--pause-icon-color', iconColor);
@@ -5274,11 +5773,13 @@ Pero si quieres fuerza y cantar con pasión,
             refs.playPauseBtn.style.backgroundColor = bgColor;
             refs.playPauseBtn.style.opacity = '1';
             refs.playPauseBtn.style.backgroundImage = 'none';
-            if (pauseShadowToggle.checked) {
-                applyShadowStyle(refs.playPauseBtn, shadowColor, shadowColor, opacity, blur, spread);
-            } else {
+            if (activePauseShadowType === 'off') {
                 shadowStyleCache.delete(refs.playPauseBtn);
                 refs.playPauseBtn.style.boxShadow = 'none';
+            } else if (isLight) {
+                applyFlatShadowStyle(refs.playPauseBtn, shadowColor, 0.6, 50, 0);
+            } else {
+                applyShadowStyle(refs.playPauseBtn, shadowColor, shadowColor, 0.05, 35, 17.5);
             }
         }
 
@@ -5773,6 +6274,7 @@ Pero si quieres fuerza y cantar con pasión,
         let letterBoxGroupElements = [];
         let letterBoxGroupCenterPixels = [];
         let letterBoxLineTimes = [];
+        let letterBoxTimelineAnchors = [];
         let letterBoxTimelineDuration = 0;
         let letterBoxManualDrag = null;
 
@@ -5886,9 +6388,9 @@ Pero si quieres fuerza y cantar con pasión,
             letterBoxGroupElements = [];
             letterBoxGroupCenterPixels = [];
 
-            if (letterBoxTextState.value.length) {
+            if (letterBoxTextState.value.trim().length) {
                 const fragment = document.createDocumentFragment();
-                const sourceLines = letterBoxTextState.value.split(/\r?\n/);
+                const sourceLines = ['', ...letterBoxTextState.value.split(/\r?\n/), ''];
                 const standaloneTagPattern = /^\s*\[[^\]]+\]\s*$/;
                 const justifyContent = letterBoxTextState.align === 'left'
                     ? 'flex-start'
@@ -5898,9 +6400,10 @@ Pero si quieres fuerza y cantar con pasión,
                     : letterBoxTextState.align === 'right' ? 'right center' : 'center center';
 
                 for (let index = 0; index < sourceLines.length; index += 1) {
-                    if (!sourceLines[index].trim()) continue;
+                    const isBoundaryBlank = index === 0 || index === sourceLines.length - 1;
+                    if (!sourceLines[index].trim() && !isBoundaryBlank) continue;
 
-                    const groupLines = [{ text: sourceLines[index], sourceIndex: index }];
+                    const groupLines = [{ text: sourceLines[index], sourceIndex: index - 1 }];
                     if (standaloneTagPattern.test(sourceLines[index])) {
                         let nextContentIndex = index + 1;
                         while (nextContentIndex < sourceLines.length && !sourceLines[nextContentIndex].trim()) {
@@ -5909,9 +6412,9 @@ Pero si quieres fuerza y cantar con pasión,
                         if (nextContentIndex < sourceLines.length
                             && !standaloneTagPattern.test(sourceLines[nextContentIndex])) {
                             for (let blankIndex = index + 1; blankIndex < nextContentIndex; blankIndex += 1) {
-                                groupLines.push({ text: '', sourceIndex: blankIndex });
+                                groupLines.push({ text: '', sourceIndex: blankIndex - 1 });
                             }
-                            groupLines.push({ text: sourceLines[nextContentIndex], sourceIndex: nextContentIndex });
+                            groupLines.push({ text: sourceLines[nextContentIndex], sourceIndex: nextContentIndex - 1 });
                             index = nextContentIndex;
                         }
                     }
@@ -5921,6 +6424,7 @@ Pero si quieres fuerza y cantar con pasión,
                     group.dataset.groupIndex = String(letterBoxGroupElements.length);
                     group.dataset.firstSourceIndex = String(groupLines[0].sourceIndex);
                     group.dataset.lastSourceIndex = String(groupLines[groupLines.length - 1].sourceIndex);
+                    if (isBoundaryBlank) group.dataset.boundary = index === 0 ? 'intro' : 'outro';
                     group.style.setProperty('--letter-line-transform-origin', transformOrigin);
 
                     groupLines.forEach(({ text: lineText }) => {
@@ -5973,54 +6477,104 @@ Pero si quieres fuerza y cantar con pasión,
             letterBoxTimelineDuration = duration;
             if (!lineCount || duration <= 0) {
                 letterBoxLineTimes = lineCount ? [0] : [];
+                letterBoxTimelineAnchors = [];
+                updateLetterBoxControlPointMarkers();
                 return;
             }
 
             const lastIndex = lineCount - 1;
             if (isLetterBoxAutoMode) {
-                letterBoxLineTimes = Array.from({ length: lineCount }, (_, index) => duration * index / lineCount);
+                letterBoxLineTimes = Array.from({ length: lineCount }, (_, index) => duration * index / lastIndex);
+                letterBoxTimelineAnchors = [];
+                updateLetterBoxControlPointMarkers();
                 return;
             }
 
-            const anchors = [
+            letterBoxTimelineAnchors = [
                 { time: 0, lineIndex: 0, mode: 'start' },
                 ...letterBoxCutState.cuts
-                    .filter((point) => Number.isFinite(point.time) && point.time > 0 && point.time < duration)
+                    .filter((point) => Number.isFinite(point.time) && point.time >= 0 && point.time <= duration)
                     .map((point) => ({
                         time: Math.max(0, Math.min(duration, point.time)),
                         lineIndex: Math.max(0, Math.min(lastIndex, Math.round(Number(point.lineIndex) || 0))),
                         mode: point.mode
                     })),
             ].sort((first, second) => first.time - second.time);
+            letterBoxLineTimes = [];
+            updateLetterBoxControlPointMarkers();
+        }
 
-            letterBoxLineTimes = Array(lineCount).fill(Number.NaN);
-            anchors.forEach((anchor, anchorIndex) => {
-                const next = anchors[anchorIndex + 1];
-                if (!next) {
-                    if (!Number.isFinite(letterBoxLineTimes[anchor.lineIndex])) {
-                        letterBoxLineTimes[anchor.lineIndex] = anchor.time;
-                    }
-                    return;
-                }
+        function updateLetterBoxControlPointMarkers() {
+            if (!letterBoxControlPointMarkers) return;
+            letterBoxControlPointMarkers.replaceChildren();
+            const duration = Number(audio?.duration);
+            const isVisible = !playerView.classList.contains('hidden')
+                && document.getElementById('configVisibility').checked
+                && !isLetterBoxAutoMode
+                && areLetterBoxControlPointMarkersVisible
+                && Number.isFinite(duration)
+                && duration > 0
+                && letterBoxCutState.cuts.length > 0;
+            letterBoxControlPointMarkers.hidden = !isVisible;
+            if (!isVisible) return;
 
-                const from = anchor.lineIndex;
-                const to = next.lineIndex;
-                const steps = Math.abs(to - from);
-                if (!steps) {
-                    letterBoxLineTimes[from] = anchor.time;
-                    return;
-                }
-                for (let step = 0; step <= steps; step += 1) {
-                    const lineIndex = from + Math.sign(to - from) * step;
-                    const progress = step / steps;
-                    letterBoxLineTimes[lineIndex] = anchor.time + (next.time - anchor.time) * progress;
-                }
-            });
+            let previousMarkerX = null;
+            let previousMarkerBelow = false;
+            [...letterBoxCutState.cuts]
+                .filter((point) => Number.isFinite(point.time) && point.time >= 0 && point.time <= duration)
+                .sort((first, second) => first.time - second.time)
+                .forEach((point) => {
+                    const marker = document.createElement('button');
+                    const isSelected = selectedLetterBoxControlPointTime === point.time;
+                    const markerX = (point.time / duration) * customSlider.getBoundingClientRect().width;
+                    const overlapsPrevious = previousMarkerX !== null && markerX - previousMarkerX < 40;
+                    const isBelow = overlapsPrevious && !previousMarkerBelow;
+                    marker.type = 'button';
+                    marker.className = `letter-box-control-point-marker${isSelected ? ' is-selected' : ''}${isBelow ? ' is-below' : ''}`;
+                    marker.style.left = `${(point.time / duration) * 100}%`;
+                    marker.setAttribute('aria-label', `Punto de control en ${formatTime(point.time)}, renglón ${point.lineIndex + 1}`);
+                    marker.setAttribute('aria-pressed', String(isSelected));
+                    marker.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 C10.1 2 4 9.3 4 18 C4 27.1 15.1 36.2 19 39 C19.6 39.5 20.4 39.5 21 39 C24.9 36.2 36 27.1 36 18 C36 9.3 29.9 2 20 2 Z" fill="currentColor"/></svg>';
+                    const stopSliderPointer = (event) => event.stopPropagation();
+                    marker.addEventListener('pointerdown', stopSliderPointer);
+                    marker.addEventListener('mousedown', stopSliderPointer);
+                    marker.addEventListener('touchstart', stopSliderPointer);
+                    marker.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        selectedLetterBoxControlPointTime = point.time;
+                        audio.currentTime = point.time;
+                        updateTimeDisplays();
+                        updateLetterBoxTextScrollByAudio();
+                        updateLetterBoxControlPointMarkers();
+                    });
+                    letterBoxControlPointMarkers.appendChild(marker);
+                    previousMarkerX = markerX;
+                    previousMarkerBelow = isBelow;
+                });
         }
 
         function getLetterBoxScheduledPosition(currentTime) {
             const lineCount = letterBoxGroupElements.length;
             if (lineCount < 2) return 0;
+
+            if (!isLetterBoxAutoMode) {
+                let previous = letterBoxTimelineAnchors[0] || { time: 0, lineIndex: 0 };
+                for (let index = 1; index < letterBoxTimelineAnchors.length; index += 1) {
+                    const next = letterBoxTimelineAnchors[index];
+                    if (currentTime < next.time) {
+                        const transitionStart = Math.max(previous.time, next.time - 0.2);
+                        if (currentTime < transitionStart || next.time <= transitionStart) {
+                            return previous.lineIndex;
+                        }
+                        const progress = Math.max(0, Math.min(1,
+                            (currentTime - transitionStart) / (next.time - transitionStart)));
+                        return previous.lineIndex + (next.lineIndex - previous.lineIndex) * progress;
+                    }
+                    previous = next;
+                }
+                return previous.lineIndex;
+            }
 
             let activeIndex = 0;
             for (let index = 1; index < lineCount; index += 1) {
@@ -6092,10 +6646,36 @@ Pero si quieres fuerza y cantar con pasión,
                 : 'Activar avance automático de la letra';
             letterBoxAutoModeBtn.dataset.tooltip = label;
             letterBoxAutoModeBtn.setAttribute('aria-label', label);
-            letterBoxNextParagraphBtn.classList.toggle('hidden', isLetterBoxAutoMode);
-            letterBoxUndoCutBtn.classList.toggle('hidden', isLetterBoxAutoMode);
-            letterBoxManualDivider.classList.toggle('hidden', isLetterBoxAutoMode);
+            letterBoxNextParagraphBtn.classList.toggle('hidden', !currentAudioFile || isLetterBoxAutoMode);
+            letterBoxUndoCutBtn.classList.toggle('hidden', !currentAudioFile || isLetterBoxAutoMode);
+            letterBoxManualDivider.classList.toggle('hidden', !currentAudioFile || isLetterBoxAutoMode);
         }
+
+        function updateLetterBoxControlPointVisibilityButton() {
+            const button = document.getElementById('letterBoxControlPointVisibilityBtn');
+            if (!button) return;
+            const label = areLetterBoxControlPointMarkersVisible
+                ? 'Ocultar puntos de control'
+                : 'Mostrar puntos de control';
+            button.dataset.tooltip = label;
+            button.setAttribute('aria-label', label);
+            button.removeAttribute('title');
+            button.setAttribute('aria-pressed', String(areLetterBoxControlPointMarkersVisible));
+            button.classList.toggle('is-markers-visible', areLetterBoxControlPointMarkersVisible);
+        }
+
+        document.getElementById('letterBoxControlPointVisibilityBtn')?.addEventListener('click', () => {
+            areLetterBoxControlPointMarkersVisible = !areLetterBoxControlPointMarkersVisible;
+            updateLetterBoxControlPointVisibilityButton();
+            updateLetterBoxControlPointMarkers();
+        });
+        updateLetterBoxControlPointVisibilityButton();
+
+        document.getElementById('interfaceVisibilityBtn')?.addEventListener('click', () => {
+            const configVisibility = document.getElementById('configVisibility');
+            configVisibility.checked = !configVisibility.checked;
+            toggleConfigBtn();
+        });
 
         function toggleLetterBoxAutoMode() {
             isLetterBoxAutoMode = !isLetterBoxAutoMode;
@@ -6111,10 +6691,53 @@ Pero si quieres fuerza y cantar con pasión,
             return letterBoxCutState.cuts.findIndex((cut) => Math.abs(Number(cut.time) - targetTime) <= tolerance);
         }
 
+        function captureLetterBoxControlPointState() {
+            return {
+                cuts: letterBoxCutState.cuts.map((point) => ({ ...point })),
+                selectedTime: selectedLetterBoxControlPointTime
+            };
+        }
+
+        function recordLetterBoxControlPointAction(previousState) {
+            const nextState = captureLetterBoxControlPointState();
+            if (JSON.stringify(previousState.cuts) === JSON.stringify(nextState.cuts)) return;
+
+            letterBoxControlPointHistory.redo = [];
+            letterBoxControlPointHistory.undo.push({ before: previousState, after: nextState });
+            if (letterBoxControlPointHistory.undo.length > letterBoxControlPointHistory.limit) {
+                letterBoxControlPointHistory.undo.shift();
+            }
+        }
+
+        function restoreLetterBoxControlPointState(state) {
+            letterBoxCutState.cuts = state.cuts.map((point) => ({ ...point }));
+            selectedLetterBoxControlPointTime = state.selectedTime;
+            rebuildLetterBoxTimeline();
+            updateLetterBoxUndoButton();
+            updateLetterBoxTextScrollByAudio();
+        }
+
+        function undoLetterBoxControlPointAction() {
+            const action = letterBoxControlPointHistory.undo.pop();
+            if (!action) return false;
+            letterBoxControlPointHistory.redo.push(action);
+            restoreLetterBoxControlPointState(action.before);
+            return true;
+        }
+
+        function redoLetterBoxControlPointAction() {
+            const action = letterBoxControlPointHistory.redo.pop();
+            if (!action) return false;
+            letterBoxControlPointHistory.undo.push(action);
+            restoreLetterBoxControlPointState(action.after);
+            return true;
+        }
+
         function addLetterBoxControlPoint(mode = 'resume', selectedLineIndex = null, selectedTime = null) {
             if (!audio || !Number.isFinite(audio.currentTime) || !Number.isFinite(audio.duration) || audio.duration <= 0) {
                 return;
             }
+            const previousState = captureLetterBoxControlPointState();
             const currentTime = Number(audio.currentTime);
             const pointTime = Number.isFinite(selectedTime)
                 ? Math.max(0, Math.min(audio.duration, selectedTime))
@@ -6123,6 +6746,7 @@ Pero si quieres fuerza y cantar con pasión,
                 Number.isFinite(selectedLineIndex) ? Math.round(selectedLineIndex) : Math.round(getLetterBoxScheduledPosition(currentTime))));
             const existingIndex = findLetterBoxControlPointIndex(pointTime);
 
+            selectedLetterBoxControlPointTime = pointTime;
             if (existingIndex >= 0) {
                 if (Number.isFinite(selectedTime)) letterBoxCutState.cuts[existingIndex].time = pointTime;
                 letterBoxCutState.cuts[existingIndex].lineIndex = lineIndex;
@@ -6135,6 +6759,7 @@ Pero si quieres fuerza y cantar con pasión,
                 });
             }
 
+            recordLetterBoxControlPointAction(previousState);
             rebuildLetterBoxTimeline();
             updateLetterBoxUndoButton();
             updateLetterBoxTextScrollByAudio();
@@ -6157,7 +6782,12 @@ Pero si quieres fuerza y cantar con pasión,
                 return;
             }
 
-            letterBoxCutState.cuts.pop();
+            const previousState = captureLetterBoxControlPointState();
+            const removedPoint = letterBoxCutState.cuts.pop();
+            if (removedPoint.time === selectedLetterBoxControlPointTime) {
+                selectedLetterBoxControlPointTime = null;
+            }
+            recordLetterBoxControlPointAction(previousState);
             rebuildLetterBoxTimeline();
             updateLetterBoxUndoButton();
             updateLetterBoxTextScrollByAudio();
@@ -6282,6 +6912,11 @@ Pero si quieres fuerza y cantar con pasión,
                 const col2 = document.getElementById('bgColorGrad2').value;
                 bgWrapper.style.background = `linear-gradient(135deg, ${col1}, ${col2})`;
             } else if (type === 'image') {
+                if (isApplyingImportedTheme) {
+                    bgWrapper.style.backgroundImage = 'none';
+                    applyBlur();
+                    return;
+                }
                 const fileInput = document.getElementById('bgImageFile');
                 if (fileInput.files && fileInput.files[0]) {
                     const reader = new FileReader();
@@ -6333,10 +6968,6 @@ Pero si quieres fuerza y cantar con pasión,
             const shadowType = getCheckedRadioValue('letterBoxShadowType') || 'shadow';
             const outerColor = document.getElementById('letterBoxShadowColor').value;
             const shadowColor = shadowType === 'light' ? '#ffffff' : '#000000';
-            const shadowOpacity = document.getElementById('letterBoxShadowOpacity').value;
-            const shadowBlur = document.getElementById('letterBoxShadowBlur').value;
-            const shadowSpread = document.getElementById('letterBoxShadowSpread').value;
-            const gradientStart = document.getElementById('letterBoxShadowGradientStart').value;
             const heightPercent = Number(document.getElementById('letterBoxHeightPercent').value || 78);
             const widthPercent = Number(document.getElementById('letterBoxWidthPercent').value || 48);
             const horizontalPercent = Number(document.getElementById('letterBoxHorizontalPosition').value || 50);
@@ -6351,13 +6982,13 @@ Pero si quieres fuerza y cantar con pasión,
             }
             letterBox.style.backdropFilter = `blur(${blur * getViewportEffectScale()}px)`;
             letterBox.style.opacity = '1';
-            if (!letterBoxShadowToggle.checked) {
+            if (shadowType === 'off') {
                 shadowStyleCache.delete(letterBox);
                 letterBox.style.boxShadow = 'none';
             } else if (shadowType === 'light') {
-                applyShadowStyle(letterBox, outerColor, '#ffffff', shadowOpacity, shadowBlur, shadowSpread, gradientStart);
+                applyShadowStyle(letterBox, outerColor, '#ffffff', 0.45, 40, 10, 4.95);
             } else {
-                applyFlatShadowStyle(letterBox, shadowColor, shadowOpacity, shadowBlur, shadowSpread);
+                applyFlatShadowStyle(letterBox, shadowColor, 0.45, 40, 10);
             }
             renderLetterBoxText();
 
@@ -6401,10 +7032,14 @@ Pero si quieres fuerza y cantar con pasión,
             const hasBlockingEditor = !letterBoxEditorPanel.classList.contains('hidden')
                 || !refs.textEditorModal.classList.contains('hidden')
                 || !deleteModalOverlay.classList.contains('hidden')
+                || !replaceAudioModalOverlay.classList.contains('hidden')
+                || !droppedJsonModalOverlay.classList.contains('hidden')
+                || !replaceLyricsModalOverlay.classList.contains('hidden')
                 || !modalOverlay.classList.contains('hidden');
             const unavailable = playerView.classList.contains('hidden') || hasBlockingEditor;
             letterBoxManipulationLayer.hidden = unavailable;
             if (unavailable) {
+                letterBoxMoveHandle.classList.remove('is-visible');
                 letterBoxRecoveryButton.hidden = true;
                 updateLetterBoxSnapGuides(false, false);
                 return;
@@ -6444,65 +7079,72 @@ Pero si quieres fuerza y cantar con pasión,
             let moveEdge = '';
             let moveOffset = 0.5;
             const moveHandleSize = 38;
+            const audioRect = playerCard.classList.contains('hidden')
+                ? null
+                : playerCard.getBoundingClientRect();
+            const edgeCandidates = [
+                { edge: 'left', offset: 0.5 },
+                { edge: 'right', offset: 0.5 },
+                { edge: 'top', offset: 0.5 },
+                { edge: 'bottom', offset: 0.5 }
+            ];
+            const getHandlePosition = (edge, offset) => {
+                if (edge === 'left') return [rect.left - moveHandleSize * 1.5, rect.top + rect.height * offset - moveHandleSize / 2];
+                if (edge === 'right') return [rect.right + moveHandleSize * 0.5, rect.top + rect.height * offset - moveHandleSize / 2];
+                if (edge === 'top') return [rect.left + rect.width * offset - moveHandleSize / 2, rect.top - moveHandleSize * 1.5];
+                if (edge === 'bottom') return [rect.left + rect.width * offset - moveHandleSize / 2, rect.bottom + moveHandleSize * 0.5];
+                return [(window.innerWidth - moveHandleSize) / 2, (window.innerHeight - moveHandleSize) / 2];
+            };
+            const isHandlePositionAvailable = ([left, top]) => {
+                const insideViewport = left >= 8 && top >= 8
+                    && left + moveHandleSize <= window.innerWidth - 8
+                    && top + moveHandleSize <= window.innerHeight - 8;
+                const overlapsAudio = audioRect && left < audioRect.right && left + moveHandleSize > audioRect.left
+                    && top < audioRect.bottom && top + moveHandleSize > audioRect.top;
+                return insideViewport && !overlapsAudio;
+            };
+            const availableEdges = edgeCandidates.filter(({ edge, offset }) => (
+                isHandlePositionAvailable(getHandlePosition(edge, offset))
+            ));
             if (letterBoxManipulationState.mode === 'move') {
                 moveEdge = letterBoxManipulationState.moveEdge;
                 moveOffset = letterBoxManipulationState.moveOffset;
             } else if (event && pointerOnMoveHandle) {
                 moveEdge = letterBoxMoveHandle.dataset.edge || '';
-                if (moveEdge) {
+                if (moveEdge && moveEdge !== 'center') {
                     moveOffset = moveEdge === 'left' || moveEdge === 'right'
                         ? clampLetterBoxValue((event.clientY - rect.top) / Math.max(1, rect.height), 0, 1)
                         : clampLetterBoxValue((event.clientX - rect.left) / Math.max(1, rect.width), 0, 1);
                 }
+            } else if (!availableEdges.length) {
+                moveEdge = 'center';
             } else if (event) {
                 const outsideHorizontalDistance = Math.max(rect.left - event.clientX, 0, event.clientX - rect.right);
                 const outsideVerticalDistance = Math.max(rect.top - event.clientY, 0, event.clientY - rect.bottom);
-                const edgeCandidates = [
-                    { edge: 'left', distance: Math.hypot(event.clientX - rect.left, outsideVerticalDistance) },
-                    { edge: 'right', distance: Math.hypot(rect.right - event.clientX, outsideVerticalDistance) },
-                    { edge: 'top', distance: Math.hypot(event.clientY - rect.top, outsideHorizontalDistance) },
-                    { edge: 'bottom', distance: Math.hypot(rect.bottom - event.clientY, outsideHorizontalDistance) }
-                ];
-                edgeCandidates.sort((first, second) => first.distance - second.distance);
+                const candidatesNearPointer = ['left', 'right', 'top', 'bottom'].map((edge) => {
+                    const distance = edge === 'left' ? Math.hypot(event.clientX - rect.left, outsideVerticalDistance)
+                        : edge === 'right' ? Math.hypot(rect.right - event.clientX, outsideVerticalDistance)
+                            : edge === 'top' ? Math.hypot(event.clientY - rect.top, outsideHorizontalDistance)
+                                : Math.hypot(rect.bottom - event.clientY, outsideHorizontalDistance);
+                    const offset = edge === 'left' || edge === 'right'
+                        ? clampLetterBoxValue((event.clientY - rect.top) / Math.max(1, rect.height), 0, 1)
+                        : clampLetterBoxValue((event.clientX - rect.left) / Math.max(1, rect.width), 0, 1);
+                    return { edge, distance, offset, available: isHandlePositionAvailable(getHandlePosition(edge, offset)) };
+                }).filter(({ available }) => available)
+                    .sort((first, second) => first.distance - second.distance);
                 const pointerOutsideBox = event.clientX < rect.left || event.clientX > rect.right
                     || event.clientY < rect.top || event.clientY > rect.bottom;
                 const revealDistance = pointerOutsideBox ? moveHandleSize * 2 + 24 : 64;
-                if (edgeCandidates[0]?.distance <= revealDistance) {
-                    moveEdge = edgeCandidates[0].edge;
-                    moveOffset = moveEdge === 'left' || moveEdge === 'right'
-                        ? clampLetterBoxValue((event.clientY - rect.top) / Math.max(1, rect.height), 0, 1)
-                        : clampLetterBoxValue((event.clientX - rect.left) / Math.max(1, rect.width), 0, 1);
+                if (candidatesNearPointer[0]?.distance <= revealDistance) {
+                    moveEdge = candidatesNearPointer[0].edge;
+                    moveOffset = candidatesNearPointer[0].offset;
                 }
             }
 
-            const maxLeft = Math.max(8, window.innerWidth - moveHandleSize - 8);
-            const maxTop = Math.max(8, window.innerHeight - moveHandleSize - 8);
-            let moveLeft = null;
-            let moveTop = null;
-            if (moveEdge === 'left' || moveEdge === 'right') {
-                moveLeft = moveEdge === 'left' ? rect.left - moveHandleSize * 1.5 : rect.right + moveHandleSize * 0.5;
-                moveTop = rect.top + rect.height * moveOffset - moveHandleSize / 2;
-                if (moveLeft < 8 && rect.right + moveHandleSize * 1.5 <= window.innerWidth - 8) {
-                    moveEdge = 'right';
-                    moveLeft = rect.right + moveHandleSize * 0.5;
-                } else if (moveLeft + moveHandleSize > window.innerWidth - 8 && rect.left - moveHandleSize * 1.5 >= 8) {
-                    moveEdge = 'left';
-                    moveLeft = rect.left - moveHandleSize * 1.5;
-                }
-            } else if (moveEdge === 'top' || moveEdge === 'bottom') {
-                moveLeft = rect.left + rect.width * moveOffset - moveHandleSize / 2;
-                moveTop = moveEdge === 'top' ? rect.top - moveHandleSize * 1.5 : rect.bottom + moveHandleSize * 0.5;
-                if (moveTop < 8 && rect.bottom + moveHandleSize * 1.5 <= window.innerHeight - 8) {
-                    moveEdge = 'bottom';
-                    moveTop = rect.bottom + moveHandleSize * 0.5;
-                } else if (moveTop + moveHandleSize > window.innerHeight - 8 && rect.top - moveHandleSize * 1.5 >= 8) {
-                    moveEdge = 'top';
-                    moveTop = rect.top - moveHandleSize * 1.5;
-                }
-            }
-            if (moveLeft !== null && moveTop !== null) {
-                letterBoxMoveHandle.style.left = `${clampLetterBoxValue(moveLeft, 8, maxLeft)}px`;
-                letterBoxMoveHandle.style.top = `${clampLetterBoxValue(moveTop, 8, maxTop)}px`;
+            if (moveEdge) {
+                const [moveLeft, moveTop] = getHandlePosition(moveEdge, moveOffset);
+                letterBoxMoveHandle.style.left = `${moveLeft}px`;
+                letterBoxMoveHandle.style.top = `${moveTop}px`;
             }
             if (moveEdge) letterBoxMoveHandle.dataset.edge = moveEdge;
             letterBoxMoveHandle.classList.toggle('is-visible', Boolean(
@@ -6716,16 +7358,12 @@ Pero si quieres fuerza y cantar con pasión,
         function toggleLetterBoxShadowType() {
             const isLight = getCheckedRadioValue('letterBoxShadowType') === 'light';
             document.getElementById('letterBoxLightColorControl').classList.toggle('hidden', !isLight);
-            document.getElementById('letterBoxLightGradientControl').classList.toggle('hidden', !isLight);
-            updatePanelShadowLabels('letterBox', isLight ? 'light' : 'shadow');
             applyLetterBoxSettings();
         }
 
         function togglePlayerShadowType() {
             const isLight = getCheckedRadioValue('playerShadowType') === 'light';
             document.getElementById('playerLightColorControl').classList.toggle('hidden', !isLight);
-            document.getElementById('playerLightGradientControl').classList.toggle('hidden', !isLight);
-            updatePanelShadowLabels('player', isLight ? 'light' : 'shadow');
             applyPlayerCardSettings();
         }
 
@@ -6782,22 +7420,18 @@ Pero si quieres fuerza y cantar con pasión,
         function applyPlayerCardSettings() {
             const shadowType = getCheckedRadioValue('playerShadowType') || 'shadow';
             const outerColor = document.getElementById('playerShadowColor').value;
-            const shadowOpacity = document.getElementById('playerShadowOpacity').value;
-            const shadowBlur = document.getElementById('playerShadowBlur').value;
-            const shadowSpread = document.getElementById('playerShadowSpread').value;
-            const gradientStart = document.getElementById('playerShadowGradientStart').value;
             const blur = document.getElementById('playerBlur').value;
             const isVisible = document.getElementById('playerVisibility').checked;
             const isFullStyle = getCheckedRadioValue('playerCardStyle') === 'full';
             const scale = playerCardScaleState.value;
 
-            if (!playerCardShadowToggle.checked) {
+            if (shadowType === 'off') {
                 shadowStyleCache.delete(playerCard);
                 playerCard.style.boxShadow = 'none';
             } else if (shadowType === 'light') {
-                applyShadowStyle(playerCard, outerColor, '#ffffff', shadowOpacity, shadowBlur, shadowSpread, gradientStart);
+                applyShadowStyle(playerCard, outerColor, '#ffffff', 0.5, 40, 10, 49.5);
             } else {
-                applyFlatShadowStyle(playerCard, '#000000', shadowOpacity, shadowBlur, shadowSpread);
+                applyFlatShadowStyle(playerCard, '#000000', 0.5, 40, 10);
             }
             audioCardBleed.style.boxShadow = playerCard.style.boxShadow;
             const scaledBlur = blur * getViewportEffectScale();
@@ -6868,32 +7502,75 @@ Pero si quieres fuerza y cantar con pasión,
             customBg.style.boxShadow = 'none';
 
             const tColor = document.getElementById('customThumbColor').value;
-            const tSize = `calc(${document.getElementById('customThumbSize').value}px * var(--player-layout-scale))`;
+            const tSize = `calc(14px * var(--player-layout-scale))`;
             customSliderThumb.style.background = tColor;
             customSliderThumb.style.width = tSize;
             customSliderThumb.style.height = tSize;
 
-            const hexColor = document.getElementById('customThumbShadowColor').value;
-            const shadowOpacity = document.getElementById('customThumbShadowOpacity').value;
-            const shadowBlur = document.getElementById('customThumbShadowBlur').value;
-            const shadowSpread = document.getElementById('customThumbShadowSize').value;
-            if (progressThumbShadowToggle.checked) {
-                applyShadowStyle(customSliderThumb, hexColor, hexColor, shadowOpacity, shadowBlur, shadowSpread);
-            } else {
+            const isLight = activeProgressThumbShadowType === 'light';
+            const hexColor = isLight ? document.getElementById('customThumbShadowColor').value : '#000000';
+            if (activeProgressThumbShadowType === 'off') {
                 shadowStyleCache.delete(customSliderThumb);
                 customSliderThumb.style.boxShadow = 'none';
+            } else {
+                const { opacity, blur, spread } = progressThumbShadowSettings[activeProgressThumbShadowType];
+                if (isLight) {
+                    applyFlatShadowStyle(customSliderThumb, hexColor, opacity, blur, spread);
+                } else {
+                    applyShadowStyle(customSliderThumb, hexColor, hexColor, opacity, blur, spread);
+                }
             }
         }
 
         function initializeCustomTooltips() {
-            document.querySelectorAll('button[title]').forEach((button) => {
-                const label = button.getAttribute('title')?.trim();
+            document.querySelectorAll('button[title], [data-tooltip]').forEach((element) => {
+                const label = (element.getAttribute('data-tooltip') || element.getAttribute('title'))?.trim();
                 if (!label) return;
-                button.dataset.tooltip = label;
-                button.classList.add('has-custom-tooltip');
-                // Evita el tooltip nativo, que se superpone al puntero.
-                button.removeAttribute('title');
+                element.dataset.tooltip = label;
+                element.classList.add('has-custom-tooltip');
+                element.removeAttribute('title');
             });
+
+            const updateTooltipPosition = (event) => {
+                const target = event.target instanceof Element
+                    ? event.target.closest('.has-custom-tooltip')
+                    : null;
+                if (!target) return;
+
+                const tooltipStyle = getComputedStyle(target, '::after');
+                const measurement = document.createElement('span');
+                Object.assign(measurement.style, {
+                    position: 'fixed',
+                    visibility: 'hidden',
+                    width: 'max-content',
+                    maxWidth: `min(17rem, calc(100vw - 1.5rem))`,
+                    boxSizing: 'border-box',
+                    padding: tooltipStyle.padding,
+                    border: tooltipStyle.border,
+                    font: tooltipStyle.font,
+                    lineHeight: tooltipStyle.lineHeight,
+                    letterSpacing: tooltipStyle.letterSpacing,
+                    whiteSpace: 'normal'
+                });
+                measurement.textContent = target.dataset.tooltip || '';
+                document.body.appendChild(measurement);
+
+                const tooltipWidth = measurement.getBoundingClientRect().width;
+                measurement.remove();
+                const rect = target.getBoundingClientRect();
+                const center = rect.left + rect.width / 2;
+                const halfWidth = tooltipWidth / 2;
+                const margin = 12;
+                const boundedCenter = Math.max(
+                    halfWidth + margin,
+                    Math.min(window.innerWidth - halfWidth - margin, center)
+                );
+                target.style.setProperty('--tooltip-shift-x', `${boundedCenter - center}px`);
+            };
+
+            document.addEventListener('pointerover', updateTooltipPosition);
+            document.addEventListener('focusin', updateTooltipPosition);
+            document.addEventListener('click', updateTooltipPosition);
         }
 
         /* La importación y exportación de configuraciones se eliminó: las
@@ -6969,6 +7646,10 @@ Pero si quieres fuerza y cantar con pasión,
             const state = textState[side];
             if (!state) return;
             activeTextEditorSide = side;
+            document.getElementById('textEditorTitle').textContent = side === 'left'
+                ? 'Editar título'
+                : 'Editar autor';
+            refs.textEditorInput.setAttribute('aria-label', side === 'left' ? 'Título del audio' : 'Autor del audio');
             refs.textEditorInput.value = state.value || '';
             refs.textEditorModal.classList.remove('hidden');
             refs.textEditorModal.classList.add('flex');
@@ -7120,10 +7801,105 @@ Pero si quieres fuerza y cantar con pasión,
             letterBoxTextLayer.addEventListener('pointercancel', (event) => stopLetterBoxTextDrag(event, true));
         }
         document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && letterBoxManualDrag) {
-                stopLetterBoxTextDrag(null, true);
+            const key = event.key.toLowerCase();
+            const target = event.target instanceof Element ? event.target : null;
+            const isEditingField = Boolean(target?.closest('input, textarea, select, [contenteditable="true"]'));
+
+            if (key === 'arrowleft' || key === 'arrowright') {
+                if (event.ctrlKey || event.metaKey || event.altKey || isEditingField
+                    || playerView.classList.contains('hidden') || !currentAudioFile) return;
+                event.preventDefault();
+                if (!event.repeat) startKeyboardSeek(key);
+                return;
+            }
+
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                if (!letterBoxEditorPanel.classList.contains('hidden')) {
+                    closeLetterBoxEditor();
+                    return;
+                }
+                if (letterBoxManualDrag) {
+                    stopLetterBoxTextDrag(null, true);
+                    return;
+                }
+                if (!refs.textEditorModal.classList.contains('hidden')) {
+                    cancelTextEditor();
+                    return;
+                }
+                if (!deleteModalOverlay.classList.contains('hidden')) {
+                    hideDeleteModal();
+                    return;
+                }
+                if (!replaceAudioModalOverlay.classList.contains('hidden')) {
+                    hideReplaceAudioModal();
+                    return;
+                }
+                if (!droppedJsonModalOverlay.classList.contains('hidden')) {
+                    hideDroppedJsonModal();
+                    return;
+                }
+                if (!replaceLyricsModalOverlay.classList.contains('hidden')) {
+                    hideReplaceLyricsModal();
+                    return;
+                }
+
+                const hasContextMenu = Boolean(document.querySelector(
+                    '.image-preview-menu, .letter-box-tag-menu, .letter-box-parenthetical-tag-menu, #linkedVinylMenu:not([hidden])'
+                ));
+                closeImagePreviewMenu();
+                closeLetterBoxTagMenus();
+                closeLinkedVinylMenu();
+                if (hasContextMenu) return;
+
+                if (!modalOverlay.classList.contains('hidden')) {
+                    closeConfig();
+                } else {
+                    openConfig();
+                }
+                return;
+            }
+
+            if ((event.ctrlKey || event.metaKey) && !event.altKey && !isEditingField) {
+                if (key === 'z' && !event.shiftKey && letterBoxControlPointHistory.undo.length) {
+                    event.preventDefault();
+                    undoLetterBoxControlPointAction();
+                    return;
+                }
+                if (key === 'y' && letterBoxControlPointHistory.redo.length) {
+                    event.preventDefault();
+                    redoLetterBoxControlPointAction();
+                    return;
+                }
+            }
+
+            if (event.repeat || event.ctrlKey || event.metaKey || event.altKey || isEditingField) return;
+
+            if ((key === 'backspace' || key === 'delete') && selectedLetterBoxControlPointTime !== null) {
+                const selectedIndex = findLetterBoxControlPointIndex(selectedLetterBoxControlPointTime);
+                if (selectedIndex < 0) return;
+                event.preventDefault();
+                const previousState = captureLetterBoxControlPointState();
+                letterBoxCutState.cuts.splice(selectedIndex, 1);
+                selectedLetterBoxControlPointTime = null;
+                recordLetterBoxControlPointAction(previousState);
+                rebuildLetterBoxTimeline();
+                updateLetterBoxUndoButton();
+                updateLetterBoxTextScrollByAudio();
+            } else if (key === 'u') {
+                event.preventDefault();
+                const configVisibility = document.getElementById('configVisibility');
+                configVisibility.checked = !configVisibility.checked;
+                toggleConfigBtn();
+            } else if (key === ' ' || key === 'k') {
+                event.preventDefault();
+                if (!playerView.classList.contains('hidden') && currentAudioFile) togglePlayPause();
             }
         });
+        document.addEventListener('keyup', (event) => {
+            if (keyboardSeekState?.key === event.key.toLowerCase()) stopKeyboardSeek();
+        });
+        window.addEventListener('blur', stopKeyboardSeek);
         window.addEventListener('resize', () => {
             checkAllOverflows();
             recalculateLetterBoxGroupLayout();
@@ -7135,53 +7911,84 @@ Pero si quieres fuerza y cantar con pasión,
         setTextValue('left', '');
 
         let isDraggingSlider = false;
+        let sliderPointerId = null;
+        let audioEndResetTimeout = null;
+
+        function cancelAudioEndReset() {
+            if (audioEndResetTimeout === null) return;
+            clearTimeout(audioEndResetTimeout);
+            audioEndResetTimeout = null;
+        }
 
         function updateSliderPosition(e) {
             if (!customSlider) return;
             const rect = customSlider.getBoundingClientRect();
-            let x = e.clientX;
-            if (x === undefined && e.touches && e.touches.length > 0) x = e.touches[0].clientX;
-            if (x === undefined) return;
-            let percentage = ((x - rect.left) / rect.width) * 100;
-            percentage = Math.max(0, Math.min(100, percentage));
-            customSliderFill.style.width = percentage + '%';
-            customSliderThumb.style.left = percentage + '%';
+            const percentage = ((e.clientX - rect.left) / rect.width) * 100;
+            const boundedPercentage = Math.max(0, Math.min(100, percentage));
+            customSliderFill.style.width = boundedPercentage + '%';
+            customSliderThumb.style.left = boundedPercentage + '%';
 
             if (audio.duration) {
-                audio.currentTime = (percentage / 100) * audio.duration;
+                audio.currentTime = (boundedPercentage / 100) * audio.duration;
             }
+        }
+
+        function updateProgressFromAudio() {
+            if (!audio.duration || !Number.isFinite(audio.currentTime)) return;
+            const percentage = Math.max(0, Math.min(100, (audio.currentTime / audio.duration) * 100));
+            customSliderFill.style.width = `${percentage}%`;
+            customSliderThumb.style.left = `${percentage}%`;
         }
 
         if (customSlider) {
-            customSlider.addEventListener('mousedown', (e) => { isDraggingSlider = true; updateSliderPosition(e); });
-            window.addEventListener('mousemove', (e) => { if (isDraggingSlider) updateSliderPosition(e); });
-            window.addEventListener('mouseup', () => { isDraggingSlider = false; });
-            customSlider.addEventListener('touchstart', (e) => { isDraggingSlider = true; updateSliderPosition(e); }, { passive: true });
-            window.addEventListener('touchmove', (e) => { if (isDraggingSlider) updateSliderPosition(e); }, { passive: true });
-            window.addEventListener('touchend', () => { isDraggingSlider = false; });
+            customSlider.addEventListener('pointerdown', (event) => {
+                if (!event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return;
+                event.preventDefault();
+                isDraggingSlider = true;
+                sliderPointerId = event.pointerId;
+                document.body.classList.add('is-seeking-audio');
+                customSlider.setPointerCapture(event.pointerId);
+                updateSliderPosition(event);
+            });
+            customSlider.addEventListener('pointermove', (event) => {
+                if (!isDraggingSlider || event.pointerId !== sliderPointerId) return;
+                event.preventDefault();
+                updateSliderPosition(event);
+            });
+            const finishSliderDrag = (event) => {
+                if (!isDraggingSlider || event.pointerId !== sliderPointerId) return;
+                isDraggingSlider = false;
+                sliderPointerId = null;
+                document.body.classList.remove('is-seeking-audio');
+                if (customSlider.hasPointerCapture(event.pointerId)) {
+                    customSlider.releasePointerCapture(event.pointerId);
+                }
+            };
+            customSlider.addEventListener('pointerup', finishSliderDrag);
+            customSlider.addEventListener('pointercancel', finishSliderDrag);
         }
 
         audio.addEventListener('timeupdate', () => {
-            if (!isDraggingSlider && audio.duration) {
-                const percentage = (audio.currentTime / audio.duration) * 100;
-                customSliderFill.style.width = percentage + '%';
-                customSliderThumb.style.left = percentage + '%';
-            }
+            if (!isDraggingSlider) updateProgressFromAudio();
             updateTimeDisplays();
             updateLetterBoxUndoButton();
         });
 
         audio.addEventListener('seeked', () => {
+            cancelAudioEndReset();
+            if (!isDraggingSlider) updateProgressFromAudio();
             updateLetterBoxUndoButton();
             updateLetterBoxTextScrollByAudio();
         });
 
         audio.addEventListener('loadedmetadata', () => {
+            cancelAudioEndReset();
             updateTimeDisplays();
             renderLetterBoxText();
             updateLetterBoxTextScrollByAudio();
         });
         audio.addEventListener('play', () => {
+            cancelAudioEndReset();
             updateTimeDisplays();
             startLetterBoxTextAnimation();
         });
@@ -7191,9 +7998,19 @@ Pero si quieres fuerza y cantar con pasión,
             updateLetterBoxTextScrollByAudio();
         });
         audio.addEventListener('ended', () => {
-            updateTimeDisplays();
+            cancelAudioEndReset();
+            playIcon.classList.remove('hidden');
+            pauseIcon.classList.add('hidden');
             stopLetterBoxTextAnimation();
             updateLetterBoxTextScrollByAudio();
+            audioEndResetTimeout = setTimeout(() => {
+                audioEndResetTimeout = null;
+                audio.currentTime = 0;
+                customSliderFill.style.width = '0%';
+                customSliderThumb.style.left = '0%';
+                updateTimeDisplays();
+                updateLetterBoxTextScrollByAudio();
+            }, 2000);
         });
 
         initializeCustomTooltips();
@@ -7253,30 +8070,16 @@ Pero si quieres fuerza y cantar con pasión,
                 letterBoxWidthPercent: '61.71303074670571',
                 letterBoxHorizontalPosition: '60.11770031688547',
                 letterBoxVerticalPosition: '50',
-                letterBoxShadowToggle: true,
                 letterBoxShadowColor: '#ff00ae',
-                letterBoxShadowGradientStart: '4.95',
-                letterBoxShadowOpacity: '0.45',
-                letterBoxShadowBlur: '40',
-                letterBoxShadowSpread: '10',
                 playerVisibility: true,
                 playerCardColor1: '#530e36',
                 playerCardColor2: '#070637',
                 playerCardColorOpacity: '0',
                 playerBlur: '18',
-                playerCardShadowToggle: true,
                 playerShadowColor: '#000000',
-                playerShadowGradientStart: '49.5',
-                playerShadowOpacity: '0.5',
-                playerShadowBlur: '40',
-                playerShadowSpread: '10',
                 pauseBgColor: '#7a82f5',
                 pauseIconColor: '#e5e5e5',
-                pauseShadowToggle: true,
                 pauseShadowColor: '#000000',
-                pauseShadowOpacity: '0.05',
-                pauseShadowBlur: '65',
-                pauseShadowSpread: '17.5',
                 counterOpacity: '0.2',
                 counterColor: '#000000',
                 timeChipOffset: '2',
@@ -7284,13 +8087,8 @@ Pero si quieres fuerza y cantar con pasión,
                 mainBarColor2: '#6e00f5',
                 secBarColor1: '#d090a0',
                 secBarColor2: '#a370e1',
-                customThumbSize: '14',
                 customThumbColor: '#e5e5e5',
-                progressThumbShadowToggle: true,
                 customThumbShadowColor: '#ff007b',
-                customThumbShadowOpacity: '0.5',
-                customThumbShadowBlur: '15',
-                customThumbShadowSize: '-1',
                 configOpacityControl: '0.25'
             },
             radios: {
@@ -7300,6 +8098,8 @@ Pero si quieres fuerza y cantar con pasión,
                 playerCardStyle: 'full',
                 playerCardColorType: 'gradient',
                 playerShadowType: 'shadow',
+                pauseShadowType: 'shadow',
+                progressThumbShadowType: 'light',
                 mainBarType: 'gradient',
                 secBarType: 'gradient'
             },
