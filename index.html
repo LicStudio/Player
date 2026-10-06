@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reproductor de letras</title>
+    <title>App Neumórfica</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -346,6 +346,29 @@
             transform: translateZ(0);
         }
 
+        .letter-box.is-fill-invisible {
+            background: transparent !important;
+            background-color: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border-color: transparent !important;
+            box-shadow: none !important;
+        }
+
+        .letter-box.is-fill-invisible::after {
+            position: absolute;
+            z-index: 1;
+            inset: 1px;
+            border: 1px dotted rgba(255,255,255,0.52);
+            border-radius: inherit;
+            content: "";
+            pointer-events: none;
+        }
+
+        body.is-interface-invisible .letter-box.is-fill-invisible::after {
+            display: none;
+        }
+
         #customSlider {
             touch-action: none;
             user-select: none;
@@ -498,7 +521,7 @@
         .letter-box-content {
             position: absolute;
             inset: 0;
-            padding: 1.35rem;
+            padding: 1.35rem 0.675rem;
             overflow: hidden;
             pointer-events: auto;
             z-index: 10;
@@ -1064,6 +1087,163 @@
             border-radius: 50%;
         }
 
+        .custom-color-picker {
+            position: fixed;
+            z-index: 2147483647;
+            width: min(300px, calc(100vw - 24px));
+            max-height: calc(100vh - 24px);
+            box-sizing: border-box;
+            overflow-y: auto;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 18px;
+            background: rgba(38,38,38,0.98);
+            color: #e5e5e5;
+            box-shadow: 0 18px 48px rgba(0,0,0,0.48), inset 0 1px rgba(255,255,255,0.05);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            font: 500 13px/1.4 'Roboto Flex', sans-serif;
+        }
+
+        .custom-color-picker[hidden] { display: none; }
+        .custom-color-picker-value-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+        }
+        .custom-color-picker-undo {
+            display: grid;
+            width: 30px;
+            height: 30px;
+            flex: 0 0 30px;
+            place-items: center;
+            padding: 0;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 9px;
+            background: rgba(255,255,255,0.06);
+            color: #e5e5e5;
+            cursor: pointer;
+        }
+        .custom-color-picker-undo:hover { background: rgba(255,255,255,0.12); }
+        .custom-color-picker-undo:disabled {
+            opacity: 0.4;
+            cursor: default;
+        }
+        .custom-color-picker-saturation {
+            position: relative;
+            height: 154px;
+            overflow: hidden;
+            border-radius: 12px;
+            background-color: hsl(0 100% 50%);
+            background-image: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, transparent);
+            cursor: crosshair;
+            touch-action: none;
+        }
+        .custom-color-picker-marker {
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(0,0,0,0.35);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+        }
+        .custom-color-picker-hue {
+            display: block;
+            width: 100%;
+            height: 18px;
+            margin: 12px 0;
+            appearance: none;
+            -webkit-appearance: none;
+            border: 0;
+            border-radius: 999px;
+            background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+            cursor: pointer;
+        }
+        .custom-color-picker-opacity {
+            display: block;
+            width: 100%;
+            height: 18px;
+            margin: 12px 0;
+            appearance: none;
+            -webkit-appearance: none;
+            border: 0;
+            border-radius: 999px;
+            background: linear-gradient(to right, transparent, var(--custom-color-picker-opacity-color, #fff));
+            cursor: pointer;
+        }
+        .custom-color-picker-hue::-webkit-slider-thumb {
+            width: 18px;
+            height: 18px;
+            appearance: none;
+            -webkit-appearance: none;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            background: transparent;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.6);
+        }
+        .custom-color-picker-opacity::-webkit-slider-thumb {
+            width: 18px;
+            height: 18px;
+            appearance: none;
+            -webkit-appearance: none;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            background: transparent;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.6);
+        }
+        .custom-color-picker-opacity::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            background: transparent;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.6);
+        }
+        .custom-color-picker-hue::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            background: transparent;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.6);
+        }
+        .custom-color-picker-preview {
+            width: 30px;
+            height: 30px;
+            flex: 0 0 30px;
+            border: 2px solid rgba(255,255,255,0.72);
+            border-radius: 9px;
+        }
+        .custom-color-picker-hex {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            min-width: 0;
+            padding: 8px 10px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 9px;
+            outline: none;
+            background: rgba(0,0,0,0.22);
+            color: #f5f5f5;
+            font: 600 13px/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
+            text-transform: uppercase;
+            user-select: text;
+            cursor: text;
+        }
+        .custom-color-picker-hex:focus-visible,
+        .custom-color-picker-undo:focus-visible,
+        .custom-color-picker-saturation:focus-visible,
+        .custom-color-picker-hue:focus-visible,
+        .custom-color-picker-opacity:focus-visible {
+            outline: 2px solid rgba(227,227,227,0.8);
+            outline-offset: 2px;
+        }
+
         .linked-vinyl-menu .image-preview-menu-btn[aria-pressed="true"] {
             background: #333537;
             color: #E3E3E3;
@@ -1256,7 +1436,8 @@
             -webkit-backdrop-filter: none;
         }
 
-        #modalOverlay {
+        #modalOverlay,
+        #helpOverlay {
             background: rgba(2, 6, 23, 0.58);
             backdrop-filter: none;
             -webkit-backdrop-filter: none;
@@ -1309,10 +1490,48 @@
 
         /* Configuración: sistema visual Material Design 3.
            Se mantiene deliberadamente aislado para no alterar el reproductor. */
-        #modalOverlay {
+        #modalOverlay,
+        #helpOverlay {
             background: rgb(0 0 0 / calc(var(--config-opacity) * 0.34));
             backdrop-filter: blur(calc(var(--config-opacity) * 10px));
             -webkit-backdrop-filter: blur(calc(var(--config-opacity) * 10px));
+        }
+
+        #helpOverlay {
+            background: rgb(0 0 0 / calc(var(--config-opacity) * 0.34));
+            backdrop-filter: blur(calc(var(--config-opacity) * 10px));
+            -webkit-backdrop-filter: blur(calc(var(--config-opacity) * 10px));
+        }
+
+        .help-shortcut-card {
+            border: 1px solid var(--md-outline);
+            border-radius: 32px;
+            background: var(--md-surface-container);
+            padding: 24px;
+            color: var(--md-on-surface);
+        }
+
+        .help-shortcut-card p {
+            color: var(--md-on-surface-variant);
+            font-size: 16px;
+            line-height: 24px;
+        }
+
+        .help-key {
+            display: inline-flex;
+            min-width: 2rem;
+            min-height: 2rem;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 0.55rem;
+            background: rgba(255,255,255,0.08);
+            padding: 0.2rem 0.55rem;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 700;
+            line-height: 1;
+            box-shadow: inset 0 -2px 0 rgba(0,0,0,0.24);
         }
 
         .config-shell {
@@ -2101,7 +2320,8 @@
         }
 
         /* Controles Material 3, sin las apariencias nativas del navegador. */
-        #modalOverlay input[type="range"] {
+        #modalOverlay input[type="range"],
+        #helpOverlay input[type="range"] {
             appearance: none;
             -webkit-appearance: none;
             height: 0.35rem;
@@ -2111,7 +2331,8 @@
             cursor: pointer;
         }
 
-        #modalOverlay input[type="range"]::-webkit-slider-thumb {
+        #modalOverlay input[type="range"]::-webkit-slider-thumb,
+        #helpOverlay input[type="range"]::-webkit-slider-thumb {
             appearance: none;
             -webkit-appearance: none;
             width: 1.15rem;
@@ -2122,7 +2343,8 @@
             box-shadow: 0 0 0 2px var(--md-primary), 0 2px 4px rgba(0, 0, 0, 0.42);
         }
 
-        #modalOverlay input[type="range"]::-moz-range-thumb {
+        #modalOverlay input[type="range"]::-moz-range-thumb,
+        #helpOverlay input[type="range"]::-moz-range-thumb {
             width: 0.88rem;
             height: 0.88rem;
             border: 2px solid #000000;
@@ -2386,7 +2608,8 @@
             letter-spacing: 0;
         }
 
-        #closeModal {
+        #closeModal,
+        #closeHelp {
             position: absolute;
             left: 24px;
             width: 48px;
@@ -2397,9 +2620,12 @@
             transition: background-color 160ms ease;
         }
 
-        #closeModal:hover { background: rgba(227,227,227,0.08); }
-        #closeModal:active { background: rgba(227,227,227,0.12); }
-        #closeModal:focus-visible { outline: 2px solid rgba(227,227,227,0.56); outline-offset: 2px; }
+        #closeModal:hover,
+        #closeHelp:hover { background: rgba(227,227,227,0.08); }
+        #closeModal:active,
+        #closeHelp:active { background: rgba(227,227,227,0.12); }
+        #closeModal:focus-visible,
+        #closeHelp:focus-visible { outline: 2px solid rgba(227,227,227,0.56); outline-offset: 2px; }
         .config-shell > header > div:last-child { display: none; }
 
         .config-shell > .flex.min-h-0.flex-1 {
@@ -2407,7 +2633,8 @@
             min-height: 0;
         }
 
-        #modalOverlay .config-sidebar {
+        #modalOverlay .config-sidebar,
+        #helpOverlay .config-sidebar {
             position: relative;
             display: flex;
             flex: 0 0 240px;
@@ -2420,7 +2647,8 @@
             background: var(--md-surface-container);
         }
 
-        #configSectionNav {
+        #configSectionNav,
+        #helpSectionNav {
             display: flex;
             flex-direction: column;
             align-items: stretch;
@@ -2461,7 +2689,8 @@
         .config-section-nav-btn.active:active { background: #414345 !important; }
         .config-section-nav-btn:focus-visible { outline: 2px solid rgba(227,227,227,0.56); outline-offset: 2px; }
 
-        #modalOverlay main {
+        #modalOverlay main,
+        #helpOverlay main {
             flex: 1 1 auto;
             min-width: 0;
             min-height: 0;
@@ -2471,12 +2700,14 @@
             color: var(--md-on-surface);
         }
 
-        #modalOverlay .config-section-panel.active {
+        #modalOverlay .config-section-panel.active,
+        #helpOverlay section[aria-labelledby="helpControlsTitle"] {
             width: min(100%, 1000px);
             margin: 0 auto;
         }
 
-        #modalOverlay .config-section-panel h3 {
+        #modalOverlay .config-section-panel h3,
+        #helpOverlay section h3 {
             margin: 0 0 24px;
             color: var(--md-on-surface);
             font-family: inherit;
@@ -2540,10 +2771,6 @@
             gap: 16px 24px;
         }
 
-        #modalOverlay .config-subsection-option[data-option-id="visibilityOption"],
-        #modalOverlay .config-subsection-option[data-option-id="textOption"] { display: contents; }
-        #modalOverlay .config-subsection-option[data-option-id="visibilityOption"] > .config-switch { grid-column: 1; }
-        #modalOverlay .config-subsection-option[data-option-id="textOption"] > .flex.items-center.gap-4 { grid-column: 2; }
         #modalOverlay .config-subsection-option[data-option-id="cornerRadiusOption"] { grid-column: 1 / -1; }
 
         #modalOverlay .config-subsection-option[data-option-id="bgOption"] {
@@ -2586,22 +2813,36 @@
 
         #modalOverlay .config-subsection-controls[data-layout="audio-panel"] {
             display: grid;
-            grid-template-columns: max-content max-content max-content;
+            grid-template-columns: minmax(0, 1fr) max-content max-content;
             align-items: center;
             gap: 16px 20px;
-        }
-
-        #modalOverlay .config-subsection-option[data-option-id="playerCardOption"] > .config-switch {
-            grid-column: 1;
-            width: max-content;
         }
 
         #modalOverlay .config-subsection-option[data-option-id="playerCardOption"],
         #modalOverlay .config-subsection-option[data-option-id="pauseBtnConfig"] { display: contents; }
 
-        #modalOverlay #playerCardStyleControl { grid-column: 2; }
-        #modalOverlay #playerCardFillControl { grid-column: 3; }
+        #modalOverlay #playerCardStyleControl { grid-column: 1; }
+        #modalOverlay #playerCardFillControl { grid-column: 1 / -1; }
         #modalOverlay #playerCardColorOpacityRow { grid-column: 1 / -1; }
+        #modalOverlay #playerCardFillControl { width: 100%; }
+        #modalOverlay #playerCardFillModeRow,
+        #modalOverlay #letterBoxFillControls {
+            width: 100%;
+            flex-wrap: nowrap;
+        }
+        #modalOverlay #playerCardFillModeRow > .config-choice-group,
+        #modalOverlay #letterBoxFillControls > .config-choice-group {
+            flex: 0 0 auto;
+        }
+        #modalOverlay #playerCardFillModeRow > div:not(.config-choice-group),
+        #modalOverlay #letterBoxFillControls > #letterBoxColorControls {
+            margin-left: 0;
+        }
+        #modalOverlay #playerCardFillModeRow #syncLetterToAudioBtn,
+        #modalOverlay #letterBoxFillControls #syncAudioToLetterBtn {
+            margin-left: auto;
+            flex: 0 0 auto;
+        }
 
         #modalOverlay .config-subsection-option[data-option-id="playerCardOption"] > .flex.items-center.gap-4 {
             grid-column: 1 / -1;
@@ -2680,7 +2921,20 @@
             align-items: center;
             gap: 16px;
         }
-        #modalOverlay #thumbControls > div:last-child { flex-direction: row; align-items: center; }
+        #modalOverlay #thumbControls > div:last-child {
+            width: 100%;
+            flex-direction: row;
+            align-items: center;
+        }
+        #modalOverlay #thumbControls input[type="color"],
+        #modalOverlay #thumbShadowColorRow input[type="color"],
+        #modalOverlay #pauseShadowColorRow input[type="color"],
+        #modalOverlay .config-subsection-option[data-option-id="counterOption"] input[type="color"] {
+            margin-left: auto;
+        }
+        #modalOverlay #thumbShadowColorRow {
+            margin-left: auto;
+        }
         #modalOverlay #progressThumbShadowSettings {
             display: grid;
             grid-template-columns: max-content minmax(0, 1fr);
@@ -2823,7 +3077,8 @@
         .config-switch:hover .md-switch-track { box-shadow: 0 0 0 8px rgba(227,227,227,0.08); }
         .config-switch:active .md-switch-track { box-shadow: 0 0 0 8px rgba(227,227,227,0.12); }
 
-        #modalOverlay input[type="range"] {
+        #modalOverlay input[type="range"],
+        #helpOverlay input[type="range"] {
             width: var(--config-slider-length);
             max-width: 100%;
             min-width: 0;
@@ -2858,6 +3113,7 @@
         }
 
         #modalOverlay input[type="range"]::-webkit-slider-runnable-track,
+        #helpOverlay input[type="range"]::-webkit-slider-runnable-track,
         #letterBoxEditorPanel input[type="range"]::-webkit-slider-runnable-track {
             height: 4px;
             border-radius: 4px;
@@ -2865,6 +3121,7 @@
         }
 
         #modalOverlay input[type="range"]::-moz-range-track,
+        #helpOverlay input[type="range"]::-moz-range-track,
         #letterBoxEditorPanel input[type="range"]::-moz-range-track {
             height: 4px;
             border-radius: 4px;
@@ -2872,6 +3129,7 @@
         }
 
         #modalOverlay input[type="range"]::-webkit-slider-thumb,
+        #helpOverlay input[type="range"]::-webkit-slider-thumb,
         #letterBoxEditorPanel input[type="range"]::-webkit-slider-thumb {
             width: 16px;
             height: 16px;
@@ -2885,6 +3143,7 @@
         }
 
         #modalOverlay input[type="range"]::-moz-range-thumb,
+        #helpOverlay input[type="range"]::-moz-range-thumb,
         #letterBoxEditorPanel input[type="range"]::-moz-range-thumb {
             width: 12.8px;
             height: 12.8px;
@@ -2895,9 +3154,9 @@
         }
 
         #modalOverlay input[type="color"] {
-            width: 48px;
-            height: 48px;
-            padding: 8px;
+            width: 50px;
+            height: 50px;
+            padding: 0;
         }
 
         #modalOverlay select,
@@ -2923,13 +3182,45 @@
         }
 
         #modalOverlay .config-choice-group {
-            display: block;
+            display: inline-flex;
+            align-items: stretch;
+            gap: 0.2rem;
             width: max-content;
             max-width: 100%;
+            padding: 4px;
+            border: 1px solid var(--md-outline);
+            border-radius: 999px;
+            background: var(--md-surface-container);
         }
 
         #modalOverlay .config-choice {
-            display: none;
+            display: flex;
+            flex: 1 1 auto;
+            min-height: 40px;
+            padding: 8px 16px;
+            border: 0;
+            border-radius: 999px;
+            background: transparent;
+            color: var(--md-on-surface-variant);
+            font-size: 14px;
+            line-height: 20px;
+            white-space: nowrap;
+        }
+
+        #modalOverlay .config-choice:hover {
+            background: rgba(227,227,227,0.08);
+        }
+
+        #modalOverlay .config-choice:has(input:checked) {
+            border: 0;
+            background: var(--md-secondary-container);
+            color: var(--md-on-surface);
+            box-shadow: none;
+        }
+
+        #modalOverlay .config-choice:focus-within {
+            outline: 2px solid rgba(227,227,227,0.56);
+            outline-offset: 1px;
         }
 
         #modalOverlay .config-choice-cycle {
@@ -2966,35 +3257,100 @@
             width: 100%;
         }
 
-        #bgOption > div {
+        #modalOverlay .config-subsection-option[data-option-id="bgOption"] {
             display: grid;
             grid-template-columns: max-content minmax(0, 1fr);
             align-items: center;
             gap: 16px;
         }
 
-        #bgOption > div > span:first-child {
+        #modalOverlay .config-subsection-option[data-option-id="bgOption"] > span:first-child {
             grid-column: 1 / -1;
         }
 
-        #bgOption > div > .config-choice-group {
+        #modalOverlay .config-subsection-option[data-option-id="bgOption"] > .config-choice-group {
             grid-column: 1;
             grid-row: 2;
         }
 
-        #bgOption > div > #bgControls {
+        #modalOverlay .config-subsection-option[data-option-id="bgOption"] > #bgControls {
             grid-column: 2;
             grid-row: 2;
             min-width: 0;
         }
 
-        #bgOption #bgControls > div {
+        #modalOverlay .config-subsection-option[data-option-id="bgOption"] #bgControls > div {
             flex-wrap: wrap;
             gap: 8px;
             justify-content: flex-start;
+            width: 100%;
         }
 
-        #bgOption > div > .flex.flex-col.gap-2.mt-4 {
+        #modalOverlay #simpleBgControl input[type="color"] {
+            margin-left: 0;
+        }
+
+        #modalOverlay #bgGradientColorControls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        #modalOverlay #simpleBgControl #syncAudioToBackgroundBtn,
+        #modalOverlay #bgGradientColorControls #syncAudioToBackgroundGradientBtn {
+            margin-left: auto;
+        }
+
+        #modalOverlay #bgImageFile {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            min-height: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+            background: transparent !important;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
+
+        #modalOverlay .bg-image-upload-btn {
+            display: inline-flex;
+            min-height: 48px;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 0 20px;
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 999px;
+            background: rgba(255,255,255,0.07);
+            color: #e5e5e5;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+        }
+
+        #modalOverlay .bg-image-upload-btn:hover {
+            border-color: rgba(255,255,255,0.26);
+            background: rgba(255,255,255,0.12);
+        }
+
+        #modalOverlay .bg-image-upload-btn:active { transform: scale(0.98); }
+        #modalOverlay #bgImageFile:focus-visible + .bg-image-upload-btn {
+            outline: 2px solid rgba(227,227,227,0.8);
+            outline-offset: 3px;
+        }
+
+        #modalOverlay .bg-image-upload-btn svg {
+            width: 19px;
+            height: 19px;
+            flex: 0 0 auto;
+        }
+
+        #modalOverlay .config-subsection-option[data-option-id="bgOption"] > .flex.flex-col.gap-2.mt-4 {
             grid-column: 1 / -1;
         }
 
@@ -3042,29 +3398,19 @@
 
         #modalOverlay #playerLightColorControl:not(.hidden),
         #modalOverlay #letterBoxLightColorControl:not(.hidden) {
-            display: grid;
-            grid-template-columns: 48px max-content;
+            display: flex;
             align-items: center;
-            align-self: end;
-            grid-column: 3;
-            gap: 8px;
-            justify-self: start;
-            width: max-content;
-            min-width: 0;
-        }
-
-        #modalOverlay #playerLightColorControl span,
-        #modalOverlay #letterBoxLightColorControl span {
             grid-column: 2;
-            grid-row: 1;
-            width: auto;
+            justify-self: stretch;
+            justify-content: flex-end;
+            gap: 0;
+            width: 100%;
             min-width: 0;
         }
 
         #modalOverlay #playerLightColorControl input[type="color"],
         #modalOverlay #letterBoxLightColorControl input[type="color"] {
-            grid-column: 1;
-            grid-row: 1;
+            justify-self: end;
         }
 
         #modalOverlay input:focus-visible,
@@ -3096,24 +3442,31 @@
 
         .config-opacity-control input { accent-color: var(--md-primary); }
 
-        #modalOverlay main {
+        #modalOverlay main,
+        #helpOverlay main {
             scrollbar-width: auto;
             scrollbar-color: #747875 #1B1B1B;
         }
 
-        #modalOverlay main::-webkit-scrollbar { width: 16px; }
-        #modalOverlay main::-webkit-scrollbar-track { background: #1B1B1B; }
-        #modalOverlay main::-webkit-scrollbar-thumb {
+        #modalOverlay main::-webkit-scrollbar,
+        #helpOverlay main::-webkit-scrollbar { width: 16px; }
+        #modalOverlay main::-webkit-scrollbar-track,
+        #helpOverlay main::-webkit-scrollbar-track { background: #1B1B1B; }
+        #modalOverlay main::-webkit-scrollbar-thumb,
+        #helpOverlay main::-webkit-scrollbar-thumb {
             border: 4px solid #1B1B1B;
             border-radius: 8px;
             background: #747875;
         }
-        #modalOverlay main::-webkit-scrollbar-thumb:hover { background: #9A9D9B; }
+        #modalOverlay main::-webkit-scrollbar-thumb:hover,
+        #helpOverlay main::-webkit-scrollbar-thumb:hover { background: #9A9D9B; }
 
         @media (max-width: 760px) {
             .config-shell { --config-slider-length: clamp(96px, calc(100vw - 246px), 480px); }
-            #modalOverlay { padding: 0; }
+            #modalOverlay,
+            #helpOverlay { padding: 0; }
             .config-shell { border-radius: 0; }
+            #helpOverlay .help-shortcut-card { padding: 16px; }
 
             .config-shell > header {
                 flex-basis: 64px;
@@ -3122,11 +3475,13 @@
             }
 
             .config-shell > header h2 { font-size: 20px; line-height: 28px; }
-            #closeModal { left: 16px; }
+            #closeModal,
+            #closeHelp { left: 16px; }
 
             .config-shell > .flex.min-h-0.flex-1 { flex-direction: column; }
 
-            #modalOverlay .config-sidebar {
+            #modalOverlay .config-sidebar,
+            #helpOverlay .config-sidebar {
                 flex: 0 0 auto;
                 width: 100%;
                 min-width: 0;
@@ -3135,7 +3490,8 @@
                 border-bottom: 1px solid var(--md-outline);
             }
 
-            #configSectionNav {
+            #configSectionNav,
+            #helpSectionNav {
                 flex-direction: row;
                 gap: 8px;
                 overflow-x: auto;
@@ -3151,7 +3507,8 @@
                 white-space: nowrap;
             }
 
-            #modalOverlay main { padding: 24px 16px; }
+            #modalOverlay main,
+            #helpOverlay main { padding: 24px 16px; }
             #modalOverlay .neu-list-item { padding: 16px; }
 
             #modalOverlay .neu-list-item .flex.items-center.gap-4 > span:first-child {
@@ -3174,10 +3531,13 @@
                 gap: 4px;
             }
 
-            #bgOption > div,
+            #modalOverlay .config-subsection-option[data-option-id="bgOption"],
             #progressOption > div > .space-y-4.border-b {
                 grid-template-columns: max-content minmax(0, 1fr);
                 gap: 12px;
+            }
+            #modalOverlay .config-subsection-option[data-option-id="bgOption"] {
+                grid-template-columns: minmax(0, 1fr);
             }
 
             #modalOverlay .config-subsection-controls[data-layout="general"],
@@ -3193,22 +3553,25 @@
             #modalOverlay .config-subsection-controls[data-layout="general"] {
                 grid-template-columns: max-content minmax(0, 1fr);
             }
-            #modalOverlay .config-subsection-option[data-option-id="textOption"] > .flex.items-center.gap-4 {
-                grid-column: 2;
-                min-width: 0;
-            }
             #modalOverlay .config-subsection-controls[data-layout="pause-shadow"] {
                 grid-template-columns: max-content minmax(0, 1fr);
             }
             #modalOverlay .config-subsection-controls[data-layout="audio-panel"] {
-                grid-template-columns: max-content minmax(0, 1fr);
+                grid-template-columns: minmax(0, 1fr);
             }
-            #modalOverlay #playerCardStyleControl { grid-column: 2; }
+            #modalOverlay #playerCardStyleControl { grid-column: 1; }
             #modalOverlay #playerCardFillControl { grid-column: 1 / -1; }
             #modalOverlay #barColorSettings { grid-template-columns: minmax(0, 1fr); }
             #modalOverlay #secBarColorControls { justify-content: flex-start; }
             #modalOverlay #progressThumbShadowSettings {
                 grid-template-columns: max-content minmax(0, 1fr);
+            }
+            #modalOverlay #progressThumbShadowControls {
+                flex-wrap: wrap;
+            }
+            #modalOverlay #progressThumbShadowControls #thumbShadowColorRow {
+                flex: 1 1 100%;
+                justify-content: flex-end;
             }
 
             #modalOverlay .config-subsection-controls[data-layout="general"] > *,
@@ -3219,10 +3582,38 @@
             #modalOverlay .config-subsection-controls[data-layout="counters"] > * {
                 grid-column: 1 / -1 !important;
             }
+            #modalOverlay .config-subsection-option[data-option-id="bgOption"] > .config-choice-group,
+            #modalOverlay .config-subsection-option[data-option-id="bgOption"] > #bgControls {
+                grid-column: 1;
+            }
+            #modalOverlay .config-subsection-option[data-option-id="bgOption"] > .config-choice-group { grid-row: 1; }
+            #modalOverlay .config-subsection-option[data-option-id="bgOption"] > #bgControls { grid-row: 2; }
 
             #modalOverlay #playerCardFillModeRow,
             #modalOverlay #letterBoxFillControls {
-                flex-wrap: wrap;
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) max-content max-content;
+                gap: 4px;
+            }
+            #modalOverlay #playerCardFillModeRow > .config-choice-group,
+            #modalOverlay #letterBoxFillControls > .config-choice-group {
+                grid-column: 1 / -1;
+                grid-row: 1;
+            }
+            #modalOverlay #playerCardFillModeRow > #syncLetterToAudioBtn,
+            #modalOverlay #letterBoxFillControls > #syncAudioToLetterBtn {
+                grid-column: 2;
+                grid-row: 2;
+                margin-left: 0;
+            }
+            #modalOverlay #playerCardFillModeRow > div:not(.config-choice-group),
+            #modalOverlay #letterBoxFillControls > #letterBoxColorControls {
+                grid-column: 3;
+                grid-row: 2;
+                margin-left: 0;
+            }
+            #modalOverlay #letterBoxFillControls > #letterBoxColorControls {
+                gap: 12px;
             }
 
             #modalOverlay .config-subsection-option[data-option-id="playerShadowOption"],
@@ -3354,6 +3745,10 @@
         <button id="configBtn" type="button" class="player-toolbar-btn" title="Abrir configuración" aria-label="Abrir configuración">
             <svg id="configIcon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.4.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.4-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
         </button>
+        <span id="configHelpDivider" class="player-toolbar-divider" aria-hidden="true"></span>
+        <button id="helpBtn" type="button" class="player-toolbar-btn" title="Ayuda" aria-label="Ayuda">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"></circle><path d="M9.6 9a2.5 2.5 0 1 1 4.3 1.75c-1.1 1.1-1.9 1.35-1.9 3"></path><path d="M12 17.5h.01"></path></svg>
+        </button>
         <span id="imageAudioDivider" class="player-toolbar-divider hidden" aria-hidden="true"></span>
         <button id="borrar-cancion" type="button" onclick="showDeleteModal()" class="player-toolbar-btn is-danger hidden" title="Eliminar audio" aria-label="Eliminar audio">
             <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
@@ -3484,27 +3879,17 @@
                             <h3 class="text-xl font-semibold text-white sm:text-2xl">General</h3>
                         </div>
                         <ul class="space-y-6">
-                            <li id="visibilityOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                                <div class="flex flex-col space-y-4">
-                                    <span class="font-semibold text-xl">Visibilidad del botón</span>
-                                    <label class="config-switch">
-                                        <input type="checkbox" id="configVisibility" checked onchange="toggleConfigBtn()"><span class="md-switch-track" aria-hidden="true"></span><span>Interfaz</span>
-                                    </label>
-                                </div>
-                            </li>
-
                             <li id="pauseBtnConfig" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
                                 <div class="flex flex-col space-y-4">
                                     <span class="font-semibold text-xl">Efecto del botón de pausa</span>
                                     <div class="flex flex-col gap-4">
                                         <div class="config-choice-group" role="radiogroup" aria-label="Efecto del botón de pausa">
-                                            <label class="config-choice"><input type="radio" name="pauseShadowType" value="light" onchange="togglePauseShadowType()"><span>Luz</span></label>
-                                            <label class="config-choice"><input type="radio" name="pauseShadowType" value="off" onchange="togglePauseShadowType()"><span>Desactivado</span></label>
-                                            <label class="config-choice"><input type="radio" name="pauseShadowType" value="shadow" checked onchange="togglePauseShadowType()"><span>Sombra</span></label>
+                                            <label class="config-choice"><input type="radio" name="pauseShadowType" value="off"><span>Desactivado</span></label>
+                                            <label class="config-choice"><input type="radio" name="pauseShadowType" value="shadow" checked><span>Sombra</span></label>
+                                            <label class="config-choice"><input type="radio" name="pauseShadowType" value="light"><span>Luz</span></label>
                                         </div>
                                         <div id="pauseShadowColorRow" class="hidden flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Color de luz</span>
-                                            <input type="color" id="pauseShadowColor" value="#000000" class="w-12 h-12 rounded cursor-pointer" oninput="applyPauseButtonSettings()">
+                                            <input type="color" id="pauseShadowColor" value="#000000" aria-label="Color de luz del botón de pausa" class="w-12 h-12 rounded cursor-pointer" oninput="applyPauseButtonSettings()">
                                         </div>
                                     </div>
                                 </div>
@@ -3531,24 +3916,12 @@
                             <h3 class="text-xl font-semibold text-white sm:text-2xl">Panel de letra</h3>
                         </div>
                         <ul class="space-y-6">
-                            <li id="textOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
-                                <div class="flex flex-col space-y-4">
-                                    <span class="font-semibold text-xl">Color de texto e iconos</span>
-                                    <div class="flex items-center gap-4">
-                                        <span class="text-sm text-gray-400">Color de texto</span>
-                                        <input type="color" id="textColorPicker" value="#e5e5e5" aria-label="Color de texto e iconos" class="w-12 h-12 rounded cursor-pointer" oninput="applyTextAndIconColor()">
-                                    </div>
-                                </div>
-                            </li>
-
                             <li id="playerCardOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
                                 <div class="flex flex-col space-y-4">
                                     <span class="font-semibold text-xl">Cuadro de Audio</span>
-                                    <label class="config-switch">
-                                        <input type="checkbox" id="playerVisibility" checked onchange="applyPlayerCardSettings()"><span class="md-switch-track" aria-hidden="true"></span><span>Panel visible</span>
-                                    </label>
                                     <div id="playerCardStyleControl" class="flex items-center">
                                         <div class="config-choice-group" role="radiogroup" aria-label="Estilo del cuadro de audio">
+                                            <label class="config-choice"><input type="radio" name="playerCardStyle" value="off" onchange="togglePlayerCardStyle()"><span>Desactivado</span></label>
                                             <label class="config-choice"><input type="radio" name="playerCardStyle" value="floating" checked onchange="togglePlayerCardStyle()"><span>Flotante</span></label>
                                             <label class="config-choice"><input type="radio" name="playerCardStyle" value="full" onchange="togglePlayerCardStyle()"><span>Completo</span></label>
                                         </div>
@@ -3559,26 +3932,25 @@
                                                 <label class="config-choice"><input type="radio" name="playerCardColorType" value="simple" checked onchange="applyPlayerCardColorSettings()"><span>Color</span></label>
                                                 <label class="config-choice"><input type="radio" name="playerCardColorType" value="gradient" onchange="applyPlayerCardColorSettings()"><span>Gradiente</span></label>
                                             </div>
+                                            <button id="syncLetterToAudioBtn" type="button" class="config-choice-cycle" aria-label="Sincronizar colores del cuadro de audio con el cuadro de letras">Sincronizar colores</button>
                                             <div class="flex gap-3 items-center">
-                                                <input type="color" id="playerCardColor1" value="#262626" aria-label="Color del cuadro de audio" class="w-12 h-12 rounded cursor-pointer" oninput="applyPlayerCardColorSettings()">
-                                                <input type="color" id="playerCardColor2" value="#262626" aria-label="Segundo color del cuadro de audio" class="w-12 h-12 rounded cursor-pointer hidden" oninput="applyPlayerCardColorSettings()">
+                                                <input type="color" id="playerCardColor1" value="#262626" aria-label="Color del cuadro de audio" data-opacity-control="playerCardColorOpacity" class="w-12 h-12 rounded cursor-pointer" oninput="applyPlayerCardColorSettings()">
+                                                <input type="color" id="playerCardColor2" value="#262626" aria-label="Segundo color del cuadro de audio" data-opacity-control="playerCardColorOpacity" class="w-12 h-12 rounded cursor-pointer hidden" oninput="applyPlayerCardColorSettings()">
                                             </div>
                                         </div>
                                     </div>
-                                    <button id="syncLetterToAudioBtn" type="button" class="config-choice-cycle" aria-label="Sincronizar colores del cuadro de audio con el cuadro de letras">Sincronizar colores</button>
-                                    <div id="playerCardColorOpacityRow" class="flex items-center gap-4">
+                                    <div id="playerCardColorOpacityRow" class="hidden">
                                         <span class="text-sm text-gray-400 w-28">Opacidad del color</span>
-                                        <input type="range" id="playerCardColorOpacity" min="0" max="1" step="0.05" value="1" aria-label="Opacidad del color del cuadro de audio" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardColorSettings()">
+                                        <input type="range" id="playerCardColorOpacity" min="0" max="1" step="0.05" value="1" aria-label="Opacidad del color del cuadro de audio" data-picker-label="Opacidad del color del cuadro de audio" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardColorSettings()">
                                     </div>
                                     <div id="playerShadowOption" class="flex flex-col gap-4">
                                         <div class="config-choice-group" role="radiogroup" aria-label="Efecto del cuadro de audio">
-                                            <label class="config-choice"><input type="radio" name="playerShadowType" value="light" onchange="togglePlayerShadowType()"><span>Luz</span></label>
-                                            <label class="config-choice"><input type="radio" name="playerShadowType" value="off" onchange="togglePlayerShadowType()"><span>Desactivado</span></label>
-                                            <label class="config-choice"><input type="radio" name="playerShadowType" value="shadow" checked onchange="togglePlayerShadowType()"><span>Sombra</span></label>
+                                            <label class="config-choice"><input type="radio" name="playerShadowType" value="off"><span>Desactivado</span></label>
+                                            <label class="config-choice"><input type="radio" name="playerShadowType" value="shadow" checked><span>Sombra</span></label>
+                                            <label class="config-choice"><input type="radio" name="playerShadowType" value="light"><span>Luz</span></label>
                                         </div>
                                         <div id="playerLightColorControl" class="hidden flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Color de luz</span>
-                                            <input type="color" id="playerShadowColor" value="#000000" class="w-12 h-12 rounded cursor-pointer" oninput="applyPlayerCardSettings()">
+                                            <input type="color" id="playerShadowColor" value="#000000" aria-label="Color de luz del cuadro de audio" class="w-12 h-12 rounded cursor-pointer" oninput="applyPlayerCardSettings()">
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-4 mt-2">
@@ -3593,31 +3965,31 @@
                                     <span class="font-semibold text-xl">Cuadro de Letras</span>
                                     <div id="letterBoxFillControls" class="flex items-center gap-3">
                                         <div class="config-choice-group" role="radiogroup" aria-label="Tipo de color del cuadro de letras">
+                                            <label class="config-choice"><input type="radio" name="letterBoxColorType" value="invisible" onchange="applyLetterBoxSettings()"><span>Invisible</span></label>
                                             <label class="config-choice"><input type="radio" name="letterBoxColorType" value="simple" checked onchange="applyLetterBoxSettings()"><span>Color</span></label>
                                             <label class="config-choice"><input type="radio" name="letterBoxColorType" value="gradient" onchange="applyLetterBoxSettings()"><span>Gradiente</span></label>
                                         </div>
-                                        <div class="flex gap-4 items-center">
-                                            <input type="color" id="letterBoxColor1" value="#262626" aria-label="Color del cuadro de letras" class="w-12 h-12 rounded cursor-pointer" oninput="applyLetterBoxSettings()">
-                                            <input type="color" id="letterBoxColor2" value="#262626" aria-label="Segundo color del cuadro de letras" class="w-12 h-12 rounded cursor-pointer hidden" oninput="applyLetterBoxSettings()">
+                                        <button id="syncAudioToLetterBtn" type="button" class="config-choice-cycle" aria-label="Sincronizar colores del cuadro de letras con el cuadro de audio">Sincronizar colores</button>
+                                        <div id="letterBoxColorControls" class="flex gap-4 items-center">
+                                            <input type="color" id="letterBoxColor1" value="#262626" aria-label="Color del cuadro de letras" data-opacity-control="letterBoxOpacity" class="w-12 h-12 rounded cursor-pointer" oninput="applyLetterBoxSettings()">
+                                            <input type="color" id="letterBoxColor2" value="#262626" aria-label="Segundo color del cuadro de letras" data-opacity-control="letterBoxOpacity" class="w-12 h-12 rounded cursor-pointer hidden" oninput="applyLetterBoxSettings()">
                                         </div>
                                     </div>
-                                    <button id="syncAudioToLetterBtn" type="button" class="config-choice-cycle" aria-label="Sincronizar colores del cuadro de letras con el cuadro de audio">Sincronizar colores</button>
                                     <div id="letterBoxShadowOption" class="flex flex-col gap-4">
                                         <div class="config-choice-group" role="radiogroup" aria-label="Efecto del cuadro de letras">
-                                            <label class="config-choice"><input type="radio" name="letterBoxShadowType" value="light" checked onchange="toggleLetterBoxShadowType()"><span>Luz</span></label>
-                                            <label class="config-choice"><input type="radio" name="letterBoxShadowType" value="off" onchange="toggleLetterBoxShadowType()"><span>Desactivado</span></label>
-                                            <label class="config-choice"><input type="radio" name="letterBoxShadowType" value="shadow" onchange="toggleLetterBoxShadowType()"><span>Sombra</span></label>
+                                            <label class="config-choice"><input type="radio" name="letterBoxShadowType" value="off"><span>Desactivado</span></label>
+                                            <label class="config-choice"><input type="radio" name="letterBoxShadowType" value="shadow"><span>Sombra</span></label>
+                                            <label class="config-choice"><input type="radio" name="letterBoxShadowType" value="light" checked><span>Luz</span></label>
                                         </div>
                                         <div id="letterBoxLightColorControl" class="hidden flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-28">Color de luz</span>
-                                            <input type="color" id="letterBoxShadowColor" value="#000000" class="w-12 h-12 rounded cursor-pointer" oninput="applyLetterBoxSettings()">
+                                            <input type="color" id="letterBoxShadowColor" value="#000000" aria-label="Color de luz del cuadro de letras" class="w-12 h-12 rounded cursor-pointer" oninput="applyLetterBoxSettings()">
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-4">
+                                    <div id="letterBoxOpacityControl" class="hidden">
                                         <span class="text-sm text-gray-400 w-28">Opacidad</span>
-                                        <input type="range" id="letterBoxOpacity" min="0.1" max="1" step="0.05" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
+                                        <input type="range" id="letterBoxOpacity" min="0.1" max="1" step="0.05" value="1" aria-label="Opacidad del color del cuadro de letras" data-picker-label="Opacidad del color del cuadro de letras" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
                                     </div>
-                                    <div class="flex items-center gap-4">
+                                    <div id="letterBoxBlurControl" class="flex items-center gap-4">
                                         <span class="text-sm text-gray-400 w-28">Blur</span>
                                         <input type="range" id="letterBoxBlur" min="0" max="40" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
                                     </div>
@@ -3654,19 +4026,28 @@
                                     </div>
                                     <div id="bgControls" class="flex flex-col gap-4">
                                         <div id="simpleBgControl" class="flex gap-4 items-center">
-                                            <input type="color" id="bgColorSimple" value="#262626" class="w-12 h-12 rounded cursor-pointer" oninput="applyBackground()">
-                                            <span class="text-sm text-gray-400">Color de fondo</span>
+                                            <button id="syncAudioToBackgroundBtn" type="button" class="config-choice-cycle" aria-label="Sincronizar colores del fondo con el cuadro de audio">Sincronizar colores</button>
+                                            <input type="color" id="bgColorSimple" value="#262626" aria-label="Color de fondo" class="w-12 h-12 rounded cursor-pointer" oninput="applyBackground()">
                                         </div>
                                         <div id="gradientBgControl" class="hidden flex gap-4 items-center">
-                                            <input type="color" id="bgColorGrad1" value="#262626" class="w-12 h-12 rounded cursor-pointer" oninput="applyBackground()">
-                                            <input type="color" id="bgColorGrad2" value="#4a4a4a" class="w-12 h-12 rounded cursor-pointer" oninput="applyBackground()">
-                                            <span class="text-sm text-gray-400">Colores de gradiente</span>
+                                            <div id="bgGradientColorControls">
+                                                <button id="syncAudioToBackgroundGradientBtn" type="button" class="config-choice-cycle" aria-label="Sincronizar colores del fondo con el cuadro de audio">Sincronizar colores</button>
+                                                <input type="color" id="bgColorGrad1" value="#262626" class="w-12 h-12 rounded cursor-pointer" oninput="applyBackground()">
+                                                <input type="color" id="bgColorGrad2" value="#4a4a4a" class="w-12 h-12 rounded cursor-pointer" oninput="applyBackground()">
+                                            </div>
                                         </div>
                                         <div id="imageBgControl" class="hidden flex gap-4 items-center">
-                                            <input type="file" id="bgImageFile" accept="image/*" class="bg-[#1a1a1a] p-2 rounded border border-gray-700 w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-white hover:file:bg-gray-600 cursor-pointer" onchange="applyBackground()">
+                                            <input type="file" id="bgImageFile" accept="image/*" aria-label="Cargar imagen de fondo" onchange="applyBackground()">
+                                            <label for="bgImageFile" class="bg-image-upload-btn">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                    <path d="M12 15V3"></path>
+                                                    <path d="m7 8 5-5 5 5"></path>
+                                                    <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path>
+                                                </svg>
+                                                <span>Cargar imagen</span>
+                                            </label>
                                         </div>
                                     </div>
-                                    <button id="syncAudioToBackgroundBtn" type="button" class="config-choice-cycle" aria-label="Sincronizar colores del fondo con el cuadro de audio">Sincronizar colores</button>
                                     <div class="flex flex-col gap-2 mt-4 pt-4 border-t border-gray-700">
                                         <div class="flex items-center gap-4">
                                             <span class="text-sm text-gray-400 w-24">Blur</span>
@@ -3691,8 +4072,8 @@
                                             <span class="text-sm text-gray-300 font-semibold">Color Principal (Reproducido)</span>
                                             <div id="mainBarColorControls" class="flex items-center gap-3">
                                                 <div class="config-choice-group" role="radiogroup" aria-label="Color principal de la barra de audio">
-                                                    <label class="config-choice"><input type="radio" name="mainBarType" value="simple" checked onchange="toggleBarMainType()"><span>Simple</span></label>
-                                                    <label class="config-choice"><input type="radio" name="mainBarType" value="gradient" onchange="toggleBarMainType()"><span>Gradiente</span></label>
+                                                    <label class="config-choice"><input type="radio" name="mainBarType" value="simple" checked><span>Simple</span></label>
+                                                    <label class="config-choice"><input type="radio" name="mainBarType" value="gradient"><span>Gradiente</span></label>
                                                 </div>
                                                 <div class="flex gap-2 items-center">
                                                     <input type="color" id="mainBarColor1" value="#e5e5e5" class="w-10 h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
@@ -3709,8 +4090,8 @@
                                                     <input type="color" id="secBarColor2" value="#333333" class="w-10 h-10 rounded cursor-pointer hidden" oninput="applyCustomSliderSettings()">
                                                 </div>
                                                 <div class="config-choice-group" role="radiogroup" aria-label="Color secundario de la barra de audio">
-                                                    <label class="config-choice"><input type="radio" name="secBarType" value="simple" checked onchange="toggleBarSecType()"><span>Simple</span></label>
-                                                    <label class="config-choice"><input type="radio" name="secBarType" value="gradient" onchange="toggleBarSecType()"><span>Gradiente</span></label>
+                                                    <label class="config-choice"><input type="radio" name="secBarType" value="simple" checked><span>Simple</span></label>
+                                                    <label class="config-choice"><input type="radio" name="secBarType" value="gradient"><span>Gradiente</span></label>
                                                 </div>
                                             </div>
                                         </div>
@@ -3728,13 +4109,12 @@
                                         <span class="text-sm text-gray-300 font-semibold">Efecto del círculo</span>
                                         <div id="progressThumbShadowControls">
                                             <div class="config-choice-group" role="radiogroup" aria-label="Efecto del círculo">
-                                                <label class="config-choice"><input type="radio" name="progressThumbShadowType" value="light" checked onchange="toggleProgressThumbShadowType()"><span>Luz</span></label>
-                                                <label class="config-choice"><input type="radio" name="progressThumbShadowType" value="off" onchange="toggleProgressThumbShadowType()"><span>Desactivado</span></label>
-                                                <label class="config-choice"><input type="radio" name="progressThumbShadowType" value="shadow" onchange="toggleProgressThumbShadowType()"><span>Sombra</span></label>
+                                                <label class="config-choice"><input type="radio" name="progressThumbShadowType" value="off"><span>Desactivado</span></label>
+                                                <label class="config-choice"><input type="radio" name="progressThumbShadowType" value="shadow"><span>Sombra</span></label>
+                                                <label class="config-choice"><input type="radio" name="progressThumbShadowType" value="light" checked><span>Luz</span></label>
                                             </div>
                                             <div id="thumbShadowColorRow" class="flex items-center gap-2">
-                                                <span class="text-xs text-gray-400 w-24">Color de luz</span>
-                                                <input type="color" id="customThumbShadowColor" value="#000000" class="w-12 h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
+                                                    <input type="color" id="customThumbShadowColor" value="#000000" aria-label="Color de luz del círculo de progreso" class="w-12 h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
                                             </div>
                                         </div>
                                     </div>
@@ -3753,13 +4133,13 @@
                             <li id="counterOption" class="neu-list-item p-6 transition text-lg">
                                 <div class="flex flex-col space-y-4">
                                     <span class="font-semibold text-xl">Color plano de contadores y botones de salto</span>
-                                    <div class="flex items-center gap-4">
+                                    <div class="hidden">
                                         <span class="text-sm text-gray-400 w-28">Opacidad</span>
-                                        <input type="range" id="counterOpacity" min="0" max="1" step="0.05" value="0.45" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyCounterSettings()">
+                                        <input type="range" id="counterOpacity" min="0" max="1" step="0.05" value="0.45" aria-label="Opacidad de contadores y botones de salto" data-picker-label="Opacidad de contadores y botones de salto" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyCounterSettings()">
                                     </div>
                                     <div class="flex items-center gap-4">
                                         <span class="text-sm text-gray-400 w-28">Color</span>
-                                        <input type="color" id="counterColor" value="#262626" class="w-12 h-12 rounded cursor-pointer" oninput="applyCounterSettings()">
+                                        <input type="color" id="counterColor" value="#262626" aria-label="Color de contadores y botones de salto" data-opacity-control="counterOpacity" class="w-12 h-12 rounded cursor-pointer" oninput="applyCounterSettings()">
                                     </div>
                                 </div>
                             </li>
@@ -3788,6 +4168,62 @@
             </div>
             <div class="config-opacity-control">
                 <input id="configOpacityControl" type="range" min="0" max="1" step="0.01" value="0.72" aria-label="Opacidad y desenfoque de configuración" title="Opacidad y desenfoque de configuración">
+            </div>
+        </div>
+    </div>
+
+    <div id="helpOverlay" class="fixed inset-0 bg-black/40 hidden z-50 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="helpDialogTitle">
+        <div class="config-shell w-full h-full flex flex-col">
+            <header class="flex items-center justify-between border-b border-white/10 px-6 py-5 sm:px-8">
+                <button id="closeHelp" type="button" class="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-xl text-white transition hover:bg-white/10" aria-label="Cerrar ayuda" title="Cerrar ayuda">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+                </button>
+                <h2 id="helpDialogTitle" class="text-2xl font-bold tracking-tight text-white sm:text-3xl">Ayuda</h2>
+                <div class="w-12"></div>
+            </header>
+            <div class="flex min-h-0 flex-1 flex-col lg:flex-row">
+                <aside class="config-sidebar w-full shrink-0 border-b border-white/10 p-4 lg:w-72 lg:border-b-0 lg:border-r lg:p-5">
+                    <nav id="helpSectionNav" aria-label="Secciones de ayuda" class="flex flex-col gap-2">
+                        <button type="button" class="config-section-nav-btn active" aria-current="page">Controles</button>
+                    </nav>
+                </aside>
+                <main class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+                    <section aria-labelledby="helpControlsTitle">
+                        <div class="mb-6">
+                            <h3 id="helpControlsTitle" class="text-xl font-semibold text-white sm:text-2xl">Controles del teclado</h3>
+                            <p class="mt-2 text-sm text-gray-400">Atajos disponibles durante la reproducción. Los controles indicados como manual solo funcionan con el avance automático de letras desactivado.</p>
+                        </div>
+                        <div class="grid gap-3">
+                            <article class="help-shortcut-card">
+                                <div class="mb-3 flex flex-wrap gap-2"><kbd class="help-key">Espacio</kbd><span class="self-center text-sm text-gray-500">o</span><kbd class="help-key">K</kbd></div>
+                                <p class="text-sm leading-relaxed text-gray-300">Pausa y reanuda el audio.</p>
+                            </article>
+                            <article class="help-shortcut-card">
+                                <div class="mb-3 flex flex-wrap gap-2"><kbd class="help-key">←</kbd><kbd class="help-key">→</kbd></div>
+                                <p class="text-sm leading-relaxed text-gray-300">Retrocede o adelanta 10 segundos. Si mantienes la tecla presionada, después de una breve espera sigue saltando en intervalos de 10 segundos.</p>
+                            </article>
+                            <article class="help-shortcut-card">
+                                <div class="mb-3 flex flex-wrap gap-2"><kbd class="help-key">Ctrl</kbd><span class="self-center text-sm text-gray-500">+</span><kbd class="help-key">←</kbd><kbd class="help-key">→</kbd><span class="self-center text-xs text-gray-400">Modo manual</span></div>
+                                <p class="text-sm leading-relaxed text-gray-300">Salta al punto de control más cercano en esa dirección. El inicio y el final del audio también cuentan. Al llegar a un punto de letra, lo selecciona.</p>
+                            </article>
+                            <article class="help-shortcut-card">
+                                <div class="mb-3 flex flex-wrap gap-2"><kbd class="help-key">↑</kbd><kbd class="help-key">↓</kbd><span class="self-center text-xs text-gray-400">Modo manual</span></div>
+                                <p class="text-sm leading-relaxed text-gray-300">Sube o baja un renglón y crea un punto de control en el tiempo actual.</p>
+                            </article>
+                            <article class="help-shortcut-card">
+                                <div class="mb-3 flex flex-wrap gap-2"><kbd class="help-key">U</kbd></div>
+                                <p class="text-sm leading-relaxed text-gray-300">Alterna la visibilidad de la interfaz.</p>
+                            </article>
+                            <article class="help-shortcut-card">
+                                <div class="mb-3 flex flex-wrap gap-2"><kbd class="help-key">Esc</kbd></div>
+                                <p class="text-sm leading-relaxed text-gray-300">Abre o cierra la configuración. Si hay un editor abierto, lo cierra; si hay un menú contextual, lo cierra primero. También cierra esta ayuda.</p>
+                            </article>
+                        </div>
+                    </section>
+                </main>
+            </div>
+            <div class="config-opacity-control">
+                <input id="helpOpacityControl" type="range" min="0" max="1" step="0.01" value="0.72" aria-label="Opacidad y desenfoque de ayuda" title="Opacidad y desenfoque de ayuda">
             </div>
         </div>
     </div>
@@ -3923,6 +4359,9 @@
         const configBtn = refs.configBtn;
         const closeModal = refs.closeModal;
         const modalOverlay = refs.modalOverlay;
+        const helpBtn = document.getElementById('helpBtn');
+        const helpOverlay = document.getElementById('helpOverlay');
+        const closeHelpBtn = document.getElementById('closeHelp');
         const deleteModalOverlay = refs.deleteModalOverlay;
         const replaceAudioModalOverlay = refs.replaceAudioModalOverlay;
         const droppedJsonModalOverlay = refs.droppedJsonModalOverlay;
@@ -4059,44 +4498,305 @@ Pero si quieres fuerza y cantar con pasión,
             return document.querySelector(`input[name="${name}"]:checked`)?.value ?? null;
         }
 
-        function getConfigChoiceLabel(radio) {
-            return radio?.closest('.config-choice')?.querySelector('span')?.textContent.trim() || radio?.value || '';
+        const customColorPicker = document.createElement('div');
+        customColorPicker.className = 'custom-color-picker';
+        customColorPicker.hidden = true;
+        customColorPicker.setAttribute('role', 'dialog');
+        customColorPicker.setAttribute('aria-label', 'Selector de color');
+        customColorPicker.innerHTML = `
+            <div class="custom-color-picker-saturation" role="slider" tabindex="0" aria-label="Saturación y luminosidad" aria-valuemin="0" aria-valuemax="100">
+                <span class="custom-color-picker-marker"></span>
+            </div>
+            <input class="custom-color-picker-hue" type="range" min="0" max="360" value="0" aria-label="Tono">
+            <input class="custom-color-picker-opacity" type="range" min="0" max="1" step="0.05" value="1" aria-label="Opacidad">
+            <div class="custom-color-picker-value-row">
+                <button class="custom-color-picker-undo" type="button" aria-label="Restaurar el color anterior">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7v5h5"></path><path d="M4.5 15a8 8 0 1 0 2-8L3 12"></path></svg>
+                </button>
+                <span class="custom-color-picker-preview" aria-hidden="true"></span>
+                <input class="custom-color-picker-hex" type="text" value="#FFFFFF" maxlength="7" spellcheck="false" autocomplete="off" aria-label="Código hexadecimal del color" tabindex="-1">
+            </div>
+        `;
+        document.body.appendChild(customColorPicker);
+
+        const customColorPickerSaturation = customColorPicker.querySelector('.custom-color-picker-saturation');
+        const customColorPickerMarker = customColorPicker.querySelector('.custom-color-picker-marker');
+        const customColorPickerHue = customColorPicker.querySelector('.custom-color-picker-hue');
+        const customColorPickerOpacity = customColorPicker.querySelector('.custom-color-picker-opacity');
+        customColorPickerOpacity.style.display = 'none';
+        const customColorPickerPreview = customColorPicker.querySelector('.custom-color-picker-preview');
+        const customColorPickerHex = customColorPicker.querySelector('.custom-color-picker-hex');
+        const customColorPickerUndo = customColorPicker.querySelector('.custom-color-picker-undo');
+        let activeCustomColorInput = null;
+        let activeCustomColorOpacityControl = null;
+        let customColorPickerInitialValue = '#ffffff';
+        let customColorPickerHsv = { h: 0, s: 0, v: 1 };
+        let isDraggingCustomColorSaturation = false;
+        let customColorSaturationPointerId = null;
+
+        function colorPickerHsvFromHex(hex) {
+            const { r, g, b } = hexToRgbValues(hex);
+            const red = r / 255;
+            const green = g / 255;
+            const blue = b / 255;
+            const maximum = Math.max(red, green, blue);
+            const minimum = Math.min(red, green, blue);
+            const difference = maximum - minimum;
+            let hue = 0;
+
+            if (difference) {
+                if (maximum === red) hue = 60 * (((green - blue) / difference) % 6);
+                else if (maximum === green) hue = 60 * ((blue - red) / difference + 2);
+                else hue = 60 * ((red - green) / difference + 4);
+            }
+
+            return {
+                h: (hue + 360) % 360,
+                s: maximum ? difference / maximum : 0,
+                v: maximum
+            };
         }
 
-        function updateConfigChoiceButton(group) {
-            const button = group?.querySelector('.config-choice-cycle');
-            if (!button) return;
-            const radios = Array.from(group.querySelectorAll('input[type="radio"]'));
-            if (!radios.length) return;
-            const selected = radios.find((radio) => radio.checked) || radios[0];
-            const selectedLabel = getConfigChoiceLabel(selected);
-            const groupLabel = group.getAttribute('aria-label') || 'Opción';
-            button.textContent = selectedLabel;
-            button.setAttribute('aria-label', `${groupLabel}: ${selectedLabel}. Cambiar opción`);
-            button.setAttribute('aria-description', `Siguiente opción: ${getConfigChoiceLabel(radios[(radios.indexOf(selected) + 1) % radios.length])}`);
+        function colorPickerHexFromHsv({ h, s, v }) {
+            const chroma = v * s;
+            const hueSection = h / 60;
+            const secondary = chroma * (1 - Math.abs((hueSection % 2) - 1));
+            const offset = v - chroma;
+            let rgb;
+
+            if (hueSection < 1) rgb = [chroma, secondary, 0];
+            else if (hueSection < 2) rgb = [secondary, chroma, 0];
+            else if (hueSection < 3) rgb = [0, chroma, secondary];
+            else if (hueSection < 4) rgb = [0, secondary, chroma];
+            else if (hueSection < 5) rgb = [secondary, 0, chroma];
+            else rgb = [chroma, 0, secondary];
+
+            return `#${rgb.map((value) => Math.round((value + offset) * 255)
+                .toString(16).padStart(2, '0')).join('')}`;
         }
 
-        function initializeConfigChoiceButtons() {
-            document.querySelectorAll('.config-choice-group').forEach((group) => {
-                const radios = Array.from(group.querySelectorAll('input[type="radio"]'));
-                if (!radios.length) return;
-
-                group.setAttribute('role', 'group');
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.className = 'config-choice-cycle';
-                button.addEventListener('click', () => {
-                    const currentIndex = radios.findIndex((radio) => radio.checked);
-                    const nextRadio = radios[(currentIndex + 1) % radios.length];
-                    nextRadio.checked = true;
-                    nextRadio.dispatchEvent(new Event('change', { bubbles: true }));
-                    updateConfigChoiceButton(group);
+        function positionCustomColorPicker() {
+            if (!activeCustomColorInput || customColorPicker.hidden) return;
+            const margin = 12;
+            let section = activeCustomColorInput.closest('li, .config-subsection-option') || activeCustomColorInput.parentElement;
+            let sectionRect = section.getBoundingClientRect();
+            while (section.parentElement && (!sectionRect.width || !sectionRect.height)) {
+                section = section.parentElement;
+                sectionRect = section.getBoundingClientRect();
+            }
+            const visibleColorInputs = (element) => Array.from(element.querySelectorAll('input[type="color"]'))
+                .filter((input) => {
+                    const rect = input.getBoundingClientRect();
+                    return rect.width > 0 && rect.height > 0;
                 });
-                radios.forEach((radio) => radio.addEventListener('change', () => updateConfigChoiceButton(group)));
-                group.appendChild(button);
-                updateConfigChoiceButton(group);
-            });
+            let colorGroup = activeCustomColorInput.parentElement;
+            while (colorGroup && section.contains(colorGroup)) {
+                const candidateInputs = visibleColorInputs(colorGroup);
+                if (candidateInputs.length === 2) {
+                    const rects = candidateInputs.map((input) => input.getBoundingClientRect());
+                    const span = Math.max(...rects.map((rect) => rect.right))
+                        - Math.min(...rects.map((rect) => rect.left));
+                    if (span <= 180) break;
+                }
+                colorGroup = colorGroup.parentElement;
+            }
+            const groupColors = colorGroup && section.contains(colorGroup)
+                ? visibleColorInputs(colorGroup)
+                : [];
+            const inputRects = groupColors.map((input) => ({
+                input,
+                rect: input.getBoundingClientRect()
+            }));
+            const isColorPair = inputRects.length >= 2;
+            const groupBounds = isColorPair
+                ? {
+                    left: Math.min(...inputRects.map(({ rect }) => rect.left)),
+                    right: Math.max(...inputRects.map(({ rect }) => rect.right))
+                }
+                : activeCustomColorInput.getBoundingClientRect();
+            const opensRight = (groupBounds.left + groupBounds.right) / 2
+                < sectionRect.left + sectionRect.width / 2;
+            const anchor = isColorPair
+                ? (opensRight
+                    ? inputRects.reduce((rightmost, current) => current.rect.right > rightmost.rect.right ? current : rightmost).rect
+                    : inputRects.reduce((leftmost, current) => current.rect.left < leftmost.rect.left ? current : leftmost).rect)
+                : activeCustomColorInput.getBoundingClientRect();
+            const availableOnSide = (right) => right
+                ? window.innerWidth - anchor.right - 8 - margin
+                : anchor.left - 8 - margin;
+            const preferredSpace = availableOnSide(opensRight);
+            const alternateSpace = availableOnSide(!opensRight);
+            const placeRight = preferredSpace >= 180 || preferredSpace >= alternateSpace
+                ? opensRight
+                : !opensRight;
+            const availableWidth = Math.max(1, availableOnSide(placeRight));
+            const pickerWidth = Math.min(300, availableWidth);
+            customColorPicker.style.width = `${pickerWidth}px`;
+            const left = placeRight
+                ? anchor.right + 8
+                : anchor.left - pickerWidth - 8;
+            const picker = customColorPicker.getBoundingClientRect();
+            const top = Math.max(margin, Math.min(
+                anchor.top + (anchor.height - picker.height) / 2,
+                window.innerHeight - picker.height - margin
+            ));
+            customColorPicker.style.left = `${left}px`;
+            customColorPicker.style.top = `${top}px`;
         }
+
+        function updateCustomColorPickerOpacity(color = activeCustomColorInput?.value || '#ffffff') {
+            customColorPickerOpacity.style.display = activeCustomColorOpacityControl ? '' : 'none';
+            if (!activeCustomColorOpacityControl) return;
+
+            customColorPickerOpacity.min = activeCustomColorOpacityControl.min;
+            customColorPickerOpacity.max = activeCustomColorOpacityControl.max;
+            customColorPickerOpacity.step = activeCustomColorOpacityControl.step;
+            customColorPickerOpacity.value = activeCustomColorOpacityControl.value;
+            customColorPickerOpacity.setAttribute(
+                'aria-label',
+                activeCustomColorOpacityControl.dataset.pickerLabel || 'Opacidad del color'
+            );
+            customColorPickerOpacity.style.setProperty('--custom-color-picker-opacity-color', color);
+        }
+
+        function updateCustomColorPickerControls(hex = null) {
+            const color = hex || colorPickerHexFromHsv(customColorPickerHsv);
+            const saturationRect = customColorPickerSaturation.getBoundingClientRect();
+            customColorPickerSaturation.style.backgroundColor = `hsl(${customColorPickerHsv.h} 100% 50%)`;
+            customColorPickerMarker.style.left = `${8 + customColorPickerHsv.s * Math.max(0, saturationRect.width - 16)}px`;
+            customColorPickerMarker.style.top = `${8 + (1 - customColorPickerHsv.v) * Math.max(0, saturationRect.height - 16)}px`;
+            customColorPickerHue.value = String(Math.round(customColorPickerHsv.h));
+            customColorPickerHex.value = color.toUpperCase();
+            customColorPickerPreview.style.backgroundColor = color;
+            updateCustomColorPickerOpacity(color);
+
+            if (activeCustomColorInput && activeCustomColorInput.value.toLowerCase() !== color.toLowerCase()) {
+                activeCustomColorInput.value = color;
+                activeCustomColorInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }
+
+        function closeCustomColorPicker(restoreFocus = false) {
+            const previousInput = activeCustomColorInput;
+            customColorPicker.hidden = true;
+            activeCustomColorInput = null;
+            activeCustomColorOpacityControl = null;
+            customColorPickerOpacity.style.display = 'none';
+            isDraggingCustomColorSaturation = false;
+            customColorSaturationPointerId = null;
+            if (restoreFocus) previousInput?.focus({ preventScroll: true });
+        }
+
+        function openCustomColorPicker(input) {
+            activeCustomColorInput = input;
+            activeCustomColorOpacityControl = input.dataset.opacityControl
+                ? document.getElementById(input.dataset.opacityControl)
+                : null;
+            customColorPickerInitialValue = input.value;
+            customColorPickerHsv = colorPickerHsvFromHex(input.value);
+            customColorPicker.hidden = false;
+            updateCustomColorPickerControls(input.value);
+            positionCustomColorPicker();
+        }
+
+        function restoreCustomColorPickerInitialValue() {
+            customColorPickerHsv = colorPickerHsvFromHex(customColorPickerInitialValue);
+            updateCustomColorPickerControls(customColorPickerInitialValue);
+        }
+
+        function updateCustomColorSaturation(event) {
+            const rect = customColorPickerSaturation.getBoundingClientRect();
+            customColorPickerHsv.s = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+            customColorPickerHsv.v = 1 - Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
+            customColorPickerSaturation.setAttribute('aria-valuenow', String(Math.round(customColorPickerHsv.v * 100)));
+            updateCustomColorPickerControls();
+        }
+
+        customColorPicker.addEventListener('pointerdown', (event) => event.stopPropagation());
+        customColorPicker.addEventListener('mousedown', (event) => event.stopPropagation());
+        customColorPicker.addEventListener('click', (event) => event.stopPropagation());
+        customColorPickerUndo.addEventListener('click', restoreCustomColorPickerInitialValue);
+        customColorPickerSaturation.addEventListener('pointerdown', (event) => {
+            if (!event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return;
+            event.preventDefault();
+            isDraggingCustomColorSaturation = true;
+            customColorSaturationPointerId = event.pointerId;
+            customColorPickerSaturation.setPointerCapture(event.pointerId);
+            updateCustomColorSaturation(event);
+        });
+        customColorPickerSaturation.addEventListener('pointermove', (event) => {
+            if (!isDraggingCustomColorSaturation || event.pointerId !== customColorSaturationPointerId) return;
+            updateCustomColorSaturation(event);
+        });
+        const finishCustomColorSaturationDrag = (event) => {
+            if (event.pointerId !== customColorSaturationPointerId) return;
+            isDraggingCustomColorSaturation = false;
+            customColorSaturationPointerId = null;
+            if (customColorPickerSaturation.hasPointerCapture(event.pointerId)) {
+                customColorPickerSaturation.releasePointerCapture(event.pointerId);
+            }
+        };
+        customColorPickerSaturation.addEventListener('pointerup', finishCustomColorSaturationDrag);
+        customColorPickerSaturation.addEventListener('pointercancel', finishCustomColorSaturationDrag);
+        customColorPickerSaturation.addEventListener('keydown', (event) => {
+            const step = event.shiftKey ? 0.1 : 0.02;
+            if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+            event.preventDefault();
+            if (event.key === 'ArrowUp') customColorPickerHsv.v = Math.min(1, customColorPickerHsv.v + step);
+            if (event.key === 'ArrowDown') customColorPickerHsv.v = Math.max(0, customColorPickerHsv.v - step);
+            if (event.key === 'ArrowRight') customColorPickerHsv.s = Math.min(1, customColorPickerHsv.s + step);
+            if (event.key === 'ArrowLeft') customColorPickerHsv.s = Math.max(0, customColorPickerHsv.s - step);
+            updateCustomColorPickerControls();
+        });
+        customColorPickerHue.addEventListener('input', () => {
+            customColorPickerHsv.h = Number(customColorPickerHue.value);
+            updateCustomColorPickerControls();
+        });
+        customColorPickerOpacity.addEventListener('input', () => {
+            if (!activeCustomColorOpacityControl) return;
+            activeCustomColorOpacityControl.value = customColorPickerOpacity.value;
+            activeCustomColorOpacityControl.dispatchEvent(new Event('input', { bubbles: true }));
+            updateCustomColorPickerOpacity();
+        });
+        customColorPickerHex.addEventListener('input', () => {
+            const value = customColorPickerHex.value.trim();
+            if (!/^#?[0-9a-f]{6}$/i.test(value)) return;
+            const color = value.startsWith('#') ? value : `#${value}`;
+            customColorPickerHsv = colorPickerHsvFromHex(color);
+            updateCustomColorPickerControls(color);
+        });
+        customColorPickerHex.addEventListener('blur', () => {
+            if (activeCustomColorInput) updateCustomColorPickerControls(activeCustomColorInput.value);
+        });
+        document.addEventListener('click', (event) => {
+            if (customColorPicker.contains(event.target)) return;
+            const colorInput = event.target instanceof Element
+                ? event.target.closest('input[type="color"]')
+                : null;
+            if (colorInput) {
+                event.preventDefault();
+                if (!customColorPicker.hidden && colorInput === activeCustomColorInput) {
+                    closeCustomColorPicker();
+                    return;
+                }
+                openCustomColorPicker(colorInput);
+                return;
+            }
+            if (!customColorPicker.hidden) closeCustomColorPicker();
+        }, true);
+        document.addEventListener('keydown', (event) => {
+            if (event.key !== 'Escape' || customColorPicker.hidden) return;
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            closeCustomColorPicker(true);
+        }, true);
+        window.addEventListener('resize', positionCustomColorPicker);
+        window.addEventListener('scroll', () => {
+            if (!customColorPicker.hidden) closeCustomColorPicker();
+        }, true);
+        document.addEventListener('wheel', () => {
+            if (!customColorPicker.hidden) closeCustomColorPicker();
+        }, { capture: true, passive: true });
 
         function hexToRgbValues(hex) {
             const normalized = String(hex || '').trim();
@@ -4128,17 +4828,31 @@ Pero si quieres fuerza y cantar con pasión,
 
         const shadowStyleCache = new WeakMap();
 
-        function togglePauseShadowType() {
-            activePauseShadowType = getCheckedRadioValue('pauseShadowType') || 'shadow';
-            document.getElementById('pauseShadowColorRow').classList.toggle('hidden', activePauseShadowType !== 'light');
-            applyPauseButtonSettings();
+        const configRadioSettings = {
+            pauseShadowType: ['pauseShadowColorRow', 'light', applyPauseButtonSettings, (value) => activePauseShadowType = value],
+            progressThumbShadowType: ['thumbShadowColorRow', 'light', applyCustomSliderSettings, (value) => activeProgressThumbShadowType = value],
+            letterBoxShadowType: ['letterBoxLightColorControl', 'light', applyLetterBoxSettings],
+            playerShadowType: ['playerLightColorControl', 'light', applyPlayerCardSettings],
+            mainBarType: ['mainBarColor2', 'gradient', applyCustomSliderSettings],
+            secBarType: ['secBarColor2', 'gradient', applyCustomSliderSettings]
+        };
+
+        function updateConfigRadioSetting(name, shouldApply = true) {
+            const [controlId, visibleValue, apply, select] = configRadioSettings[name] || [];
+            const value = getCheckedRadioValue(name);
+            if (value === null || !controlId) return;
+            document.getElementById(controlId).classList.toggle('hidden', value !== visibleValue);
+            select?.(value);
+            if (shouldApply) apply();
         }
 
-        function toggleProgressThumbShadowType() {
-            activeProgressThumbShadowType = getCheckedRadioValue('progressThumbShadowType') || 'light';
-            document.getElementById('thumbShadowColorRow').classList.toggle('hidden', activeProgressThumbShadowType !== 'light');
-            applyCustomSliderSettings();
+        function initializeConfigRadioSettings() {
+            Object.keys(configRadioSettings).forEach((name) => updateConfigRadioSetting(name, false));
         }
+
+        modalOverlay.addEventListener('change', ({ target }) => {
+            if (target instanceof HTMLInputElement && target.type === 'radio') updateConfigRadioSetting(target.name);
+        });
 
         function getViewportEffectScale() {
             const widthScale = window.innerWidth / 1920;
@@ -4255,7 +4969,7 @@ Pero si quieres fuerza y cantar con pasión,
             const letterList = letterPanel.querySelector('ul');
             const audioList = audioPanel.querySelector('ul');
             const optionIds = [
-                'visibilityOption', 'textOption', 'cornerRadiusOption', 'bgOption',
+                'cornerRadiusOption', 'bgOption',
                 'pauseButtonColorOption', 'pauseBtnConfig',
                 'counterOption', 'timeChipOption', 'letterBoxOption', 'letterBoxShadowOption',
                 'playerCardOption', 'playerShadowOption', 'progressOption'
@@ -4264,7 +4978,7 @@ Pero si quieres fuerza y cantar con pasión,
             [generalList, letterList, audioList].forEach((list) => list.replaceChildren());
 
             generalList.append(
-                createConfigSubsectionCard('General', ['visibilityOption', 'textOption', 'cornerRadiusOption'], optionElements, 'general'),
+                createConfigSubsectionCard('General', ['cornerRadiusOption'], optionElements, 'general'),
                 createConfigSubsectionCard('Fondo', ['bgOption'], optionElements, 'background')
             );
 
@@ -4293,6 +5007,7 @@ Pero si quieres fuerza y cantar con pasión,
         const configPanels = Array.from(document.querySelectorAll('.config-section-panel'));
         const configContent = document.querySelector('#modalOverlay main');
         const configOpacityControl = document.getElementById('configOpacityControl');
+        const helpOpacityControl = document.getElementById('helpOpacityControl');
         function normalizeConfigSliderSteps() {
             document.querySelectorAll('#modalOverlay input[type="range"]').forEach((slider) => {
                 const minimum = Number(slider.min || 0);
@@ -4303,14 +5018,16 @@ Pero si quieres fuerza y cantar con pasión,
             });
         }
         normalizeConfigSliderSteps();
-        initializeConfigChoiceButtons();
         const configNavigationState = {
             section: 'general',
             scrollTop: 0
         };
 
-        function applyConfigOpacity() {
-            const opacity = Math.max(0, Math.min(1, Number(configOpacityControl?.value ?? 0.72)));
+        function applyConfigOpacity(event = null) {
+            const sourceControl = event?.currentTarget || configOpacityControl;
+            const opacity = Math.max(0, Math.min(1, Number(sourceControl?.value ?? 0.72)));
+            if (configOpacityControl) configOpacityControl.value = String(opacity);
+            if (helpOpacityControl) helpOpacityControl.value = String(opacity);
             document.documentElement.style.setProperty('--config-opacity', opacity);
         }
 
@@ -4408,6 +5125,7 @@ Pero si quieres fuerza y cantar con pasión,
                 });
 
                 document.querySelectorAll('#modalOverlay input:not([type="file"])').forEach((control) => {
+                    if (control.type === 'radio' && !control.checked) return;
                     control.dispatchEvent(new Event(control.type === 'radio' || control.type === 'checkbox' ? 'change' : 'input', { bubbles: true }));
                 });
             } finally {
@@ -4444,8 +5162,10 @@ Pero si quieres fuerza y cantar con pasión,
             applyLetterBoxSettings();
             applyPlayerCardSettings();
             applyCustomSliderSettings();
+            if (getCheckedRadioValue('bgType') === 'image') {
+                document.getElementById('bgImageFile').value = '';
+            }
             applyBackground();
-            if (getCheckedRadioValue('bgType') === 'image') bgWrapper.style.backgroundImage = 'none';
             applyBlur();
             renderLetterBoxText();
             captureLetterBoxTextReferenceWidth();
@@ -4649,6 +5369,7 @@ Pero si quieres fuerza y cantar con pasión,
         }
 
         function openConfig() {
+            closeHelp();
             setConfigMode(true);
             modalOverlay.classList.remove('hidden');
             syncLetterBoxManipulationHandles();
@@ -4665,6 +5386,15 @@ Pero si quieres fuerza y cantar con pasión,
             syncLetterBoxManipulationHandles();
         }
 
+        function openHelp() {
+            if (!modalOverlay.classList.contains('hidden')) closeConfig();
+            helpOverlay.classList.remove('hidden');
+        }
+
+        function closeHelp() {
+            helpOverlay.classList.add('hidden');
+        }
+
         configSectionButtons.forEach((button) => {
             button.addEventListener('click', () => setActiveConfigSection(button.dataset.configSection));
         });
@@ -4674,9 +5404,12 @@ Pero si quieres fuerza y cantar con pasión,
             });
         }
         configOpacityControl?.addEventListener('input', applyConfigOpacity);
+        helpOpacityControl?.addEventListener('input', applyConfigOpacity);
         applyConfigOpacity();
 
         configBtn.addEventListener('click', openConfig);
+        helpBtn.addEventListener('click', openHelp);
+        closeHelpBtn.addEventListener('click', closeHelp);
         if (configGhostTrigger) {
             configGhostTrigger.addEventListener('click', openConfig);
         }
@@ -5281,8 +6014,10 @@ Pero si quieres fuerza y cantar con pasión,
             document.getElementById('borrar-cancion')?.classList.toggle('hidden', !hasAudioLoaded);
         }
 
-        function toggleConfigBtn() {
-            const isVisible = document.getElementById('configVisibility').checked;
+        let isInterfaceVisible = true;
+
+        function setInterfaceVisibility(isVisible) {
+            isInterfaceVisible = isVisible;
             const hasAudioLoaded = Boolean(currentAudioFile);
             document.body.classList.toggle('is-interface-invisible', !isVisible);
             document.querySelectorAll('.player-action-toolbar').forEach((toolbar) => {
@@ -5502,7 +6237,7 @@ Pero si quieres fuerza y cantar con pasión,
             });
             homeView.classList.add('hidden');
             playerView.classList.remove('hidden');
-            toggleConfigBtn();
+            setInterfaceVisibility(isInterfaceVisible);
             syncLetterBoxManipulationHandles();
 
             if (currentAudioObjectUrl) URL.revokeObjectURL(currentAudioObjectUrl);
@@ -5566,6 +6301,27 @@ Pero si quieres fuerza y cantar con pasión,
             audio.currentTime = nextTime;
         }
 
+        function seekAudioToControlPoint(direction) {
+            if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
+            const controlPointTimes = [...new Set([
+                0,
+                audio.duration,
+                ...letterBoxCutState.cuts
+                    .map((point) => Number(point.time))
+                    .filter((time) => Number.isFinite(time) && time >= 0 && time <= audio.duration)
+            ])].sort((first, second) => first - second);
+            const currentTime = Number(audio.currentTime) || 0;
+            const targetTime = direction < 0
+                ? [...controlPointTimes].reverse().find((time) => time < currentTime)
+                : controlPointTimes.find((time) => time > currentTime);
+            if (targetTime === undefined) return;
+            audio.currentTime = targetTime;
+            selectedLetterBoxControlPointTime = letterBoxCutState.cuts.some(
+                (point) => Number(point.time) === targetTime
+            ) ? targetTime : null;
+            updateLetterBoxControlPointMarkers();
+        }
+
         let keyboardSeekState = null;
 
         function stopKeyboardSeek() {
@@ -5585,18 +6341,11 @@ Pero si quieres fuerza y cantar con pasión,
             keyboardSeekState = {
                 key,
                 direction,
-                stepSeconds: 1,
-                jumpsAtStep: 0,
                 interval: null,
                 cooldownTimeout: setTimeout(() => {
                     if (!keyboardSeekState || keyboardSeekState.key !== key) return;
                     keyboardSeekState.interval = setInterval(() => {
-                        seekAudioBy(keyboardSeekState.direction * keyboardSeekState.stepSeconds);
-                        keyboardSeekState.jumpsAtStep += 1;
-                        if (keyboardSeekState.jumpsAtStep === 10) {
-                            keyboardSeekState.stepSeconds = Math.min(10, keyboardSeekState.stepSeconds * 2);
-                            keyboardSeekState.jumpsAtStep = 0;
-                        }
+                        seekAudioBy(keyboardSeekState.direction * 10);
                     }, 100);
                 }, 400)
             };
@@ -5645,7 +6394,7 @@ Pero si quieres fuerza y cantar con pasión,
             updateLetterBoxUndoButton();
             setTextValue('right', '');
             setTextValue('left', '');
-            toggleConfigBtn();
+            setInterfaceVisibility(isInterfaceVisible);
         }
 
         function showDeleteModal() {
@@ -5814,7 +6563,7 @@ Pero si quieres fuerza y cantar con pasión,
 
         function updateAudioCardScaleHandle() {
             const isVisible = !playerView.classList.contains('hidden')
-                && document.getElementById('playerVisibility').checked;
+                && getCheckedRadioValue('playerCardStyle') !== 'off';
             if (!isVisible) {
                 audioCardScaleHandle.hidden = true;
                 return;
@@ -6031,18 +6780,6 @@ Pero si quieres fuerza y cantar con pasión,
             return hslToHex(hue, saturation, lightness);
         }
 
-        function getLetterBoxTagTextColor(backgroundColor) {
-            const { r, g, b } = hexToRgbValues(backgroundColor);
-            const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-            return luminance > 0.58 ? '#111827' : '#ffffff';
-        }
-
-        function getLetterBoxTagShadowColor(backgroundColor) {
-            const { r, g, b } = hexToRgbValues(backgroundColor);
-            const darken = (value) => Math.max(0, Math.round(value * 0.4));
-            return `#${[darken(r), darken(g), darken(b)].map((value) => value.toString(16).padStart(2, '0')).join('')}`;
-        }
-
         function extractLetterBoxTagKey(value) {
             const safeText = String(value || '').trim();
             return safeText.split(/\s+/)[0]?.toLowerCase() || '';
@@ -6158,11 +6895,6 @@ Pero si quieres fuerza y cantar con pasión,
             const top = Math.max(12, Math.min(rect.bottom + 8, window.innerHeight - menu.offsetHeight - 12));
             menu.style.left = `${left}px`;
             menu.style.top = `${top}px`;
-        }
-
-        function rgbaFromHex(hex, alpha = 1) {
-            const { r, g, b } = hexToRgbValues(hex);
-            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
         }
 
         function adjustColorBrightness(hex, brightness = 0.5, alpha = 1) {
@@ -6509,7 +7241,7 @@ Pero si quieres fuerza y cantar con pasión,
             letterBoxControlPointMarkers.replaceChildren();
             const duration = Number(audio?.duration);
             const isVisible = !playerView.classList.contains('hidden')
-                && document.getElementById('configVisibility').checked
+                && isInterfaceVisible
                 && !isLetterBoxAutoMode
                 && areLetterBoxControlPointMarkersVisible
                 && Number.isFinite(duration)
@@ -6613,15 +7345,58 @@ Pero si quieres fuerza y cantar con pasión,
             const horizontalOffset = Math.max(-1200, Math.min(1200, Number(letterBoxTextState.horizontalOffset) || 0));
             letterBoxText.style.transform = `translateX(${horizontalOffset}px)`;
             const scheduledCenter = getLetterBoxGroupCenterAtPosition(scheduledPosition);
-
-            letterBoxGroupElements.forEach((group, index) => {
+            const fadeOutsideGroups = letterBox.classList.contains('is-fill-invisible');
+            const clipRect = fadeOutsideGroups ? letterBoxTextWrap.getBoundingClientRect() : null;
+            const dragOffset = letterBoxManualDrag?.deltaY || 0;
+            const textRect = fadeOutsideGroups ? letterBoxText.getBoundingClientRect() : null;
+            const groupLayout = letterBoxGroupElements.map((group, index) => {
                 let emphasis = 0;
                 if (index === lowerIndex) emphasis = 1 - fraction;
                 if (index === upperIndex && upperIndex !== lowerIndex) emphasis = fraction;
                 const scale = 0.65 + emphasis * 0.35;
-                const opacity = 0.5 + emphasis * 0.5;
-                const dragOffset = letterBoxManualDrag?.deltaY || 0;
                 const verticalOffset = letterBoxGroupCenterPixels[index] - scheduledCenter + dragOffset;
+                const center = textRect
+                    ? textRect.top + textRect.height / 2 + verticalOffset
+                    : 0;
+                const height = fadeOutsideGroups ? group.offsetHeight * scale : 0;
+                return {
+                    scale,
+                    verticalOffset,
+                    opacity: 0.5 + emphasis * 0.5,
+                    rect: { top: center - height / 2, bottom: center + height / 2, center }
+                };
+            });
+            const isFullyVisible = (rect) => clipRect && rect.top >= clipRect.top && rect.bottom <= clipRect.bottom;
+            const getEdgeFadeOpacity = (index, anchorIndex, edgeIndex, anchorOpacity) => {
+                if (!fadeOutsideGroups || edgeIndex === null || !isFullyVisible(groupLayout[index].rect)) return 0;
+                const edgeCenter = groupLayout[edgeIndex].rect.center;
+                const anchorCenter = groupLayout[anchorIndex].rect.center;
+                const groupCenter = groupLayout[index].rect.center;
+                const distance = Math.abs(anchorCenter - edgeCenter);
+                if (distance <= 0) return 0;
+                return anchorOpacity * Math.max(0, Math.min(1, Math.abs(groupCenter - edgeCenter) / distance));
+            };
+            const topEdgeIndex = fadeOutsideGroups
+                ? letterBoxGroupElements.findIndex((group, index) => index < lowerIndex && isFullyVisible(groupLayout[index].rect))
+                : null;
+            let bottomEdgeIndex = null;
+            if (fadeOutsideGroups) {
+                for (let index = letterBoxGroupElements.length - 1; index > upperIndex; index -= 1) {
+                    if (isFullyVisible(groupLayout[index].rect)) {
+                        bottomEdgeIndex = index;
+                        break;
+                    }
+                }
+            }
+
+            letterBoxGroupElements.forEach((group, index) => {
+                const { scale, verticalOffset } = groupLayout[index];
+                let opacity = groupLayout[index].opacity;
+                if (fadeOutsideGroups && index < lowerIndex) {
+                    opacity = getEdgeFadeOpacity(index, lowerIndex, topEdgeIndex < 0 ? null : topEdgeIndex, groupLayout[lowerIndex].opacity);
+                } else if (fadeOutsideGroups && index > upperIndex) {
+                    opacity = getEdgeFadeOpacity(index, upperIndex, bottomEdgeIndex, groupLayout[upperIndex].opacity);
+                }
                 group.style.opacity = String(opacity);
                 group.style.transform = `translateY(calc(-50% + ${verticalOffset}px)) scale(${scale})`;
                 group.classList.toggle('is-snap-candidate', Boolean(letterBoxManualDrag) && index === letterBoxManualDrag.candidateIndex);
@@ -6672,9 +7447,7 @@ Pero si quieres fuerza y cantar con pasión,
         updateLetterBoxControlPointVisibilityButton();
 
         document.getElementById('interfaceVisibilityBtn')?.addEventListener('click', () => {
-            const configVisibility = document.getElementById('configVisibility');
-            configVisibility.checked = !configVisibility.checked;
-            toggleConfigBtn();
+            setInterfaceVisibility(!isInterfaceVisible);
         });
 
         function toggleLetterBoxAutoMode() {
@@ -6766,13 +7539,17 @@ Pero si quieres fuerza y cantar con pasión,
         }
 
         function advanceLetterBoxToNextParagraph() {
+            changeLetterBoxParagraph(1);
+        }
+
+        function changeLetterBoxParagraph(direction) {
             if (!audio || !Number.isFinite(audio.currentTime) || !Number.isFinite(audio.duration)
                 || audio.duration <= 0 || !letterBoxGroupElements.length) {
                 return;
             }
             const currentPosition = getLetterBoxScheduledPosition(Number(audio.currentTime));
-            const nextLineIndex = Math.floor(currentPosition) + 1;
-            if (nextLineIndex >= letterBoxGroupElements.length) return;
+            const nextLineIndex = Math.floor(currentPosition) + direction;
+            if (nextLineIndex < 0 || nextLineIndex >= letterBoxGroupElements.length) return;
             const controlTime = audio.currentTime === 0 ? Math.min(0.001, audio.duration / 2) : null;
             addLetterBoxControlPoint('resume', nextLineIndex, controlTime);
         }
@@ -6835,12 +7612,6 @@ Pero si quieres fuerza y cantar con pasión,
             syncLetterBoxManipulationHandles();
         }
 
-        function acceptLetterBoxEditor() {
-            if (!letterBoxTextInput) return closeLetterBoxEditor();
-            applyLetterBoxEditorDraft();
-            closeLetterBoxEditor();
-        }
-
         function startLetterBoxTextDrag(event) {
             if (isLetterBoxAutoMode || !letterBoxTextLayer || !letterBoxTextState.value.trim() || !audio?.paused) return;
             if (event.button !== 0) return;
@@ -6901,7 +7672,10 @@ Pero si quieres fuerza y cantar con pasión,
             }
         }
 
+        let backgroundImageLoadId = 0;
+
         function applyBackground() {
+            const requestId = ++backgroundImageLoadId;
             const type = getCheckedRadioValue('bgType');
             if (type === 'simple') {
                 const color = document.getElementById('bgColorSimple').value;
@@ -6920,12 +7694,18 @@ Pero si quieres fuerza y cantar con pasión,
                 const fileInput = document.getElementById('bgImageFile');
                 if (fileInput.files && fileInput.files[0]) {
                     const reader = new FileReader();
-                    reader.onload = function (e) {
-                        bgWrapper.style.backgroundImage = `url('${e.target.result}')`;
+                    reader.onload = function () {
+                        if (requestId !== backgroundImageLoadId || getCheckedRadioValue('bgType') !== 'image') return;
+                        if (typeof reader.result !== 'string') return;
+                        bgWrapper.style.backgroundImage = `url('${reader.result}')`;
                         bgWrapper.style.backgroundSize = 'cover';
                         bgWrapper.style.backgroundPosition = 'center';
+                        applyBlur();
                     };
+                    reader.onerror = () => console.error('No se pudo leer la imagen de fondo.', reader.error);
                     reader.readAsDataURL(fileInput.files[0]);
+                } else {
+                    bgWrapper.style.backgroundImage = 'none';
                 }
             }
             applyBlur();
@@ -6933,12 +7713,9 @@ Pero si quieres fuerza y cantar con pasión,
 
         function applyBlur() {
             const intensity = Number(document.getElementById('blurIntensity').value);
-            bgWrapper.style.filter = intensity > 0 ? `blur(${intensity}px)` : 'none';
-        }
-
-        function applyTextAndIconColor() {
-            const color = document.getElementById('textColorPicker').value;
-            document.documentElement.style.setProperty('--text-color', color);
+            const hasBackgroundImage = getCheckedRadioValue('bgType') === 'image'
+                && bgWrapper.style.backgroundImage.startsWith('url(');
+            bgWrapper.style.filter = hasBackgroundImage && intensity > 0 ? `blur(${intensity}px)` : 'none';
         }
 
         function applyCounterSettings() {
@@ -6961,7 +7738,15 @@ Pero si quieres fuerza y cantar con pasión,
 
             const color1 = document.getElementById('letterBoxColor1').value;
             const color2 = document.getElementById('letterBoxColor2').value;
-            const isGradientFill = getCheckedRadioValue('letterBoxColorType') === 'gradient';
+            const fillType = getCheckedRadioValue('letterBoxColorType') || 'simple';
+            const isInvisibleFill = fillType === 'invisible';
+            const isGradientFill = fillType === 'gradient';
+            const fillSettingsDisplay = isInvisibleFill ? 'none' : '';
+            letterBox.classList.toggle('is-fill-invisible', isInvisibleFill);
+            document.getElementById('letterBoxColorControls').style.display = fillSettingsDisplay;
+            document.getElementById('syncAudioToLetterBtn').style.display = fillSettingsDisplay;
+            document.getElementById('letterBoxShadowOption').style.display = fillSettingsDisplay;
+            document.getElementById('letterBoxBlurControl').style.display = fillSettingsDisplay;
             document.getElementById('letterBoxColor2').classList.toggle('hidden', !isGradientFill);
             const opacity = Number(document.getElementById('letterBoxOpacity').value);
             const blur = Number(document.getElementById('letterBoxBlur').value || 0);
@@ -6973,16 +7758,27 @@ Pero si quieres fuerza y cantar con pasión,
             const horizontalPercent = Number(document.getElementById('letterBoxHorizontalPosition').value || 50);
             const verticalPercent = Number(document.getElementById('letterBoxVerticalPosition').value || 50);
 
-            if (isGradientFill) {
+            if (isInvisibleFill) {
+                letterBox.style.background = 'none';
+                letterBox.style.backgroundColor = 'transparent';
+                letterBox.style.backdropFilter = 'none';
+                letterBox.style.webkitBackdropFilter = 'none';
+                letterBox.style.borderColor = 'transparent';
+            } else if (isGradientFill) {
                 letterBox.style.background = `linear-gradient(135deg, ${hexToRgba(color1, opacity)}, ${hexToRgba(color2, opacity)})`;
                 letterBox.style.backgroundColor = 'transparent';
+                letterBox.style.borderColor = 'var(--player-outline-color)';
+                letterBox.style.backdropFilter = `blur(${blur * getViewportEffectScale()}px)`;
+                letterBox.style.webkitBackdropFilter = `blur(${blur * getViewportEffectScale()}px)`;
             } else {
                 letterBox.style.background = 'none';
                 letterBox.style.backgroundColor = hexToRgba(color1, opacity);
+                letterBox.style.borderColor = 'var(--player-outline-color)';
+                letterBox.style.backdropFilter = `blur(${blur * getViewportEffectScale()}px)`;
+                letterBox.style.webkitBackdropFilter = `blur(${blur * getViewportEffectScale()}px)`;
             }
-            letterBox.style.backdropFilter = `blur(${blur * getViewportEffectScale()}px)`;
             letterBox.style.opacity = '1';
-            if (shadowType === 'off') {
+            if (isInvisibleFill || shadowType === 'off') {
                 shadowStyleCache.delete(letterBox);
                 letterBox.style.boxShadow = 'none';
             } else if (shadowType === 'light') {
@@ -7355,18 +8151,6 @@ Pero si quieres fuerza y cantar con pasión,
             syncLetterBoxManipulationHandles(event);
         }
 
-        function toggleLetterBoxShadowType() {
-            const isLight = getCheckedRadioValue('letterBoxShadowType') === 'light';
-            document.getElementById('letterBoxLightColorControl').classList.toggle('hidden', !isLight);
-            applyLetterBoxSettings();
-        }
-
-        function togglePlayerShadowType() {
-            const isLight = getCheckedRadioValue('playerShadowType') === 'light';
-            document.getElementById('playerLightColorControl').classList.toggle('hidden', !isLight);
-            applyPlayerCardSettings();
-        }
-
         function applyPlayerCardColorSettings() {
             const color1 = document.getElementById('playerCardColor1').value;
             const color2Input = document.getElementById('playerCardColor2');
@@ -7414,6 +8198,7 @@ Pero si quieres fuerza y cantar con pasión,
         }
 
         document.getElementById('syncAudioToBackgroundBtn')?.addEventListener('click', syncAudioFillToBackground);
+        document.getElementById('syncAudioToBackgroundGradientBtn')?.addEventListener('click', syncAudioFillToBackground);
         document.getElementById('syncAudioToLetterBtn')?.addEventListener('click', syncAudioFillToLetterBox);
         document.getElementById('syncLetterToAudioBtn')?.addEventListener('click', syncLetterBoxFillToAudio);
 
@@ -7421,8 +8206,9 @@ Pero si quieres fuerza y cantar con pasión,
             const shadowType = getCheckedRadioValue('playerShadowType') || 'shadow';
             const outerColor = document.getElementById('playerShadowColor').value;
             const blur = document.getElementById('playerBlur').value;
-            const isVisible = document.getElementById('playerVisibility').checked;
-            const isFullStyle = getCheckedRadioValue('playerCardStyle') === 'full';
+            const cardStyle = getCheckedRadioValue('playerCardStyle') || 'floating';
+            const isVisible = cardStyle !== 'off';
+            const isFullStyle = cardStyle === 'full';
             const scale = playerCardScaleState.value;
 
             if (shadowType === 'off') {
@@ -7471,18 +8257,6 @@ Pero si quieres fuerza y cantar con pasión,
         function togglePlayerCardStyle() {
             applyPlayerCardSettings();
             applyCornerRadiusSettings();
-        }
-
-        function toggleBarMainType() {
-            const isGradient = getCheckedRadioValue('mainBarType') === 'gradient';
-            document.getElementById('mainBarColor2').classList.toggle('hidden', !isGradient);
-            applyCustomSliderSettings();
-        }
-
-        function toggleBarSecType() {
-            const isGradient = getCheckedRadioValue('secBarType') === 'gradient';
-            document.getElementById('secBarColor2').classList.toggle('hidden', !isGradient);
-            applyCustomSliderSettings();
         }
 
         function applyCustomSliderSettings() {
@@ -7805,6 +8579,23 @@ Pero si quieres fuerza y cantar con pasión,
             const target = event.target instanceof Element ? event.target : null;
             const isEditingField = Boolean(target?.closest('input, textarea, select, [contenteditable="true"]'));
 
+            if ((key === 'arrowup' || key === 'arrowdown') && !event.ctrlKey
+                && !event.metaKey && !event.altKey && !isEditingField
+                && !playerView.classList.contains('hidden') && currentAudioFile && !isLetterBoxAutoMode) {
+                event.preventDefault();
+                if (!event.repeat) changeLetterBoxParagraph(key === 'arrowdown' ? 1 : -1);
+                return;
+            }
+
+            if ((key === 'arrowleft' || key === 'arrowright') && event.ctrlKey
+                && !event.metaKey && !event.altKey && !isEditingField
+                && !playerView.classList.contains('hidden') && currentAudioFile && !isLetterBoxAutoMode) {
+                event.preventDefault();
+                stopKeyboardSeek();
+                seekAudioToControlPoint(key === 'arrowleft' ? -1 : 1);
+                return;
+            }
+
             if (key === 'arrowleft' || key === 'arrowright') {
                 if (event.ctrlKey || event.metaKey || event.altKey || isEditingField
                     || playerView.classList.contains('hidden') || !currentAudioFile) return;
@@ -7852,6 +8643,11 @@ Pero si quieres fuerza y cantar con pasión,
                 closeLinkedVinylMenu();
                 if (hasContextMenu) return;
 
+                if (!helpOverlay.classList.contains('hidden')) {
+                    closeHelp();
+                    return;
+                }
+
                 if (!modalOverlay.classList.contains('hidden')) {
                     closeConfig();
                 } else {
@@ -7859,6 +8655,8 @@ Pero si quieres fuerza y cantar con pasión,
                 }
                 return;
             }
+
+            if (!helpOverlay.classList.contains('hidden')) return;
 
             if ((event.ctrlKey || event.metaKey) && !event.altKey && !isEditingField) {
                 if (key === 'z' && !event.shiftKey && letterBoxControlPointHistory.undo.length) {
@@ -7888,9 +8686,7 @@ Pero si quieres fuerza y cantar con pasión,
                 updateLetterBoxTextScrollByAudio();
             } else if (key === 'u') {
                 event.preventDefault();
-                const configVisibility = document.getElementById('configVisibility');
-                configVisibility.checked = !configVisibility.checked;
-                toggleConfigBtn();
+                setInterfaceVisibility(!isInterfaceVisible);
             } else if (key === ' ' || key === 'k') {
                 event.preventDefault();
                 if (!playerView.classList.contains('hidden') && currentAudioFile) togglePlayPause();
@@ -8021,8 +8817,7 @@ Pero si quieres fuerza y cantar con pasión,
         updateLetterBoxUndoButton();
         applyCounterSettings();
         applyPlayerCardColorSettings();
-        togglePlayerShadowType();
-        toggleLetterBoxShadowType();
+        initializeConfigRadioSettings();
         applyPlayerCardSettings();
         applyCustomSliderSettings();
         applyPauseButtonSettings();
@@ -8032,7 +8827,7 @@ Pero si quieres fuerza y cantar con pasión,
         updateLinkedVinylVisual();
         updateImagePickerState();
         updateLinkedVinylActionButtons();
-        toggleConfigBtn();
+        setInterfaceVisibility(isInterfaceVisible);
         requestAnimationFrame(() => {
             updatePlayerLayoutScale();
             applyLetterBoxSettings();
@@ -8055,8 +8850,6 @@ Pero si quieres fuerza y cantar con pasión,
             format: 'karaoke-app-settings',
             version: 2,
             controls: {
-                configVisibility: true,
-                textColorPicker: '#e5e5e5',
                 cornerRadiusSlider: '19.75',
                 bgColorSimple: '#530e36',
                 bgColorGrad1: '#530e36',
@@ -8071,7 +8864,6 @@ Pero si quieres fuerza y cantar con pasión,
                 letterBoxHorizontalPosition: '60.11770031688547',
                 letterBoxVerticalPosition: '50',
                 letterBoxShadowColor: '#ff00ae',
-                playerVisibility: true,
                 playerCardColor1: '#530e36',
                 playerCardColor2: '#070637',
                 playerCardColorOpacity: '0',
