@@ -21,6 +21,8 @@
             --letter-box-horizontal-position: 50;
             --letter-box-vertical-position: 50;
             --text-color: #e5e5e5;
+            --audio-panel-text-color: #e5e5e5;
+            --letter-panel-text-color: #e5e5e5;
             --pause-bg: #2f2f2f;
             --pause-icon-color: #f2f2f2;
             --pause-shadow-color: #000000;
@@ -142,10 +144,31 @@
             padding: max(0px, calc(21.9px * var(--control-size-factor) * var(--player-layout-scale) - (1px - var(--player-layout-scale) * 1px)));
         }
 
+        #playPauseBtn.pause-button-simple {
+            background: transparent !important;
+            background-color: transparent !important;
+            border-color: transparent;
+            box-shadow: none !important;
+            padding: 0;
+        }
+
+        #playerView.simple-pause-controls-scaled #playPauseBtn,
+        #playerView.simple-pause-controls-scaled #seekBar,
+        #playerView.simple-pause-controls-scaled #playPauseBtn:hover,
+        #playerView.simple-pause-controls-scaled #playPauseBtn:active {
+            transform: translate(-50%, -50%) scale(var(--pause-controls-scale, 1));
+        }
+
         #playPauseBtn:hover,
         #playPauseBtn:active {
             transform: translate(-50%, -50%);
             box-shadow: none;
+        }
+
+        #playPauseBtn.pause-button-simple:hover,
+        #playPauseBtn.pause-button-simple:active {
+            background: transparent !important;
+            background-color: transparent !important;
         }
 
         #seekBar {
@@ -242,39 +265,39 @@
         .letter-box-tag-menu input[type="range"]::-webkit-slider-runnable-track,
         .letter-box-parenthetical-tag-menu input[type="range"]::-webkit-slider-runnable-track,
         .linked-vinyl-menu input[type="range"]::-webkit-slider-runnable-track {
-            height: 4px;
-            border-radius: 4px;
-            background: #444746;
+            height: 18px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.25);
         }
 
         .image-preview-menu input[type="range"]::-moz-range-track,
         .letter-box-tag-menu input[type="range"]::-moz-range-track,
         .letter-box-parenthetical-tag-menu input[type="range"]::-moz-range-track,
         .linked-vinyl-menu input[type="range"]::-moz-range-track {
-            height: 4px;
-            border-radius: 4px;
-            background: #444746;
+            height: 18px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.25);
         }
 
         .image-preview-menu input[type="range"]::-webkit-slider-thumb {
             appearance: none;
             -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            margin-top: -6.4px;
-            border: 2px solid #131314;
+            width: 18px;
+            height: 18px;
+            margin-top: 0;
+            border: 2px solid #fff;
             border-radius: 50%;
-            background: #E3E3E3;
-            box-shadow: 0 0 0 1.6px #E3E3E3;
+            background: transparent;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.6);
         }
 
         .image-preview-menu input[type="range"]::-moz-range-thumb {
-            width: 12.8px;
-            height: 12.8px;
-            border: 2px solid #131314;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #fff;
             border-radius: 50%;
-            background: #E3E3E3;
-            box-shadow: 0 0 0 1.6px #E3E3E3;
+            background: transparent;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.6);
         }
 
         .image-preview-menu-btn {
@@ -359,7 +382,7 @@
             position: absolute;
             z-index: 1;
             inset: 1px;
-            border: 1px dotted rgba(255,255,255,0.52);
+            border: 2px dashed rgba(255,255,255,0.2);
             border-radius: inherit;
             content: "";
             pointer-events: none;
@@ -675,23 +698,23 @@
         .letter-box-parenthetical-tag-menu input[type="range"]::-webkit-slider-thumb {
             appearance: none;
             -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            margin-top: -6.4px;
-            border: 2px solid #131314;
+            width: 18px;
+            height: 18px;
+            margin-top: 0;
+            border: 2px solid #fff;
             border-radius: 50%;
-            background: #E3E3E3;
-            box-shadow: 0 0 0 1.6px #E3E3E3;
+            background: transparent;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.6);
         }
 
         .letter-box-tag-menu input[type="range"]::-moz-range-thumb,
         .letter-box-parenthetical-tag-menu input[type="range"]::-moz-range-thumb {
-            width: 12.8px;
-            height: 12.8px;
-            border: 2px solid #131314;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #fff;
             border-radius: 50%;
-            background: #E3E3E3;
-            box-shadow: 0 0 0 1.6px #E3E3E3;
+            background: transparent;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.6);
         }
 
         .letter-box-tag-menu input[type="color"],
@@ -1040,22 +1063,22 @@
         .linked-vinyl-menu input[type="range"]::-webkit-slider-thumb {
             appearance: none;
             -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            margin-top: -6.4px;
-            border: 2px solid #131314;
+            width: 18px;
+            height: 18px;
+            margin-top: 0;
+            border: 2px solid #fff;
             border-radius: 50%;
-            background: #E3E3E3;
-            box-shadow: 0 0 0 1.6px #E3E3E3;
+            background: transparent;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.6);
         }
 
         .linked-vinyl-menu input[type="range"]::-moz-range-thumb {
-            width: 12.8px;
-            height: 12.8px;
-            border: 2px solid #131314;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #fff;
             border-radius: 50%;
-            background: #E3E3E3;
-            box-shadow: 0 0 0 1.6px #E3E3E3;
+            background: transparent;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.6);
         }
 
         .linked-vinyl-menu input[type="color"],
@@ -1281,18 +1304,18 @@
 
         .neu-slider {
             appearance: none;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.25);
             border-radius: 9999px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
         }
         .neu-slider::-webkit-slider-thumb {
             appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #e5e5e5;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #fff;
             border-radius: 50%;
+            background: transparent;
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.6);
         }
 
         .time-chip {
@@ -1418,6 +1441,18 @@
             font-size: clamp(14px, 1.6vw, 32px);
             font-size: 85cqh;
             line-height: 1;
+        }
+
+        #cuadro-de-audio .text-preview,
+        #cuadro-de-audio .text-placeholder,
+        .time-chip {
+            color: var(--audio-panel-text-color);
+        }
+
+        #letterBoxText,
+        #letterBoxText .letter-box-line-content,
+        #letterBoxText .letter-box-line-content > span:not(.letter-box-tag) {
+            color: var(--letter-panel-text-color);
         }
 
         #cuadro-de-audio .text-preview,
@@ -2762,15 +2797,6 @@
             min-width: 0;
         }
 
-        #modalOverlay .config-subsection-controls[data-layout="general"] {
-            display: grid;
-            grid-template-columns: max-content max-content minmax(0, 1fr);
-            align-items: center;
-            gap: 16px 24px;
-        }
-
-        #modalOverlay .config-subsection-option[data-option-id="cornerRadiusOption"] { grid-column: 1 / -1; }
-
         #modalOverlay .config-subsection-option[data-option-id="bgOption"] {
             display: grid;
             grid-template-columns: max-content minmax(0, 1fr);
@@ -2789,8 +2815,9 @@
             min-width: 0;
         }
 
-        #modalOverlay .config-subsection-option[data-option-id="bgOption"] > .flex.flex-col.gap-2.mt-4 {
+        #modalOverlay .config-subsection-option[data-option-id="bgOption"] > #bgBlurControl {
             grid-column: 1 / -1;
+            grid-row: 2;
         }
 
         #modalOverlay .config-subsection-controls[data-layout="letter-panel"] {
@@ -2811,7 +2838,7 @@
 
         #modalOverlay .config-subsection-controls[data-layout="audio-panel"] {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) max-content max-content;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr));
             align-items: center;
             gap: 16px 20px;
         }
@@ -2820,41 +2847,78 @@
         #modalOverlay .config-subsection-option[data-option-id="pauseBtnConfig"] { display: contents; }
 
         #modalOverlay #playerCardStyleControl { grid-column: 1; }
-        #modalOverlay #playerCardFillControl { grid-column: 1 / -1; }
-        #modalOverlay #playerCardColorOpacityRow { grid-column: 1 / -1; }
+        #modalOverlay #playerShadowOption,
+        #modalOverlay #playerCardColorOpacityRow,
+        #modalOverlay #audioTextColorControl { grid-column: 1 / -1; }
         #modalOverlay #playerCardFillControl { width: 100%; }
+        #modalOverlay .blur-control {
+            gap: 8px;
+            border-top: 1px solid var(--md-outline);
+            padding-top: 16px;
+        }
+        #modalOverlay .config-subsection-controls[data-layout="audio-panel"] > .blur-control {
+            grid-column: 1 / -1;
+        }
         #modalOverlay #playerCardFillModeRow,
         #modalOverlay #letterBoxFillControls {
             width: 100%;
             flex-wrap: nowrap;
         }
+        #modalOverlay #playerCardFillModeRow { gap: 0.35rem; }
         #modalOverlay #playerCardFillModeRow > .config-choice-group,
         #modalOverlay #letterBoxFillControls > .config-choice-group {
             flex: 0 0 auto;
+        }
+        #modalOverlay #playerCardFillModeRow > .config-choice-group {
+            transform: translateX(-0.8rem);
         }
         #modalOverlay #playerCardFillModeRow > div:not(.config-choice-group),
         #modalOverlay #letterBoxFillControls > #letterBoxColorControls {
             margin-left: 0;
         }
+        #modalOverlay #playerCardFillModeRow #syncLetterToAudioBtn { transform: translateX(-0.4rem); }
         #modalOverlay #playerCardFillModeRow #syncLetterToAudioBtn,
         #modalOverlay #letterBoxFillControls #syncAudioToLetterBtn {
             margin-left: auto;
             flex: 0 0 auto;
         }
-
+        #modalOverlay #audioTextColorControl,
+        #modalOverlay #letterTextColorControl {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        #modalOverlay #audioTextColorControl input[type="color"],
+        #modalOverlay #letterTextColorControl input[type="color"] { margin-left: auto; }
         #modalOverlay .config-subsection-option[data-option-id="playerCardOption"] > .flex.items-center.gap-4 {
             grid-column: 1 / -1;
         }
 
         #modalOverlay .config-subsection-controls[data-layout="pause-button"] {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) max-content max-content;
-            align-items: center;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            align-items: start;
             gap: 16px;
         }
 
         #modalOverlay .config-subsection-option[data-option-id="pauseButtonColorOption"] { display: contents; }
-        #modalOverlay .config-subsection-option[data-option-id="pauseButtonColorOption"] > .flex.items-center.gap-4 { gap: 8px; }
+        #modalOverlay .config-subsection-option[data-option-id="pauseButtonColorOption"] > .flex.flex-col.space-y-4 { display: contents; }
+        #modalOverlay #pauseButtonTopRow {
+            display: flex;
+            align-items: center;
+            grid-column: 1 / -1;
+            gap: 16px;
+        }
+        #modalOverlay #pauseButtonColorInputs {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-left: auto;
+        }
+        #modalOverlay #pauseButtonScaleControl {
+            grid-column: 1 / -1;
+            min-height: 50px;
+        }
 
         #modalOverlay .config-subsection-controls[data-layout="pause-shadow"] {
             display: grid;
@@ -2888,31 +2952,62 @@
         }
 
         #modalOverlay .config-subsection-controls[data-layout="counters"] {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) max-content;
+            align-items: center;
+            gap: 12px 24px;
         }
 
-        #modalOverlay .config-subsection-option[data-option-id="counterOption"] { display: flex; }
+        #modalOverlay .config-subsection-option[data-option-id="counterOption"],
         #modalOverlay .config-subsection-option[data-option-id="timeChipOption"] { display: contents; }
-        #modalOverlay .config-subsection-option[data-option-id="timeChipOption"] > .flex.items-center.gap-4 { width: 100%; }
+        #modalOverlay .config-subsection-option[data-option-id="counterOption"] > .flex.flex-col.space-y-4,
+        #modalOverlay .config-subsection-option[data-option-id="timeChipOption"] > .flex.flex-col.space-y-4 { display: contents; }
+        #modalOverlay .config-subsection-option[data-option-id="timeChipOption"] .flex.items-center.gap-4 {
+            grid-column: 1;
+            grid-row: 1;
+            width: 100%;
+            gap: 8px;
+        }
+        #modalOverlay .neu-list-item .config-subsection-option[data-option-id="timeChipOption"] .flex.items-center.gap-4 > span:first-child {
+            flex: 0 0 auto;
+            width: auto;
+            min-width: 0;
+        }
+        #modalOverlay .config-subsection-option[data-option-id="counterOption"] .flex.items-center.gap-4 {
+            grid-column: 2;
+            grid-row: 1;
+            width: auto;
+        }
+        #modalOverlay .config-subsection-option[data-option-id="counterOption"] .flex.items-center.gap-4 > span {
+            display: none;
+        }
 
         #modalOverlay .config-subsection-controls[data-layout="progress-bar"] { gap: 16px; }
         #modalOverlay #barColorSettings {
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-            align-items: start;
-        }
-        #modalOverlay #mainBarColorControls,
-        #modalOverlay #secBarColorControls {
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        #modalOverlay #mainBarColorSettings,
+        #modalOverlay #secBarModeSettings { min-width: 0; }
+        #modalOverlay #mainBarColorSettings { margin-left: auto; }
+        #modalOverlay #mainBarColorControls,
+        #modalOverlay #secBarModeControls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
             min-width: 0;
         }
-        #modalOverlay #mainBarColorControls { justify-content: flex-start; }
-        #modalOverlay #secBarColorControls { justify-content: flex-end; }
         #modalOverlay #mainBarColorControls .config-choice-group,
-        #modalOverlay #secBarColorControls .config-choice-group { flex: 0 0 auto; }
+        #modalOverlay #secBarModeControls .config-choice-group { flex: 0 0 auto; }
+        #modalOverlay #mainBarColorControls > div:not(.config-choice-group) {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex: 0 0 116px;
+            gap: 16px;
+        }
         #modalOverlay #thumbControls {
             display: grid;
             grid-template-columns: minmax(0, 1fr);
@@ -3113,29 +3208,29 @@
         #modalOverlay input[type="range"]::-webkit-slider-runnable-track,
         #helpOverlay input[type="range"]::-webkit-slider-runnable-track,
         #letterBoxEditorPanel input[type="range"]::-webkit-slider-runnable-track {
-            height: 4px;
-            border-radius: 4px;
-            background: #444746;
+            height: 18px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.25);
         }
 
         #modalOverlay input[type="range"]::-moz-range-track,
         #helpOverlay input[type="range"]::-moz-range-track,
         #letterBoxEditorPanel input[type="range"]::-moz-range-track {
-            height: 4px;
-            border-radius: 4px;
-            background: #444746;
+            height: 18px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.25);
         }
 
         #modalOverlay input[type="range"]::-webkit-slider-thumb,
         #helpOverlay input[type="range"]::-webkit-slider-thumb,
         #letterBoxEditorPanel input[type="range"]::-webkit-slider-thumb {
-            width: 16px;
-            height: 16px;
-            margin-top: -6.4px;
-            border: 2px solid #131314;
+            width: 18px;
+            height: 18px;
+            margin-top: 0;
+            border: 2px solid #fff;
             border-radius: 50%;
-            background: #E3E3E3;
-            box-shadow: 0 0 0 1.6px #E3E3E3;
+            background: transparent;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.6);
             appearance: none;
             -webkit-appearance: none;
         }
@@ -3143,12 +3238,12 @@
         #modalOverlay input[type="range"]::-moz-range-thumb,
         #helpOverlay input[type="range"]::-moz-range-thumb,
         #letterBoxEditorPanel input[type="range"]::-moz-range-thumb {
-            width: 12.8px;
-            height: 12.8px;
-            border: 2px solid #131314;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #fff;
             border-radius: 50%;
-            background: #E3E3E3;
-            box-shadow: 0 0 0 1.6px #E3E3E3;
+            background: transparent;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.6);
         }
 
         #modalOverlay input[type="color"] {
@@ -3262,18 +3357,14 @@
             gap: 16px;
         }
 
-        #modalOverlay .config-subsection-option[data-option-id="bgOption"] > span:first-child {
-            grid-column: 1 / -1;
-        }
-
         #modalOverlay .config-subsection-option[data-option-id="bgOption"] > .config-choice-group {
             grid-column: 1;
-            grid-row: 2;
+            grid-row: 1;
         }
 
         #modalOverlay .config-subsection-option[data-option-id="bgOption"] > #bgControls {
             grid-column: 2;
-            grid-row: 2;
+            grid-row: 1;
             min-width: 0;
         }
 
@@ -3291,7 +3382,7 @@
         #modalOverlay #bgGradientColorControls {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 16px;
             width: 100%;
         }
 
@@ -3299,6 +3390,7 @@
         #modalOverlay #bgGradientColorControls #syncAudioToBackgroundGradientBtn {
             margin-left: auto;
         }
+        #modalOverlay #bgGradientColorControls #syncAudioToBackgroundGradientBtn { margin-right: -4px; }
 
         #modalOverlay #bgImageFile {
             position: absolute;
@@ -3348,51 +3440,12 @@
             flex: 0 0 auto;
         }
 
-        #modalOverlay .config-subsection-option[data-option-id="bgOption"] > .flex.flex-col.gap-2.mt-4 {
+        #modalOverlay .config-subsection-option[data-option-id="bgOption"] > #bgBlurControl {
             grid-column: 1 / -1;
+            grid-row: 2;
         }
 
         #modalOverlay .neu-btn { border-radius: 999px; }
-
-        #progressOption > div > .space-y-4.border-b {
-            display: grid;
-            grid-template-columns: max-content minmax(0, 1fr);
-            align-items: center;
-            gap: 16px;
-        }
-
-        #progressOption > div > .space-y-4.border-b > span:first-child {
-            grid-column: 1 / -1;
-        }
-
-        #progressOption .config-choice-group { grid-column: 1; }
-
-        #progressOption .config-choice-group + .flex.gap-4.items-center {
-            grid-column: 2;
-            justify-self: start;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            gap: 8px;
-        }
-
-        #progressOption .space-y-4 > .grid.grid-cols-2 {
-            grid-template-columns: minmax(0, 1fr) max-content;
-            align-items: center;
-            gap: 16px 24px;
-        }
-
-        #progressOption .space-y-4 > .grid.grid-cols-2 > div:first-child {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 48px;
-            align-items: center;
-            gap: 8px;
-            grid-column: 2;
-            grid-row: 1;
-        }
-
-        #progressOption .space-y-4 > .grid.grid-cols-2 > div:nth-child(2) { grid-column: 1; grid-row: 1; }
-        #progressOption .space-y-4 > .grid.grid-cols-2 > div:nth-child(3) { grid-column: 1; grid-row: 2; }
-        #progressOption .space-y-4 > .grid.grid-cols-2 > div:nth-child(4) { grid-column: 1; grid-row: 3; }
 
         #modalOverlay #playerLightColorControl:not(.hidden),
         #modalOverlay #letterBoxLightColorControl:not(.hidden) {
@@ -3519,26 +3572,13 @@
                 max-width: calc(100% - 112px);
             }
 
-            #progressOption .space-y-4 > .grid.grid-cols-2 {
-                grid-template-columns: minmax(0, 1fr) max-content;
-                gap: 8px;
-            }
-
-            #progressOption .space-y-4 > .grid.grid-cols-2 > div:first-child {
-                grid-template-columns: minmax(0, 1fr) 48px;
-                gap: 4px;
-            }
-
-            #modalOverlay .config-subsection-option[data-option-id="bgOption"],
-            #progressOption > div > .space-y-4.border-b {
-                grid-template-columns: max-content minmax(0, 1fr);
+            #modalOverlay .config-subsection-option[data-option-id="bgOption"] {
                 gap: 12px;
             }
             #modalOverlay .config-subsection-option[data-option-id="bgOption"] {
                 grid-template-columns: minmax(0, 1fr);
             }
 
-            #modalOverlay .config-subsection-controls[data-layout="general"],
             #modalOverlay .config-subsection-controls[data-layout="background"],
             #modalOverlay .config-subsection-controls[data-layout="audio-panel"],
             #modalOverlay .config-subsection-controls[data-layout="pause-button"],
@@ -3548,9 +3588,6 @@
                 gap: 12px;
             }
 
-            #modalOverlay .config-subsection-controls[data-layout="general"] {
-                grid-template-columns: max-content minmax(0, 1fr);
-            }
             #modalOverlay .config-subsection-controls[data-layout="pause-shadow"] {
                 grid-template-columns: max-content minmax(0, 1fr);
             }
@@ -3560,7 +3597,7 @@
             #modalOverlay #playerCardStyleControl { grid-column: 1; }
             #modalOverlay #playerCardFillControl { grid-column: 1 / -1; }
             #modalOverlay #barColorSettings { grid-template-columns: minmax(0, 1fr); }
-            #modalOverlay #secBarColorControls { justify-content: flex-start; }
+            #modalOverlay #secBarModeControls { justify-content: flex-start; }
             #modalOverlay #progressThumbShadowSettings {
                 grid-template-columns: max-content minmax(0, 1fr);
             }
@@ -3572,7 +3609,6 @@
                 justify-content: flex-end;
             }
 
-            #modalOverlay .config-subsection-controls[data-layout="general"] > *,
             #modalOverlay .config-subsection-controls[data-layout="background"] > *,
             #modalOverlay .config-subsection-controls[data-layout="audio-panel"] > *,
             #modalOverlay .config-subsection-controls[data-layout="pause-button"] > *,
@@ -3610,6 +3646,7 @@
                 grid-row: 2;
                 margin-left: 0;
             }
+            #modalOverlay #playerCardFillModeRow > div:not(.config-choice-group),
             #modalOverlay #letterBoxFillControls > #letterBoxColorControls {
                 gap: 12px;
             }
@@ -3632,6 +3669,17 @@
                 padding: 8px 16px 16px;
                 background: var(--md-surface-container);
             }
+        }
+
+        @media (max-width: 520px) {
+            #modalOverlay #barColorSettings { flex-wrap: wrap; }
+            #modalOverlay #secBarModeSettings { flex: 1 1 100%; }
+        }
+
+        @media (max-width: 380px) {
+            #modalOverlay #mainBarColorSettings { width: 100%; }
+            #modalOverlay #mainBarColorControls { flex-wrap: wrap; }
+            #modalOverlay #mainBarColorControls > div:not(.config-choice-group) { margin-left: auto; }
         }
     </style>
 </head>
@@ -3681,7 +3729,7 @@
                 </button>
 
                 <div id="customSlider" class="absolute bottom-[31px] left-1/2 -translate-x-1/2 h-[7px] z-20 cursor-pointer" aria-label="Progreso de la canción" style="bottom: calc(31px * var(--player-layout-scale)); width: 1019px; height: calc(7px * var(--player-layout-scale));">
-                    <div id="customSliderBg" class="absolute inset-0 w-full h-full rounded-full" style="background: #000000;"></div>
+                    <div id="customSliderBg" class="absolute inset-0 w-full h-full rounded-full" style="background: rgba(255, 255, 255, 0.25);"></div>
                     <div id="customSliderFill" class="absolute left-0 top-0 h-full rounded-full pointer-events-none" style="width: 0%; background: #e5e5e5;"></div>
                     <div id="customSliderThumb" class="absolute top-1/2 rounded-full bg-[#e5e5e5] pointer-events-none transition-shadow" style="left: 0%; width: calc(14px * var(--player-layout-scale)); height: calc(14px * var(--player-layout-scale)); transform: translate(-50%, -50%); box-shadow: 0 0 5px 2px rgba(0,0,0,0.5);"></div>
                     <div id="letterBoxControlPointMarkers" hidden aria-label="Puntos de control de la letra"></div>
@@ -3857,25 +3905,23 @@
                 <button id="closeModal" class="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-xl text-white transition hover:bg-white/10" aria-label="Cerrar configuración" title="Cerrar configuración">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
                 </button>
-                <h2 id="configSectionTitle" class="text-2xl font-bold tracking-tight text-white sm:text-3xl">Configuración</h2>
+                <h2 id="configSectionTitle" class="text-2xl font-bold tracking-tight text-white sm:text-3xl">Fondo</h2>
                 <div class="w-12"></div>
             </header>
 
             <div class="flex min-h-0 flex-1 flex-col lg:flex-row">
                 <aside class="config-sidebar w-full shrink-0 border-b border-white/10 p-4 lg:w-72 lg:border-b-0 lg:border-r lg:p-5">
                     <nav id="configSectionNav" class="flex flex-col gap-2">
-                        <button type="button" class="config-section-nav-btn active" data-config-section="general">General</button>
+                        <button type="button" class="config-section-nav-btn active" data-config-section="general">Fondo</button>
                         <button type="button" class="config-section-nav-btn" data-config-section="panel-letra">Panel de letra</button>
                         <button type="button" class="config-section-nav-btn" data-config-section="panel-audio">Panel de audio</button>
+                        <button type="button" class="config-section-nav-btn" data-config-section="contadores-progreso">Extras</button>
                         <button type="button" class="config-section-nav-btn" data-config-section="gestion">Gestión</button>
                     </nav>
                 </aside>
 
                 <main class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
                     <div class="config-section-panel active" data-config-section="general">
-                        <div class="mb-6">
-                            <h3 class="text-xl font-semibold text-white sm:text-2xl">General</h3>
-                        </div>
                         <ul class="space-y-6">
                             <li id="pauseBtnConfig" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
                                 <div class="flex flex-col space-y-4">
@@ -3896,13 +3942,23 @@
                             <li id="pauseButtonColorOption" class="neu-list-item p-6 transition text-lg">
                                 <div class="flex flex-col space-y-4">
                                     <span class="font-semibold text-xl">Color del botón de pausa</span>
-                                    <div class="flex items-center gap-4">
-                                        <span class="text-sm text-gray-400 w-28">Color primario</span>
-                                        <input type="color" id="pauseBgColor" value="#262626" class="w-12 h-12 rounded cursor-pointer" oninput="applyPauseButtonSettings()">
+                                    <div id="pauseButtonTopRow">
+                                        <div id="pauseButtonModeControl" class="config-choice-group" role="radiogroup" aria-label="Modo de configuración del botón de pausa">
+                                            <label class="config-choice"><input type="radio" name="pauseButtonMode" value="simple" onchange="applyPauseButtonSettings()"><span>Simple</span></label>
+                                            <label class="config-choice"><input type="radio" name="pauseButtonMode" value="complete" checked onchange="applyPauseButtonSettings()"><span>Completo</span></label>
+                                        </div>
+                                        <div id="pauseButtonColorInputs">
+                                            <div id="pausePrimaryColorRow">
+                                                <input type="color" id="pauseBgColor" value="#262626" aria-label="Color primario del botón de pausa" class="w-12 h-12 rounded cursor-pointer" oninput="applyPauseButtonSettings()">
+                                            </div>
+                                            <div id="pauseSecondaryColorRow">
+                                                <input type="color" id="pauseIconColor" value="#e5e5e5" aria-label="Color secundario del botón de pausa" class="w-12 h-12 rounded cursor-pointer" oninput="applyPauseButtonSettings()">
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="flex items-center gap-4">
-                                        <span class="text-sm text-gray-400 w-28">Color secundario</span>
-                                        <input type="color" id="pauseIconColor" value="#e5e5e5" class="w-12 h-12 rounded cursor-pointer" oninput="applyPauseButtonSettings()">
+                                    <div id="pauseButtonScaleControl" class="flex items-center gap-2" style="display: none">
+                                        <span class="text-sm text-gray-400 whitespace-nowrap">Tamaño</span>
+                                        <input type="range" id="pauseButtonScale" min="1" max="3" step="0.05" value="1.4" aria-label="Tamaño de los controles de pausa y avance" oninput="applyPauseButtonSettings()">
                                     </div>
                                 </div>
                             </li>
@@ -3910,9 +3966,6 @@
                     </div>
 
                     <div class="config-section-panel" data-config-section="panel-letra">
-                        <div class="mb-6">
-                            <h3 class="text-xl font-semibold text-white sm:text-2xl">Panel de letra</h3>
-                        </div>
                         <ul class="space-y-6">
                             <li id="playerCardOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
                                 <div class="flex flex-col space-y-4">
@@ -3931,11 +3984,15 @@
                                                 <label class="config-choice"><input type="radio" name="playerCardColorType" value="gradient" onchange="applyPlayerCardColorSettings()"><span>Gradiente</span></label>
                                             </div>
                                             <button id="syncLetterToAudioBtn" type="button" class="config-choice-cycle" aria-label="Sincronizar colores del cuadro de audio con el cuadro de letras">Sincronizar colores</button>
-                                            <div class="flex gap-3 items-center">
+                                            <div class="flex gap-4 items-center">
                                                 <input type="color" id="playerCardColor1" value="#262626" aria-label="Color del cuadro de audio" data-opacity-control="playerCardColorOpacity" class="w-12 h-12 rounded cursor-pointer" oninput="applyPlayerCardColorSettings()">
                                                 <input type="color" id="playerCardColor2" value="#262626" aria-label="Segundo color del cuadro de audio" data-opacity-control="playerCardColorOpacity" class="w-12 h-12 rounded cursor-pointer hidden" oninput="applyPlayerCardColorSettings()">
                                             </div>
                                         </div>
+                                    </div>
+                                    <div id="audioTextColorControl" class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-400">Color del texto</span>
+                                        <input type="color" id="audioPanelTextColor" value="#e5e5e5" aria-label="Color del texto del panel de audio y los contadores" class="w-12 h-12 rounded cursor-pointer" oninput="applyAudioPanelTextColor()">
                                     </div>
                                     <div id="playerCardColorOpacityRow" class="hidden">
                                         <span class="text-sm text-gray-400 w-28">Opacidad del color</span>
@@ -3951,8 +4008,8 @@
                                             <input type="color" id="playerShadowColor" value="#000000" aria-label="Color de luz del cuadro de audio" class="w-12 h-12 rounded cursor-pointer" oninput="applyPlayerCardSettings()">
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-4 mt-2">
-                                        <span class="text-sm text-gray-400 w-28">Blur Fondo</span>
+                                    <div class="blur-control flex items-center gap-4">
+                                        <span class="text-sm text-gray-400">Blur</span>
                                         <input type="range" id="playerBlur" min="0" max="40" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()">
                                     </div>
                                 </div>
@@ -3973,6 +4030,10 @@
                                             <input type="color" id="letterBoxColor2" value="#262626" aria-label="Segundo color del cuadro de letras" data-opacity-control="letterBoxOpacity" class="w-12 h-12 rounded cursor-pointer hidden" oninput="applyLetterBoxSettings()">
                                         </div>
                                     </div>
+                                    <div id="letterTextColorControl" class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-400">Color del texto</span>
+                                        <input type="color" id="letterPanelTextColor" value="#e5e5e5" aria-label="Color del texto del panel de letra" class="w-12 h-12 rounded cursor-pointer" oninput="applyLetterPanelTextColor()">
+                                    </div>
                                     <div id="letterBoxShadowOption" class="flex flex-col gap-4">
                                         <div class="config-choice-group" role="radiogroup" aria-label="Efecto del cuadro de letras">
                                             <label class="config-choice"><input type="radio" name="letterBoxShadowType" value="off"><span>Desactivado</span></label>
@@ -3983,27 +4044,18 @@
                                             <input type="color" id="letterBoxShadowColor" value="#000000" aria-label="Color de luz del cuadro de letras" class="w-12 h-12 rounded cursor-pointer" oninput="applyLetterBoxSettings()">
                                         </div>
                                     </div>
+                                    <div id="letterBoxBlurControl" class="blur-control flex items-center gap-4">
+                                        <span class="text-sm text-gray-400">Blur</span>
+                                        <input type="range" id="letterBoxBlur" min="0" max="40" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
+                                    </div>
                                     <div id="letterBoxOpacityControl" class="hidden">
                                         <span class="text-sm text-gray-400 w-28">Opacidad</span>
-                                        <input type="range" id="letterBoxOpacity" min="0.1" max="1" step="0.05" value="1" aria-label="Opacidad del color del cuadro de letras" data-picker-label="Opacidad del color del cuadro de letras" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
-                                    </div>
-                                    <div id="letterBoxBlurControl" class="flex items-center gap-4">
-                                        <span class="text-sm text-gray-400 w-28">Blur</span>
-                                        <input type="range" id="letterBoxBlur" min="0" max="40" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
+                                        <input type="range" id="letterBoxOpacity" min="0" max="1" step="0.05" value="1" aria-label="Opacidad del color del cuadro de letras" data-picker-label="Opacidad del color del cuadro de letras" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
                                     </div>
                                     <input type="hidden" id="letterBoxHeightPercent" value="78">
                                     <input type="hidden" id="letterBoxWidthPercent" value="48">
                                     <input type="hidden" id="letterBoxHorizontalPosition" value="50">
                                     <input type="hidden" id="letterBoxVerticalPosition" value="50">
-                                </div>
-                            </li>
-                            <li id="cornerRadiusOption" class="neu-list-item p-6 transition text-lg">
-                                <div class="flex flex-col space-y-4">
-                                    <span class="font-semibold text-xl">Redondez de cuadros</span>
-                                    <div class="flex items-center gap-4">
-                                        <span class="text-sm text-gray-400 w-28">Radio</span>
-                                        <input type="range" id="cornerRadiusSlider" min="5" max="300" step="1" value="20" aria-label="Redondez de los cuadros de letras y audio" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyCornerRadiusSettings()">
-                                    </div>
                                 </div>
                             </li>
                         </ul>
@@ -4046,11 +4098,9 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="flex flex-col gap-2 mt-4 pt-4 border-t border-gray-700">
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm text-gray-400 w-24">Blur</span>
-                                            <input type="range" id="blurIntensity" min="0" max="20" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyBlur()">
-                                        </div>
+                                    <div id="bgBlurControl" class="blur-control flex items-center gap-4">
+                                        <span class="text-sm text-gray-400">Blur</span>
+                                        <input type="range" id="blurIntensity" min="0" max="20" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyBlur()">
                                     </div>
                                 </div>
                             </li>
@@ -4065,37 +4115,34 @@
                             <li id="progressOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
                                 <div class="flex flex-col space-y-4">
                                     <span class="font-semibold text-xl">Barra de Audio Personalizada</span>
-                                    <div id="barColorSettings" class="grid grid-cols-2 gap-4 border-b border-gray-700/50 pb-4">
-                                        <div id="mainBarColorSettings" class="space-y-3">
-                                            <span class="text-sm text-gray-300 font-semibold">Color Principal (Reproducido)</span>
-                                            <div id="mainBarColorControls" class="flex items-center gap-3">
-                                                <div class="config-choice-group" role="radiogroup" aria-label="Color principal de la barra de audio">
-                                                    <label class="config-choice"><input type="radio" name="mainBarType" value="simple" checked><span>Simple</span></label>
-                                                    <label class="config-choice"><input type="radio" name="mainBarType" value="gradient"><span>Gradiente</span></label>
-                                                </div>
-                                                <div class="flex gap-2 items-center">
-                                                    <input type="color" id="mainBarColor1" value="#e5e5e5" class="w-10 h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
-                                                    <input type="color" id="mainBarColor2" value="#ffffff" class="w-10 h-10 rounded cursor-pointer hidden" oninput="applyCustomSliderSettings()">
+                                    <div id="barColorSettings">
+                                        <div id="secBarModeSettings">
+                                            <div id="secBarModeControls">
+                                                <div class="config-choice-group" role="radiogroup" aria-label="Modo de la parte no reproducida de la barra de audio">
+                                                    <label class="config-choice"><input type="radio" name="secBarMode" value="light" onchange="applyCustomSliderSettings()"><span>Claro</span></label>
+                                                    <label class="config-choice"><input type="radio" name="secBarMode" value="dark" checked onchange="applyCustomSliderSettings()"><span>Oscuro</span></label>
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div id="secBarColorSettings" class="space-y-3">
-                                            <span class="text-sm text-gray-300 font-semibold text-right">Color Secundario (No Reproducido)</span>
-                                            <div id="secBarColorControls" class="flex items-center justify-end gap-3">
-                                                <div class="flex gap-2 items-center">
-                                                    <input type="color" id="secBarColor1" value="#000000" class="w-10 h-10 rounded cursor-pointer" oninput="applyCustomSliderSettings()">
-                                                    <input type="color" id="secBarColor2" value="#333333" class="w-10 h-10 rounded cursor-pointer hidden" oninput="applyCustomSliderSettings()">
+                                        <div id="mainBarColorSettings">
+                                            <div id="mainBarColorControls">
+                                                <div class="config-choice-group" role="radiogroup" aria-label="Tipo de color de la parte reproducida de la barra de audio">
+                                                    <label class="config-choice"><input type="radio" name="mainBarType" value="simple" checked><span>Color</span></label>
+                                                    <label class="config-choice"><input type="radio" name="mainBarType" value="gradient"><span>Gradiente</span></label>
                                                 </div>
-                                                <div class="config-choice-group" role="radiogroup" aria-label="Color secundario de la barra de audio">
-                                                    <label class="config-choice"><input type="radio" name="secBarType" value="simple" checked><span>Simple</span></label>
-                                                    <label class="config-choice"><input type="radio" name="secBarType" value="gradient"><span>Gradiente</span></label>
+                                                <div>
+                                                    <input type="color" id="mainBarColor1" value="#e5e5e5" class="w-10 h-10 rounded cursor-pointer" aria-label="Color de la parte reproducida" oninput="applyCustomSliderSettings()">
+                                                    <input type="color" id="mainBarColor2" value="#ffffff" class="w-10 h-10 rounded cursor-pointer hidden" aria-label="Segundo color de la parte reproducida" oninput="applyCustomSliderSettings()">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="space-y-4 border-b border-gray-700/50 pb-4">
-                                        <span class="text-sm text-gray-300 font-semibold">Círculo (Thumb)</span>
+                                </div>
+                            </li>
+
+                            <li id="progressThumbOption" class="neu-list-item p-6 cursor-pointer hover:bg-white/5 transition text-lg">
+                                <div class="flex flex-col space-y-4">
+                                    <div class="space-y-4">
                                         <div id="thumbControls" class="grid grid-cols-1 gap-4">
                                             <div class="flex items-center gap-2">
                                                 <span class="text-xs text-gray-400">Color</span>
@@ -4104,7 +4151,6 @@
                                         </div>
                                     </div>
                                     <div id="progressThumbShadowSettings" class="space-y-4">
-                                        <span class="text-sm text-gray-300 font-semibold">Efecto del círculo</span>
                                         <div id="progressThumbShadowControls">
                                             <div class="config-choice-group" role="radiogroup" aria-label="Efecto del círculo">
                                                 <label class="config-choice"><input type="radio" name="progressThumbShadowType" value="off"><span>Desactivado</span></label>
@@ -4123,8 +4169,8 @@
                                 <div class="flex flex-col space-y-4">
                                     <span class="font-semibold text-xl">Posición horizontal de los contadores</span>
                                     <div class="flex items-center gap-4">
-                                        <span class="text-sm text-gray-400 w-24">Separación</span>
-                                        <input type="range" id="timeChipOffset" min="0" max="20" step="0.1" value="2" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyTimeChipSettings()">
+                                        <span class="text-sm text-gray-400">Separación</span>
+                                        <input type="range" id="timeChipOffset" min="0" max="20" step="0.1" value="2" aria-label="Separación de los contadores" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyTimeChipSettings()">
                                     </div>
                                 </div>
                             </li>
@@ -4136,7 +4182,6 @@
                                         <input type="range" id="counterOpacity" min="0" max="1" step="0.05" value="0.45" aria-label="Opacidad de contadores y botones de salto" data-picker-label="Opacidad de contadores y botones de salto" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyCounterSettings()">
                                     </div>
                                     <div class="flex items-center gap-4">
-                                        <span class="text-sm text-gray-400 w-28">Color</span>
                                         <input type="color" id="counterColor" value="#262626" aria-label="Color de contadores y botones de salto" data-opacity-control="counterOpacity" class="w-12 h-12 rounded cursor-pointer" oninput="applyCounterSettings()">
                                     </div>
                                 </div>
@@ -4145,9 +4190,6 @@
                     </div>
 
                     <div class="config-section-panel" data-config-section="gestion">
-                        <div class="mb-6">
-                            <h3 class="text-xl font-semibold text-white sm:text-2xl">Gestión</h3>
-                        </div>
                         <div class="flex flex-wrap items-center gap-3">
                             <button id="exportConfigBtn" type="button" class="config-choice-cycle">Guardar tema</button>
                             <button id="importConfigBtn" type="button" class="config-choice-cycle">Cargar</button>
@@ -4836,8 +4878,7 @@ Pero si quieres fuerza y cantar con pasión,
             progressThumbShadowType: ['thumbShadowColorRow', 'light', applyCustomSliderSettings, (value) => activeProgressThumbShadowType = value],
             letterBoxShadowType: ['letterBoxLightColorControl', 'light', applyLetterBoxSettings],
             playerShadowType: ['playerLightColorControl', 'light', applyPlayerCardSettings],
-            mainBarType: ['mainBarColor2', 'gradient', applyCustomSliderSettings],
-            secBarType: ['secBarColor2', 'gradient', applyCustomSliderSettings]
+            mainBarType: ['mainBarColor2', 'gradient', applyCustomSliderSettings]
         };
 
         function updateConfigRadioSetting(name, shouldApply = true) {
@@ -4907,23 +4948,28 @@ Pero si quieres fuerza y cantar con pasión,
 
         function createConfigSubsectionCard(title, optionIds, optionElements, layout = 'stack', withPauseIcon = false) {
             const card = document.createElement('li');
-            card.className = 'neu-list-item p-6 config-subsection-card';
+            card.className = ['letter-panel', 'audio-panel', 'background'].includes(layout)
+                ? 'config-subsection-card'
+                : 'neu-list-item p-6 config-subsection-card';
             const content = document.createElement('div');
             content.className = 'config-subsection-controls';
             content.dataset.layout = layout;
-            const heading = document.createElement('h4');
-            const headingRow = document.createElement('div');
-            headingRow.className = 'config-subsection-heading';
-            if (withPauseIcon) {
-                const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                icon.setAttribute('viewBox', '0 0 24 24');
-                icon.setAttribute('fill', 'currentColor');
-                icon.setAttribute('aria-hidden', 'true');
-                icon.innerHTML = '<path d="M7 5h4v14H7zM15 5h4v14h-4z"></path>';
-                headingRow.appendChild(icon);
+            let headingRow = null;
+            if (title) {
+                const heading = document.createElement('h4');
+                headingRow = document.createElement('div');
+                headingRow.className = 'config-subsection-heading';
+                if (withPauseIcon) {
+                    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    icon.setAttribute('viewBox', '0 0 24 24');
+                    icon.setAttribute('fill', 'currentColor');
+                    icon.setAttribute('aria-hidden', 'true');
+                    icon.innerHTML = '<path d="M7 5h4v14H7zM15 5h4v14h-4z"></path>';
+                    headingRow.appendChild(icon);
+                }
+                heading.textContent = title;
+                headingRow.appendChild(heading);
             }
-            heading.textContent = title;
-            headingRow.appendChild(heading);
 
             optionIds.forEach((optionId) => {
                 const option = optionElements.get(optionId);
@@ -4941,7 +4987,26 @@ Pero si quieres fuerza y cantar con pasión,
                 content.appendChild(optionContent);
             });
 
-            card.append(headingRow, content);
+            const blurControl = layout === 'letter-panel'
+                ? content.querySelector('#letterBoxBlurControl')
+                : layout === 'audio-panel'
+                    ? content.querySelector('.blur-control')
+                    : null;
+            const effectControl = layout === 'letter-panel'
+                ? content.querySelector('[data-option-id="letterBoxShadowOption"]')
+                : layout === 'audio-panel'
+                    ? content.querySelector('[data-option-id="playerShadowOption"]')
+                    : null;
+            if (blurControl && effectControl) effectControl.after(blurControl);
+            const textColorControl = layout === 'letter-panel'
+                ? content.querySelector('#letterTextColorControl')
+                : layout === 'audio-panel'
+                    ? content.querySelector('#audioTextColorControl')
+                    : null;
+            if (blurControl && textColorControl) blurControl.after(textColorControl);
+
+            if (headingRow) card.append(headingRow);
+            card.append(content);
             return card;
         }
 
@@ -4951,56 +5016,60 @@ Pero si quieres fuerza y cantar con pasión,
             const generalPanel = existingPanels.get('general');
             const letterPanel = existingPanels.get('panel-letra');
             let audioPanel = existingPanels.get('panel-audio');
+            let progressPanel = existingPanels.get('contadores-progreso');
 
             if (!audioPanel) {
                 audioPanel = document.createElement('div');
                 audioPanel.className = 'config-section-panel';
                 audioPanel.dataset.configSection = 'panel-audio';
-                const heading = document.createElement('div');
-                heading.className = 'mb-6';
-                const title = document.createElement('h3');
-                title.className = 'text-xl font-semibold text-white sm:text-2xl';
-                title.textContent = 'Panel de audio';
-                heading.appendChild(title);
-                audioPanel.appendChild(heading);
                 const list = document.createElement('ul');
                 list.className = 'space-y-6';
                 audioPanel.appendChild(list);
             }
 
+            if (!progressPanel) {
+                progressPanel = document.createElement('div');
+                progressPanel.className = 'config-section-panel';
+                progressPanel.dataset.configSection = 'contadores-progreso';
+                const list = document.createElement('ul');
+                list.className = 'space-y-6';
+                progressPanel.appendChild(list);
+            }
+
             const generalList = generalPanel.querySelector('ul');
             const letterList = letterPanel.querySelector('ul');
             const audioList = audioPanel.querySelector('ul');
+            const progressList = progressPanel.querySelector('ul');
             const optionIds = [
-                'cornerRadiusOption', 'bgOption',
+                'bgOption',
                 'pauseButtonColorOption', 'pauseBtnConfig',
                 'counterOption', 'timeChipOption', 'letterBoxOption', 'letterBoxShadowOption',
-                'playerCardOption', 'playerShadowOption', 'progressOption'
+                'playerCardOption', 'playerShadowOption', 'progressOption', 'progressThumbOption'
             ];
             const optionElements = new Map(optionIds.map((optionId) => [optionId, document.getElementById(optionId)]));
-            [generalList, letterList, audioList].forEach((list) => list.replaceChildren());
+            [generalList, letterList, audioList, progressList].forEach((list) => list.replaceChildren());
 
             generalList.append(
-                createConfigSubsectionCard('General', ['cornerRadiusOption'], optionElements, 'general'),
-                createConfigSubsectionCard('Fondo', ['bgOption'], optionElements, 'background')
+                createConfigSubsectionCard('', ['bgOption'], optionElements, 'background')
             );
 
             letterList.append(
-                createConfigSubsectionCard('Panel de letra', ['letterBoxOption'], optionElements, 'letter-panel'),
-                createConfigSubsectionCard('Efecto del panel', ['letterBoxShadowOption'], optionElements, 'panel-shadow')
+                createConfigSubsectionCard('', ['letterBoxOption', 'letterBoxShadowOption'], optionElements, 'letter-panel')
             );
 
             audioList.append(
-                createConfigSubsectionCard('Panel de audio', ['playerCardOption'], optionElements, 'audio-panel'),
-                createConfigSubsectionCard('Efecto del panel', ['playerShadowOption'], optionElements, 'panel-shadow'),
-                createConfigSubsectionCard('Botón de pausa', ['pauseButtonColorOption'], optionElements, 'pause-button', true),
-                createConfigSubsectionCard('Efecto del botón de pausa', ['pauseBtnConfig'], optionElements, 'pause-shadow', true),
-                createConfigSubsectionCard('Contadores', ['counterOption', 'timeChipOption'], optionElements, 'counters'),
-                createConfigSubsectionCard('Barra de audio', ['progressOption'], optionElements, 'progress-bar')
+                createConfigSubsectionCard('', ['playerCardOption', 'playerShadowOption'], optionElements, 'audio-panel')
+            );
+
+            progressList.append(
+                createConfigSubsectionCard('Botón de pausa', ['pauseButtonColorOption', 'pauseBtnConfig'], optionElements, 'pause-button', true),
+                createConfigSubsectionCard('Barra de audio', ['progressOption'], optionElements, 'progress-bar'),
+                createConfigSubsectionCard('Círculo de progreso', ['progressThumbOption'], optionElements, 'progress-thumb'),
+                createConfigSubsectionCard('Contadores', ['counterOption', 'timeChipOption'], optionElements, 'counters')
             );
 
             const managementPanel = existingPanels.get('gestion');
-            main.replaceChildren(generalPanel, letterPanel, audioPanel, managementPanel);
+            main.replaceChildren(generalPanel, letterPanel, audioPanel, progressPanel, managementPanel);
         }
 
         organizeConfigSections();
@@ -5015,8 +5084,7 @@ Pero si quieres fuerza y cantar con pasión,
             document.querySelectorAll('#modalOverlay input[type="range"]').forEach((slider) => {
                 const minimum = Number(slider.min || 0);
                 const maximum = Number(slider.max || 100);
-                const divisions = slider.id === 'cornerRadiusSlider' ? 100 : 20;
-                const step = (maximum - minimum) / divisions;
+                const step = (maximum - minimum) / 20;
                 slider.step = String(Number(step.toPrecision(12)));
             });
         }
@@ -5035,9 +5103,10 @@ Pero si quieres fuerza y cantar con pasión,
         }
 
         const configSectionLabels = {
-            general: 'General',
+            general: 'Fondo',
             'panel-letra': 'Panel de letra',
             'panel-audio': 'Panel de audio',
+            'contadores-progreso': 'Extras',
             gestion: 'Gestión'
         };
 
@@ -5367,7 +5436,7 @@ Pero si quieres fuerza y cantar con pasión,
             });
 
             if (configSectionTitle) {
-                configSectionTitle.textContent = 'Configuración';
+                configSectionTitle.textContent = configSectionLabels[nextSection];
             }
         }
 
@@ -6513,11 +6582,19 @@ Pero si quieres fuerza y cantar con pasión,
         }
 
         function applyPauseButtonSettings() {
+            const isSimpleMode = getCheckedRadioValue('pauseButtonMode') === 'simple';
+            const isCompleteMode = !isSimpleMode;
+            document.getElementById('pauseButtonScaleControl').style.display = isSimpleMode ? '' : 'none';
+            document.getElementById('pausePrimaryColorRow').style.visibility = isCompleteMode ? 'visible' : 'hidden';
+            document.querySelector('[data-option-id="pauseBtnConfig"]').style.display = isCompleteMode ? '' : 'none';
+            document.documentElement.style.setProperty('--pause-controls-scale', document.getElementById('pauseButtonScale').value);
+            refs.playerView.classList.toggle('simple-pause-controls-scaled', isSimpleMode);
             const bgColor = document.getElementById('pauseBgColor').value;
             const iconColor = document.getElementById('pauseIconColor').value;
             const isLight = activePauseShadowType === 'light';
             const shadowColor = isLight ? document.getElementById('pauseShadowColor').value : '#000000';
 
+            refs.playPauseBtn.classList.toggle('pause-button-simple', !isCompleteMode);
             refs.playPauseBtn.style.setProperty('--pause-bg', bgColor);
             refs.playPauseBtn.style.setProperty('--pause-icon-color', iconColor);
             document.documentElement.style.setProperty('--pause-icon-color', iconColor);
@@ -6633,12 +6710,6 @@ Pero si quieres fuerza y cantar con pasión,
             document.documentElement.style.setProperty('--time-chip-offset-left', offset);
             document.documentElement.style.setProperty('--time-chip-offset-right', offset);
             updateCustomSliderLayout();
-        }
-
-        function applyCornerRadiusSettings() {
-            const radius = `${document.getElementById('cornerRadiusSlider').value}px`;
-            playerCard.style.borderRadius = getCheckedRadioValue('playerCardStyle') === 'full' ? '0px' : radius;
-            letterBox.style.borderRadius = radius;
         }
 
         function updateBgControls(type) {
@@ -7680,6 +7751,9 @@ Pero si quieres fuerza y cantar con pasión,
         function applyBackground() {
             const requestId = ++backgroundImageLoadId;
             const type = getCheckedRadioValue('bgType');
+            const fileInput = document.getElementById('bgImageFile');
+            document.getElementById('bgBlurControl').style.display =
+                type === 'image' && fileInput.files?.length ? '' : 'none';
             if (type === 'simple') {
                 const color = document.getElementById('bgColorSimple').value;
                 bgWrapper.style.background = color;
@@ -7694,7 +7768,6 @@ Pero si quieres fuerza y cantar con pasión,
                     applyBlur();
                     return;
                 }
-                const fileInput = document.getElementById('bgImageFile');
                 if (fileInput.files && fileInput.files[0]) {
                     const reader = new FileReader();
                     reader.onload = function () {
@@ -7734,6 +7807,16 @@ Pero si quieres fuerza y cantar con pasión,
             controls.forEach((control) => {
                 if (control) control.style.backgroundColor = background;
             });
+        }
+
+        function applyAudioPanelTextColor() {
+            const color = document.getElementById('audioPanelTextColor').value;
+            document.getElementById('cuadro-de-audio').style.setProperty('--audio-panel-text-color', color);
+        }
+
+        function applyLetterPanelTextColor() {
+            const color = document.getElementById('letterPanelTextColor').value;
+            letterBoxText.style.setProperty('--letter-panel-text-color', color);
         }
 
         function applyLetterBoxSettings() {
@@ -8212,13 +8295,18 @@ Pero si quieres fuerza y cantar con pasión,
             const cardStyle = getCheckedRadioValue('playerCardStyle') || 'floating';
             const isVisible = cardStyle !== 'off';
             const isFullStyle = cardStyle === 'full';
+            const display = isVisible ? '' : 'none';
+            document.getElementById('playerCardFillControl').style.display = display;
+            document.getElementById('playerCardColorOpacityRow').style.display = display;
+            document.getElementById('playerShadowOption').style.display = display;
+            document.querySelector('.config-subsection-controls[data-layout="audio-panel"] > .blur-control').style.display = display;
             const scale = playerCardScaleState.value;
 
             if (shadowType === 'off') {
                 shadowStyleCache.delete(playerCard);
                 playerCard.style.boxShadow = 'none';
             } else if (shadowType === 'light') {
-                applyShadowStyle(playerCard, outerColor, '#ffffff', 0.5, 40, 10, 49.5);
+                applyShadowStyle(playerCard, outerColor, '#ffffff', 0.45, 40, 10, 4.95);
             } else {
                 applyFlatShadowStyle(playerCard, '#000000', 0.5, 40, 10);
             }
@@ -8259,7 +8347,6 @@ Pero si quieres fuerza y cantar con pasión,
 
         function togglePlayerCardStyle() {
             applyPlayerCardSettings();
-            applyCornerRadiusSettings();
         }
 
         function applyCustomSliderSettings() {
@@ -8270,11 +8357,11 @@ Pero si quieres fuerza y cantar con pasión,
             const mainC2 = document.getElementById('mainBarColor2').value;
             customSliderFill.style.background = mainIsGrad ? `linear-gradient(90deg, ${mainC1}, ${mainC2})` : mainC1;
 
-            const secIsGrad = getCheckedRadioValue('secBarType') === 'gradient';
-            const secC1 = document.getElementById('secBarColor1').value;
-            const secC2 = document.getElementById('secBarColor2').value;
+            const secBarMode = getCheckedRadioValue('secBarMode');
             const customBg = document.getElementById('customSliderBg');
-            customBg.style.background = secIsGrad ? `linear-gradient(90deg, ${secC1}, ${secC2})` : secC1;
+            customBg.style.background = secBarMode === 'dark'
+                ? 'rgba(255, 255, 255, 0.25)'
+                : 'rgba(0, 0, 0, 0.25)';
             // Ensure background is flat (no inset shadow/depth)
             customBg.style.boxShadow = 'none';
 
@@ -8819,13 +8906,14 @@ Pero si quieres fuerza y cantar con pasión,
         updateLetterBoxAutoModeButton();
         updateLetterBoxUndoButton();
         applyCounterSettings();
+        applyAudioPanelTextColor();
+        applyLetterPanelTextColor();
         applyPlayerCardColorSettings();
         initializeConfigRadioSettings();
         applyPlayerCardSettings();
         applyCustomSliderSettings();
         applyPauseButtonSettings();
         applyTimeChipSettings();
-        applyCornerRadiusSettings();
         applyLetterBoxSettings();
         updateLinkedVinylVisual();
         updateImagePickerState();
@@ -8853,7 +8941,6 @@ Pero si quieres fuerza y cantar con pasión,
             format: 'karaoke-app-settings',
             version: 2,
             controls: {
-                cornerRadiusSlider: '19.75',
                 bgColorSimple: '#530e36',
                 bgColorGrad1: '#530e36',
                 bgColorGrad2: '#070637',
@@ -8880,8 +8967,6 @@ Pero si quieres fuerza y cantar con pasión,
                 timeChipOffset: '2',
                 mainBarColor1: '#ff4d79',
                 mainBarColor2: '#6e00f5',
-                secBarColor1: '#d090a0',
-                secBarColor2: '#a370e1',
                 customThumbColor: '#e5e5e5',
                 customThumbShadowColor: '#ff007b',
                 configOpacityControl: '0.25'
@@ -8890,13 +8975,14 @@ Pero si quieres fuerza y cantar con pasión,
                 bgType: 'gradient',
                 letterBoxColorType: 'gradient',
                 letterBoxShadowType: 'light',
+                pauseButtonMode: 'complete',
                 playerCardStyle: 'full',
                 playerCardColorType: 'gradient',
                 playerShadowType: 'shadow',
                 pauseShadowType: 'shadow',
                 progressThumbShadowType: 'light',
                 mainBarType: 'gradient',
-                secBarType: 'gradient'
+                secBarMode: 'dark'
             },
             backgroundImage: 'linear-gradient(135deg, rgb(83, 14, 54), rgb(7, 6, 55))',
             audioScale: 0.9444444444444444,
