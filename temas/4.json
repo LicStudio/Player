@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "fondo": {
+    "tipo": "color",
+    "color": "#26955f",
+    "segundoColor": "#081a6c",
+    "gradiente": true
+  },
+  "panelLetra": {
+    "tipoRelleno": "color",
+    "color": "#4e0940",
+    "segundoColor": "#06082e",
+    "gradiente": true,
+    "colorTexto": "#ffffff",
+    "sombra": {
+      "tipo": "shadow",
+      "color": "#f13184"
+    },
+    "blur": 20,
+    "opacidad": 0,
+    "texto": {
+      "tamanoPx": 41,
+      "desplazamientoHorizontalPx": 24
+    },
+    "tamano": {
+      "anchoPorcentaje": 57.979502196193266,
+      "altoPorcentaje": 80.859375
+    },
+    "posicion": {
+      "horizontalPorcentaje": 60.333642261353106,
+      "verticalPorcentaje": 50
+    }
+  },
+  "panelAudio": {
+    "estilo": "floating",
+    "color": "#4e0940",
+    "segundoColor": "#06082e",
+    "gradiente": true,
+    "colorTexto": "#ffffff",
+    "sombra": {
+      "tipo": "shadow",
+      "color": "#000000"
+    },
+    "blur": 16,
+    "opacidad": 0,
+    "tamano": 0.9725770478507704
+  },
+  "extras": {
+    "botonPausa": {
+      "modo": "complete",
+      "tipoSombra": "shadow",
+      "colorSombra": "#6d6dff",
+      "colorFondo": "#3ba373",
+      "colorIcono": "#ffffff",
+      "tamano": 1.4
+    },
+    "barraAudio": {
+      "modoNoReproducido": "light",
+      "colorReproducido": "#6cffba",
+      "segundoColorReproducido": "#494bd8",
+      "gradiente": true
+    },
+    "circuloProgreso": {
+      "visibilidad": "off",
+      "color": "#e5e5e5",
+      "tipoSombra": "off",
+      "colorSombra": "#1fadce"
+    },
+    "contadores": {
+      "separacion": 0.352941176470588,
+      "color": "#20e454",
+      "opacidad": 0.2
+    }
+  },
+  "vinilo": {
+    "posicion": {
+      "izquierdaPorcentaje": 6.588579795021962,
+      "arribaPorcentaje": 18.229166666666664
+    },
+    "capa": "back",
+    "tamano": 40,
+    "estilo": "classic",
+    "grosorBorde": 0,
+    "colorBorde": "#ffffff"
+  }
+}
