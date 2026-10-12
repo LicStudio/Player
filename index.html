@@ -172,10 +172,10 @@
         }
 
         #seekBar {
-            width: calc(172px * var(--control-size-factor) * var(--player-layout-scale));
-            height: calc(42px * var(--control-size-factor) * var(--player-layout-scale));
-            padding-left: calc(10.9px * var(--control-size-factor) * var(--player-layout-scale));
-            padding-right: calc(10.9px * var(--control-size-factor) * var(--player-layout-scale));
+            width: calc(206.4px * var(--control-size-factor) * var(--player-layout-scale));
+            height: calc(50.4px * var(--control-size-factor) * var(--player-layout-scale));
+            padding-left: calc(13.08px * var(--control-size-factor) * var(--player-layout-scale));
+            padding-right: calc(13.08px * var(--control-size-factor) * var(--player-layout-scale));
             background: transparent;
             border: none;
             box-shadow: none;
@@ -1683,6 +1683,7 @@
         }
 
         .config-opacity-control input {
+            display: block;
             width: 100%;
             accent-color: #E3E3E3;
             cursor: pointer;
@@ -1976,6 +1977,7 @@
         #deleteModalOverlay,
         #replaceAudioModalOverlay,
         #discordProfileModalOverlay,
+        #presetThemeModalOverlay,
         #textEditorModal {
             background: rgb(0 0 0 / 0.42);
             backdrop-filter: blur(8px);
@@ -1990,6 +1992,8 @@
             background: #212121;
             box-shadow: 0 24px 56px rgba(0, 0, 0, 0.42);
             color: #f0f0f0;
+            animation: custom-tooltip-pop 240ms cubic-bezier(0.2, 1.4, 0.4, 1) both;
+            transform-origin: center;
         }
 
         .delete-audio-dialog-header {
@@ -2397,7 +2401,8 @@
             }
         }
         @media (prefers-reduced-motion: reduce) {
-            .custom-tooltip:not([hidden]) {
+            .custom-tooltip:not([hidden]),
+            .delete-audio-dialog {
                 animation: none;
             }
         }
@@ -3484,6 +3489,7 @@
 
         #modalOverlay #simpleBgControl.hidden,
         #modalOverlay #imageBgControl.hidden,
+        #modalOverlay #videoBgControl.hidden,
         #modalOverlay .config-subsection-option[data-option-id="bgOption"] > #bgBlurControl.hidden {
             display: none;
         }
@@ -3493,7 +3499,13 @@
             flex: 0 0 auto;
         }
 
-        #modalOverlay #bgImageFile {
+        #modalOverlay .config-subsection-option[data-option-id="bgOption"] #bgControls > #videoBgControl {
+            width: auto;
+            flex: 0 0 auto;
+        }
+
+        #modalOverlay #bgImageFile,
+        #modalOverlay #bgVideoFile {
             position: absolute;
             width: 1px;
             height: 1px;
@@ -3530,9 +3542,19 @@
         }
 
         #modalOverlay .bg-image-upload-btn:active { transform: scale(0.98); }
-        #modalOverlay #bgImageFile:focus-visible + .bg-image-upload-btn {
+        #modalOverlay #bgImageFile:focus-visible + .bg-image-upload-btn,
+        #modalOverlay #bgVideoFile:focus-visible + .bg-image-upload-btn {
             outline: 2px solid rgba(227,227,227,0.8);
             outline-offset: 3px;
+        }
+
+        #bgVideo {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
         }
 
         #modalOverlay .bg-image-upload-btn svg {
@@ -3587,7 +3609,7 @@
         #modalOverlay .neu-btn:active { background: rgba(227,227,227,0.12) !important; }
 
         .config-opacity-control {
-            bottom: 24px;
+            bottom: 9px;
             left: 24px;
             width: 192px;
         }
@@ -3621,12 +3643,111 @@
 
         #audioCardScaleHandle:focus-visible::after { opacity: 0; }
 
+        #appNotification {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 2000;
+            width: min(420px, calc(100vw - 32px));
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 1px solid var(--notification-border);
+            border-left: 5px solid var(--notification-accent);
+            border-radius: 12px;
+            background: var(--notification-background);
+            color: #ffffff;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+            font-size: 15px;
+            line-height: 1.45;
+            opacity: 0;
+            pointer-events: auto;
+            transform: translateX(calc(100% + 32px));
+        }
+
+        #appNotification[hidden] { display: none; }
+
+        #appNotification[data-type="success"] {
+            --notification-accent: #36c275;
+            --notification-border: rgba(54, 194, 117, 0.45);
+            --notification-background: rgba(14, 75, 44, 0.96);
+        }
+
+        #appNotification[data-type="error"] {
+            --notification-accent: #ff5b5b;
+            --notification-border: rgba(255, 91, 91, 0.48);
+            --notification-background: rgba(91, 24, 28, 0.97);
+        }
+
+        #appNotification[data-type="warning"] {
+            --notification-accent: #ffd34e;
+            --notification-border: rgba(255, 211, 78, 0.48);
+            --notification-background: rgba(83, 65, 17, 0.97);
+        }
+
+        .app-notification-icon {
+            width: 38px;
+            height: 38px;
+            flex: 0 0 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--notification-icon-background);
+            color: var(--notification-accent);
+        }
+
+        #appNotification[data-type="success"] { --notification-icon-background: rgba(105, 230, 157, 0.2); }
+        #appNotification[data-type="error"] { --notification-icon-background: rgba(255, 141, 141, 0.2); }
+        #appNotification[data-type="warning"] { --notification-icon-background: rgba(255, 231, 145, 0.2); }
+
+        .app-notification-icon svg {
+            width: 21px;
+            height: 21px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .app-notification-message { flex: 1; }
+
+        #appNotification.is-visible {
+            animation: notification-enter 460ms cubic-bezier(0.18, 1.45, 0.35, 1) forwards;
+        }
+
+        #appNotification.is-leaving {
+            animation: notification-exit 380ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes notification-enter {
+            from { opacity: 0; transform: translateX(calc(100% + 32px)); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes notification-exit {
+            0% { opacity: 1; transform: translateX(0); }
+            22% { opacity: 1; transform: translateX(-8px); }
+            100% { opacity: 0; transform: translateX(calc(100% + 32px)); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #appNotification.is-visible,
+            #appNotification.is-leaving {
+                animation-duration: 1ms;
+            }
+        }
+
     </style>
 </head>
 
 <body class="h-screen w-screen flex items-center justify-center relative overflow-hidden">
-    <div id="bgWrapper" class="fixed inset-0 -z-10 w-full h-full transition-all duration-300"></div>
+    <div id="bgWrapper" class="fixed inset-0 -z-10 w-full h-full transition-all duration-300">
+        <video id="bgVideo" loop muted playsinline hidden></video>
+    </div>
     <div id="fileDropOverlay" hidden aria-hidden="true">Suelta el archivo aquí</div>
+    <div id="appNotification" data-type="success" role="status" aria-live="polite" hidden></div>
 
     <div id="appContainer" class="w-full h-full flex items-center justify-center">
         <div id="homeView" class="w-full flex flex-col items-center justify-center p-6">
@@ -3791,6 +3912,7 @@
             <button id="letterBoxNextParagraphBtn" type="button" class="player-toolbar-btn hidden" title="Avanzar al siguiente párrafo en este punto" aria-label="Avanzar al siguiente párrafo en este punto">
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v15"></path><path d="m6 13 6 6 6-6"></path></svg>
             </button>
+            <span id="letterBoxUndoDivider" class="player-toolbar-divider hidden" aria-hidden="true"></span>
             <button id="letterBoxUndoCutBtn" type="button" class="player-toolbar-btn hidden" title="Deshacer último punto" aria-label="Deshacer último punto">
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10a6 6 0 0 1 6 6v1"></path></svg>
             </button>
@@ -3944,7 +4066,7 @@
                                                     <input type="checkbox" id="playerCardColor2GradientEnabled" class="gradient-enabled-control" aria-hidden="true" tabindex="-1">
                                                     <span class="optional-gradient-color-slot">
                                                         <input type="color" id="playerCardColor2" value="#262626" aria-label="Segundo color del cuadro de audio" data-opacity-control="playerCardColorOpacity" class="w-12 h-12 rounded cursor-pointer hidden" oninput="applyPlayerCardColorSettings()">
-                                                        <button id="playerCardColor2AddBtn" type="button" class="config-color-add-button has-custom-tooltip" aria-label="Añadir segundo color al gradiente" data-tooltip="Añadir segundo color al gradiente" aria-pressed="false">
+                                                        <button id="playerCardColor2AddBtn" type="button" class="config-color-add-button has-custom-tooltip" aria-label="Añadir degradado" data-tooltip="Añadir degradado" aria-pressed="false">
                                                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
                                                         </button>
                                                     </span>
@@ -3971,7 +4093,7 @@
                                         </div>
                                     </div>
                                     <div class="blur-control flex items-center gap-4">
-                                        <span class="text-sm text-gray-400">Blur</span>
+                                        <span class="text-sm text-gray-400">Desenfoque</span>
                                         <input type="range" id="playerBlur" min="0" max="40" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyPlayerCardSettings()">
                                     </div>
                                 </div>
@@ -3991,7 +4113,7 @@
                                             <input type="checkbox" id="letterBoxColor2GradientEnabled" class="gradient-enabled-control" aria-hidden="true" tabindex="-1">
                                             <span class="optional-gradient-color-slot">
                                                 <input type="color" id="letterBoxColor2" value="#262626" aria-label="Segundo color del cuadro de letras" data-opacity-control="letterBoxOpacity" class="w-12 h-12 rounded cursor-pointer hidden" oninput="applyLetterBoxSettings()">
-                                                <button id="letterBoxColor2AddBtn" type="button" class="config-color-add-button has-custom-tooltip" aria-label="Añadir segundo color al gradiente" data-tooltip="Añadir segundo color al gradiente" aria-pressed="false">
+                                                <button id="letterBoxColor2AddBtn" type="button" class="config-color-add-button has-custom-tooltip" aria-label="Añadir degradado" data-tooltip="Añadir degradado" aria-pressed="false">
                                                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
                                                 </button>
                                             </span>
@@ -4012,7 +4134,7 @@
                                         </div>
                                     </div>
                                     <div id="letterBoxBlurControl" class="blur-control flex items-center gap-4">
-                                        <span class="text-sm text-gray-400">Blur</span>
+                                        <span class="text-sm text-gray-400">Desenfoque</span>
                                         <input type="range" id="letterBoxBlur" min="0" max="40" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyLetterBoxSettings()">
                                     </div>
                                     <div id="letterBoxOpacityControl" class="hidden">
@@ -4039,6 +4161,7 @@
                                     <div class="config-choice-group" role="radiogroup" aria-label="Tipo de fondo">
                                         <label class="config-choice"><input type="radio" name="bgType" value="simple" checked onchange="updateBgControls('simple')"><span>Color</span></label>
                                         <label class="config-choice"><input type="radio" name="bgType" value="image" onchange="updateBgControls('image')"><span>Imagen</span></label>
+                                        <label class="config-choice"><input type="radio" name="bgType" value="video" onchange="updateBgControls('video')"><span>Video</span></label>
                                     </div>
                                     <div id="bgControls" class="flex flex-col gap-4">
                                         <div id="simpleBgControl" class="config-color-control-row">
@@ -4047,7 +4170,7 @@
                                             <input type="checkbox" id="bgColorGrad2GradientEnabled" class="gradient-enabled-control" aria-hidden="true" tabindex="-1">
                                             <span class="optional-gradient-color-slot">
                                                 <input type="color" id="bgColorGrad2" value="#4a4a4a" aria-label="Segundo color del fondo" class="w-12 h-12 rounded cursor-pointer hidden" oninput="applyBackground()">
-                                                <button id="bgColorGrad2AddBtn" type="button" class="config-color-add-button has-custom-tooltip" aria-label="Añadir segundo color al gradiente" data-tooltip="Añadir segundo color al gradiente" aria-pressed="false">
+                                                <button id="bgColorGrad2AddBtn" type="button" class="config-color-add-button has-custom-tooltip" aria-label="Añadir degradado" data-tooltip="Añadir degradado" aria-pressed="false">
                                                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
                                                 </button>
                                             </span>
@@ -4063,9 +4186,19 @@
                                                 <span>Cargar imagen</span>
                                             </label>
                                         </div>
+                                        <div id="videoBgControl" class="hidden flex gap-4 items-center">
+                                            <input type="file" id="bgVideoFile" accept="video/*" aria-label="Cargar video de fondo" onchange="applyBackground()">
+                                            <label for="bgVideoFile" class="bg-image-upload-btn">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                    <path d="M15 10l5-3v10l-5-3"></path>
+                                                    <rect x="3" y="6" width="12" height="12" rx="2"></rect>
+                                                </svg>
+                                                <span>Cargar video</span>
+                                            </label>
+                                        </div>
                                     </div>
                                     <div id="bgBlurControl" class="blur-control flex items-center gap-4 hidden">
-                                        <span class="text-sm text-gray-400">Blur</span>
+                                        <span class="text-sm text-gray-400">Desenfoque</span>
                                         <input type="range" id="blurIntensity" min="0" max="20" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="applyBlur()">
                                     </div>
                                 </div>
@@ -4097,7 +4230,7 @@
                                                     <input type="checkbox" id="mainBarColor2GradientEnabled" class="gradient-enabled-control" aria-hidden="true" tabindex="-1">
                                                     <span class="optional-gradient-color-slot">
                                                         <input type="color" id="mainBarColor2" value="#ffffff" class="w-10 h-10 rounded cursor-pointer hidden" aria-label="Segundo color de la parte reproducida" oninput="applyCustomSliderSettings()">
-                                                        <button id="mainBarColor2AddBtn" type="button" class="config-color-add-button has-custom-tooltip" aria-label="Añadir segundo color al gradiente" data-tooltip="Añadir segundo color al gradiente" aria-pressed="false">
+                                                        <button id="mainBarColor2AddBtn" type="button" class="config-color-add-button has-custom-tooltip" aria-label="Añadir degradado" data-tooltip="Añadir degradado" aria-pressed="false">
                                                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
                                                         </button>
                                                     </span>
@@ -4157,16 +4290,15 @@
                                 <span>4x</span>
                             </div>
                         </div>
-                        <div class="mt-8 border-t border-white/10 pt-6">
+                        <div class="mt-8 border-t border-white/10 pt-6 pb-6">
                             <h3 class="mb-2">Guardar tema</h3>
                             <div class="flex flex-wrap gap-3">
                                 <button id="exportConfigurationButton" type="button" class="config-choice-cycle gap-2" aria-label="Guardar tema"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>Guardar</button>
                                 <button id="importConfigurationButton" type="button" class="config-choice-cycle gap-2" aria-label="Cargar tema"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"></path><path d="m7 8 5-5 5 5"></path><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>Cargar</button>
                                 <input id="configurationFileInput" type="file" accept=".json,application/json" class="hidden" aria-label="Seleccionar archivo de configuración">
                             </div>
-                            <p id="configurationTransferStatus" class="mt-3 text-sm text-gray-400" role="status" aria-live="polite"></p>
                         </div>
-                        <div class="border-t border-white/10 pt-6">
+                        <div class="border-t border-white/10 pt-6 pb-6">
                             <h3 class="mb-2">Temas</h3>
                             <div class="flex flex-wrap gap-3">
                                 <button type="button" class="config-choice-cycle" data-theme-number="1">Tema 1</button>
@@ -4174,7 +4306,6 @@
                                 <button type="button" class="config-choice-cycle" data-theme-number="3">Tema 3</button>
                                 <button type="button" class="config-choice-cycle" data-theme-number="4">Tema 4</button>
                             </div>
-                            <p id="presetThemeStatus" class="mt-3 text-sm text-gray-400" role="status" aria-live="polite"></p>
                         </div>
                         <div class="border-t border-white/10 pt-6">
                             <h3 class="mb-2">Guardar canción</h3>
@@ -4183,13 +4314,12 @@
                                 <button id="importSongButton" type="button" class="config-choice-cycle gap-2" aria-label="Cargar canción"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"></path><path d="m7 8 5-5 5 5"></path><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>Cargar</button>
                                 <input id="songFileInput" type="file" accept=".json,application/json" class="hidden" aria-label="Seleccionar archivo de canción">
                             </div>
-                            <p id="songTransferStatus" class="mt-3 text-sm text-gray-400" role="status" aria-live="polite"></p>
                         </div>
                     </div>
                 </main>
             </div>
             <div class="config-opacity-control">
-                <input id="configOpacityControl" type="range" min="0" max="1" step="0.01" value="0.72" aria-label="Opacidad y desenfoque de configuración" title="Opacidad y desenfoque de configuración">
+                <input id="configOpacityControl" type="range" min="0" max="1" step="0.01" value="0.72" aria-label="Opacidad de configuración" title="Opacidad de configuración">
             </div>
             <div class="fixed bottom-6 right-6 z-10 flex items-center gap-2 rounded-full border border-white/15 bg-black/35 px-4 py-2 text-sm font-medium text-white shadow-lg backdrop-blur-md">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffffff" role="img" aria-label="Discord"><path d="M19.5 5.4a18 18 0 0 0-4.5-1.4l-.6 1.2a16 16 0 0 0-4.8 0L9 4a18 18 0 0 0-4.5 1.4C1.7 9.6 1 13.7 1.4 17.8a18 18 0 0 0 5.5 2.8l1.2-2a11 11 0 0 1-1.9-.9l.5-.4c3.7 1.7 7.7 1.7 11.4 0l.5.4a11 11 0 0 1-1.9.9l1.2 2a18 18 0 0 0 5.5-2.8c.5-4.8-.8-8.8-3.9-12.4ZM8.8 15.2c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Zm6.4 0c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Z"></path></svg>
@@ -4297,6 +4427,20 @@
         </div>
     </div>
 
+    <div id="presetThemeModalOverlay" class="fixed inset-0 hidden flex items-center justify-center p-6 z-[60]">
+        <div class="delete-audio-dialog" role="dialog" aria-modal="true" aria-labelledby="presetThemeDialogTitle" aria-describedby="presetThemeDialogDescription">
+            <div class="delete-audio-dialog-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9c0-1.1-.9-2-2-2h-1.1a1.9 1.9 0 0 1-1.8-2.5A2.2 2.2 0 0 0 14 4.7V4a1 1 0 0 0-1-1h-1Z"></path><circle cx="7.5" cy="10" r=".8"></circle><circle cx="10" cy="6.5" r=".8"></circle><circle cx="15" cy="7" r=".8"></circle><circle cx="7" cy="14.5" r=".8"></circle></svg>
+            </div>
+            <h3 id="presetThemeDialogTitle">¿Cargar tema?</h3>
+            <p id="presetThemeDialogDescription" class="clear-both mb-6 text-sm leading-relaxed text-gray-300">Se reemplazará la configuración actual.</p>
+            <div class="delete-audio-actions">
+                <button id="presetThemeCancel" type="button" class="delete-audio-cancel">Cancelar</button>
+                <button id="presetThemeAccept" type="button" class="delete-audio-save">Cargar tema</button>
+            </div>
+        </div>
+    </div>
+
     <div id="replaceAudioModalOverlay" class="fixed inset-0 hidden flex items-center justify-center p-6 z-50">
         <div class="delete-audio-dialog" role="dialog" aria-modal="true" aria-labelledby="replaceAudioDialogTitle" aria-describedby="replaceAudioDialogDescription">
             <div class="delete-audio-dialog-icon" aria-hidden="true">
@@ -4378,6 +4522,7 @@
             letterBoxAutoModeBtn: document.getElementById('letterBoxAutoModeBtn'),
             letterBoxManualDivider: document.getElementById('letterBoxManualDivider'),
             letterBoxNextParagraphBtn: document.getElementById('letterBoxNextParagraphBtn'),
+            letterBoxUndoDivider: document.getElementById('letterBoxUndoDivider'),
             letterBoxEditBtn: document.getElementById('letterBoxEditBtn'),
             letterBoxUndoCutBtn: document.getElementById('letterBoxUndoCutBtn'),
             letterBoxEditorPanel: document.getElementById('letterBoxEditorPanel'),
@@ -4400,6 +4545,8 @@
         const discordProfileModalOverlay = document.getElementById('discordProfileModalOverlay');
         const discordProfileLink = document.getElementById('discordProfileLink');
         const discordProfileCancel = document.getElementById('discordProfileCancel');
+        const presetThemeModalOverlay = document.getElementById('presetThemeModalOverlay');
+        const presetThemeCancel = document.getElementById('presetThemeCancel');
         const replaceAudioModalOverlay = refs.replaceAudioModalOverlay;
         const replaceLyricsModalOverlay = refs.replaceLyricsModalOverlay;
         const bgWrapper = refs.bgWrapper;
@@ -4413,6 +4560,8 @@
         let audioMetadataRequestId = 0;
         let pendingAudioReplacement = null;
         let pendingLyricsReplacement = null;
+        let pendingPresetThemeNumber = null;
+        let pendingPresetThemeButton = null;
         window.addEventListener('beforeunload', (event) => {
             if (!currentAudioFile) return;
             event.preventDefault();
@@ -4444,6 +4593,7 @@
         const letterBoxAutoModeBtn = refs.letterBoxAutoModeBtn;
         const letterBoxManualDivider = refs.letterBoxManualDivider;
         const letterBoxNextParagraphBtn = refs.letterBoxNextParagraphBtn;
+        const letterBoxUndoDivider = refs.letterBoxUndoDivider;
         const letterBoxEditBtn = refs.letterBoxEditBtn;
         const letterBoxUndoCutBtn = refs.letterBoxUndoCutBtn;
         const letterBoxEditorPanel = refs.letterBoxEditorPanel;
@@ -4920,8 +5070,8 @@ Pero si quieres fuerza y cantar con pasión,
                 colorControl.classList.toggle('hidden', !enabledControl.checked);
                 addButton.classList.toggle('hidden', enabledControl.checked);
                 addButton.setAttribute('aria-pressed', String(enabledControl.checked));
-                addButton.setAttribute('aria-label', 'Añadir segundo color al gradiente');
-                addButton.dataset.tooltip = 'Añadir segundo color al gradiente';
+                addButton.setAttribute('aria-label', 'Añadir degradado');
+                addButton.dataset.tooltip = 'Añadir degradado';
                 addButton.removeAttribute('title');
                 apply();
             };
@@ -4941,7 +5091,7 @@ Pero si quieres fuerza y cantar con pasión,
             colorControl.classList.toggle('hidden', !enabledControl.checked);
             addButton.classList.toggle('hidden', enabledControl.checked);
             addButton.setAttribute('aria-pressed', String(enabledControl.checked));
-            addButton.dataset.tooltip = 'Añadir segundo color al gradiente';
+            addButton.dataset.tooltip = 'Añadir degradado';
             addButton.removeAttribute('title');
         }
 
@@ -5166,6 +5316,7 @@ Pero si quieres fuerza y cantar con pasión,
             if (playbackSlowdownControl) playbackSlowdownControl.value = String(slowdown);
             document.documentElement.style.setProperty('--playback-slowdown', slowdown);
             audio.playbackRate = 1 / slowdown;
+            document.getElementById('bgVideo').playbackRate = audio.playbackRate;
         }
 
         playbackSlowdownControl?.addEventListener('input', applyPlaybackSlowdown);
@@ -5471,6 +5622,15 @@ Pero si quieres fuerza y cantar con pasión,
         });
         window.addEventListener('dragend', hideFileDropOverlay);
         window.addEventListener('blur', hideFileDropOverlay);
+        function getDroppedFileTypeLabel(file) {
+            if (file.type.startsWith('image/')) return 'de imagen';
+            if (file.type.startsWith('audio/')) return 'de audio';
+            if (isTextFile(file)) return 'de texto';
+            if (file.type === 'application/json' || /\.json$/i.test(file.name)) return 'JSON';
+            const extension = file.name.match(/\.([^.]+)$/)?.[1];
+            return extension ? `de tipo ${extension.toUpperCase()}` : 'de tipo desconocido';
+        }
+
         document.addEventListener('drop', (event) => {
             hideFileDropOverlay();
             const droppedFiles = Array.from(event.dataTransfer?.files || []);
@@ -5487,6 +5647,26 @@ Pero si quieres fuerza y cantar con pasión,
             const textFile = droppedFiles.find(isTextFile);
             const audioFile = droppedFiles.find((file) => file.type.startsWith('audio/')
                 || /\.(mp3|wav|ogg|m4a|aac|flac|opus|weba)$/i.test(file.name));
+            const availableImageSlots = currentAudioFile
+                ? Math.max(0, MAX_PREVIEW_IMAGES - imagePreviewItems.length)
+                : 0;
+            const rejectedImageFiles = currentAudioFile ? imageFiles.slice(availableImageSlots) : [];
+            const handledFiles = new Set([
+                ...imageFiles.slice(0, availableImageSlots),
+                ...(textFile ? [textFile] : []),
+                ...(audioFile ? [audioFile] : [])
+            ]);
+            const rejectedFiles = [
+                ...rejectedImageFiles,
+                ...droppedFiles.filter((file) => !handledFiles.has(file) && !imageFiles.includes(file))
+            ];
+            if (imageFiles.length && !currentAudioFile) {
+                showNotification('Selecciona tu audio antes.', 'warning');
+            }
+            if (rejectedFiles.length) {
+                const fileTypes = [...new Set(rejectedFiles.map(getDroppedFileTypeLabel))];
+                showNotification(`No se pueden cargar archivos ${fileTypes.join(', ')}.`, 'warning');
+            }
             if (imageFiles.length) {
                 addImageFiles(imageFiles).catch((error) => alert(error.message));
             }
@@ -5946,6 +6126,7 @@ Pero si quieres fuerza y cantar con pasión,
                 letterBoxAutoModeBtn,
                 letterBoxEditBtn,
                 letterBoxNextParagraphBtn,
+                letterBoxUndoDivider,
                 letterBoxUndoCutBtn,
                 linkedVinylActionBtn,
                 document.getElementById('letterBoxControlPointVisibilityBtn')
@@ -6377,9 +6558,119 @@ Pero si quieres fuerza y cantar con pasión,
             hideDiscordProfileModal();
         }
 
+        let notificationTimeout = null;
+        let notificationHideTimeout = null;
+        let notificationRemainingTime = 4000;
+        let notificationDeadline = null;
+        let notificationIsHovered = false;
+        const notification = document.getElementById('appNotification');
+
+        function beginNotificationExit() {
+            notificationDeadline = null;
+            notificationRemainingTime = 0;
+            notification.classList.remove('is-visible');
+            notification.classList.add('is-leaving');
+            notificationHideTimeout = setTimeout(() => {
+                notification.hidden = true;
+                notification.classList.remove('is-leaving');
+            }, 400);
+        }
+
+        function scheduleNotificationExit() {
+            clearTimeout(notificationTimeout);
+            if (notificationIsHovered || notification.hidden || !notification.classList.contains('is-visible')) return;
+            notificationDeadline = performance.now() + notificationRemainingTime;
+            notificationTimeout = setTimeout(beginNotificationExit, notificationRemainingTime);
+        }
+
+        notification.addEventListener('mouseenter', () => {
+            if (notification.hidden || !notification.classList.contains('is-visible')) return;
+            notificationIsHovered = true;
+            if (notificationDeadline !== null) {
+                notificationRemainingTime = Math.max(0, notificationDeadline - performance.now());
+                notificationDeadline = null;
+                clearTimeout(notificationTimeout);
+                notificationTimeout = null;
+            }
+        });
+        notification.addEventListener('mouseleave', () => {
+            notificationIsHovered = false;
+            if (notification.classList.contains('is-visible')) scheduleNotificationExit();
+        });
+
+        function showNotification(message, type = 'success') {
+            const icon = document.createElement('span');
+            const messageElement = document.createElement('span');
+            const iconPaths = {
+                success: '<path d="m5 12 4 4L19 6"></path>',
+                error: '<path d="m6 6 12 12M18 6 6 18"></path>',
+                warning: '<path d="M12 3 2.8 19h18.4L12 3Z"></path><path d="M12 9v4m0 3h.01"></path>'
+            };
+            clearTimeout(notificationTimeout);
+            clearTimeout(notificationHideTimeout);
+            notification.hidden = false;
+            notification.dataset.type = type;
+            notification.setAttribute('role', type === 'error' ? 'alert' : 'status');
+            notification.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+            icon.className = 'app-notification-icon';
+            icon.setAttribute('aria-hidden', 'true');
+            icon.innerHTML = `<svg viewBox="0 0 24 24">${iconPaths[type]}</svg>`;
+            messageElement.className = 'app-notification-message';
+            messageElement.textContent = message;
+            notification.replaceChildren(icon, messageElement);
+            notification.classList.remove('is-visible', 'is-leaving');
+            void notification.offsetWidth;
+            notification.classList.add('is-visible');
+            notificationRemainingTime = 4000;
+            notificationDeadline = null;
+            notificationIsHovered = notification.matches(':hover');
+            scheduleNotificationExit();
+        }
+
+        function showPresetThemeModal(themeNumber, button) {
+            pendingPresetThemeNumber = themeNumber;
+            pendingPresetThemeButton = button;
+            document.getElementById('presetThemeDialogTitle').textContent = `¿Cargar Tema ${themeNumber}?`;
+            document.getElementById('presetThemeDialogDescription').textContent = 'Se reemplazará la configuración actual.';
+            presetThemeCancel.classList.remove('hidden');
+            const acceptButton = document.getElementById('presetThemeAccept');
+            acceptButton.textContent = 'Cargar tema';
+            acceptButton.classList.remove('delete-audio-cancel');
+            acceptButton.classList.add('delete-audio-save');
+            presetThemeModalOverlay.classList.remove('hidden');
+            presetThemeCancel.focus();
+        }
+        function hidePresetThemeModal() {
+            presetThemeModalOverlay.classList.add('hidden');
+            pendingPresetThemeNumber = null;
+            const triggerButton = pendingPresetThemeButton;
+            pendingPresetThemeButton = null;
+            presetThemeCancel.classList.remove('hidden');
+            const acceptButton = document.getElementById('presetThemeAccept');
+            acceptButton.textContent = 'Cargar tema';
+            triggerButton?.focus();
+        }
+        async function confirmPresetThemeLoad() {
+            const themeNumber = pendingPresetThemeNumber;
+            if (themeNumber === null) {
+                hidePresetThemeModal();
+                return;
+            }
+            hidePresetThemeModal();
+            try {
+                await loadPresetTheme(themeNumber);
+                showNotification(`Tema ${themeNumber} aplicado correctamente.`);
+            } catch (error) {
+                const detail = error instanceof Error ? error.message : String(error);
+                showNotification(`Error al cargar el Tema ${themeNumber}: ${detail}`, 'error');
+            }
+        }
+
         discordProfileLink.addEventListener('click', showDiscordProfileModal);
         discordProfileCancel.addEventListener('click', hideDiscordProfileModal);
         document.getElementById('discordProfileAccept').addEventListener('click', confirmDiscordProfileOpen);
+        presetThemeCancel.addEventListener('click', hidePresetThemeModal);
+        document.getElementById('presetThemeAccept').addEventListener('click', confirmPresetThemeLoad);
 
         function showReplaceAudioModal(file) {
             pendingAudioReplacement = file;
@@ -6713,6 +7004,7 @@ Pero si quieres fuerza y cantar con pasión,
             document.getElementById('bgControls').parentElement.dataset.bgType = type;
             document.getElementById('simpleBgControl').classList.toggle('hidden', type !== 'simple');
             document.getElementById('imageBgControl').classList.toggle('hidden', type !== 'image');
+            document.getElementById('videoBgControl').classList.toggle('hidden', type !== 'video');
             applyBackground();
         }
 
@@ -7506,7 +7798,8 @@ Pero si quieres fuerza y cantar con pasión,
             letterBoxAutoModeBtn.dataset.tooltip = label;
             letterBoxAutoModeBtn.setAttribute('aria-label', label);
             letterBoxNextParagraphBtn.classList.toggle('hidden', !currentAudioFile || isLetterBoxAutoMode);
-            letterBoxUndoCutBtn.classList.toggle('hidden', !currentAudioFile || isLetterBoxAutoMode);
+            letterBoxUndoCutBtn.classList.toggle('hidden', !currentAudioFile);
+            letterBoxUndoDivider.classList.toggle('hidden', !currentAudioFile || isLetterBoxAutoMode);
             letterBoxManualDivider.classList.toggle('hidden', !currentAudioFile || isLetterBoxAutoMode);
         }
 
@@ -7757,16 +8050,54 @@ Pero si quieres fuerza y cantar con pasión,
         }
 
         let backgroundImageLoadId = 0;
+        let backgroundVideoUrl = null;
+        let backgroundVideoFile = null;
+        const backgroundVideo = document.getElementById('bgVideo');
+        backgroundVideo.addEventListener('error', () => {
+            console.error('No se pudo reproducir el video de fondo.', backgroundVideo.error);
+        });
+
+        function syncBackgroundVideoPlayback() {
+            if (getCheckedRadioValue('bgType') !== 'video' || backgroundVideo.hidden || audio.paused || audio.ended) {
+                backgroundVideo.pause();
+                return;
+            }
+
+            const playback = backgroundVideo.play();
+            if (playback) {
+                playback.catch((error) => {
+                    if (error.name !== 'AbortError') {
+                        console.error('No se pudo iniciar la reproducción del video de fondo.', error);
+                    }
+                });
+            }
+        }
+
+        function releaseBackgroundVideo() {
+            backgroundVideo.pause();
+            backgroundVideo.hidden = true;
+            backgroundVideo.removeAttribute('src');
+            backgroundVideo.load();
+            if (backgroundVideoUrl) {
+                URL.revokeObjectURL(backgroundVideoUrl);
+                backgroundVideoUrl = null;
+            }
+            backgroundVideoFile = null;
+            document.getElementById('bgVideoFile').value = '';
+        }
 
         function applyBackground() {
             const requestId = ++backgroundImageLoadId;
             const type = getCheckedRadioValue('bgType');
             const fileInput = document.getElementById('bgImageFile');
+            const videoInput = document.getElementById('bgVideoFile');
             const bgBlurControl = document.getElementById('bgBlurControl');
             bgBlurControl.classList.add('hidden');
             if (type === 'simple') {
+                releaseBackgroundVideo();
                 const color = document.getElementById('bgColorSimple').value;
                 const color2 = document.getElementById('bgColorGrad2').value;
+                bgWrapper.style.backgroundImage = 'none';
                 bgWrapper.style.background = document.getElementById('bgColorGrad2GradientEnabled').checked
                     ? `linear-gradient(135deg, ${color}, ${color2})`
                     : color;
@@ -7787,15 +8118,37 @@ Pero si quieres fuerza y cantar con pasión,
                 } else {
                     bgWrapper.style.backgroundImage = 'none';
                 }
+                releaseBackgroundVideo();
+            } else if (type === 'video') {
+                bgWrapper.style.backgroundImage = 'none';
+                const file = videoInput.files && videoInput.files[0];
+                if (file) {
+                    backgroundVideo.hidden = false;
+                    if (backgroundVideoFile !== file) {
+                        if (backgroundVideoUrl) URL.revokeObjectURL(backgroundVideoUrl);
+                        backgroundVideoUrl = URL.createObjectURL(file);
+                        backgroundVideoFile = file;
+                        backgroundVideo.src = backgroundVideoUrl;
+                        backgroundVideo.load();
+                    }
+                    bgBlurControl.classList.remove('hidden');
+                    applyBlur();
+                    syncBackgroundVideoPlayback();
+                } else {
+                    backgroundVideo.pause();
+                    backgroundVideo.hidden = true;
+                }
             }
             applyBlur();
         }
 
         function applyBlur() {
             const intensity = Number(document.getElementById('blurIntensity').value);
-            const hasBackgroundImage = getCheckedRadioValue('bgType') === 'image'
-                && bgWrapper.style.backgroundImage.startsWith('url(');
-            bgWrapper.style.filter = hasBackgroundImage && intensity > 0 ? `blur(${intensity}px)` : 'none';
+            const type = getCheckedRadioValue('bgType');
+            const hasBackgroundMedia = type === 'image'
+                ? bgWrapper.style.backgroundImage.startsWith('url(')
+                : type === 'video' && !backgroundVideo.hidden && Boolean(backgroundVideo.currentSrc || backgroundVideo.src);
+            bgWrapper.style.filter = hasBackgroundMedia && intensity > 0 ? `blur(${intensity}px)` : 'none';
         }
 
         function applyCounterSettings() {
@@ -8814,6 +9167,10 @@ Pero si quieres fuerza y cantar con pasión,
                     hideDiscordProfileModal();
                     return;
                 }
+                if (!presetThemeModalOverlay.classList.contains('hidden')) {
+                    hidePresetThemeModal();
+                    return;
+                }
                 if (!deleteModalOverlay.classList.contains('hidden')) {
                     hideDeleteModal();
                     return;
@@ -8982,11 +9339,13 @@ Pero si quieres fuerza y cantar con pasión,
             cancelAudioEndReset();
             updateTimeDisplays();
             startLetterBoxTextAnimation();
+            syncBackgroundVideoPlayback();
         });
         audio.addEventListener('pause', () => {
             updateTimeDisplays();
             stopLetterBoxTextAnimation();
             updateLetterBoxTextScrollByAudio();
+            syncBackgroundVideoPlayback();
         });
         audio.addEventListener('ended', () => {
             cancelAudioEndReset();
@@ -8994,6 +9353,7 @@ Pero si quieres fuerza y cantar con pasión,
             pauseIcon.classList.add('hidden');
             stopLetterBoxTextAnimation();
             updateLetterBoxTextScrollByAudio();
+            syncBackgroundVideoPlayback();
             audioEndResetTimeout = setTimeout(() => {
                 audioEndResetTimeout = null;
                 audio.currentTime = 0;
@@ -9393,7 +9753,7 @@ Pero si quieres fuerza y cantar con pasión,
             downloadLink.download = 'configuracion-karaoke.json';
             downloadLink.click();
             setTimeout(() => URL.revokeObjectURL(fileUrl), 0);
-            document.getElementById('configurationTransferStatus').textContent = 'Configuración guardada en configuracion-karaoke.json.';
+            showNotification('Configuración guardada en configuracion-karaoke.json.');
         });
 
         const configurationFileInput = document.getElementById('configurationFileInput');
@@ -9401,14 +9761,12 @@ Pero si quieres fuerza y cantar con pasión,
         configurationFileInput.addEventListener('change', async () => {
             const file = configurationFileInput.files?.[0];
             if (!file) return;
-            const status = document.getElementById('configurationTransferStatus');
             try {
                 await importConfigurationFile(file);
-                status.textContent = 'Configuración cargada correctamente.';
+                showNotification('Configuración cargada correctamente.');
             } catch (error) {
                 const detail = error instanceof Error ? error.message : String(error);
-                status.textContent = `Error al cargar la configuración: ${detail}`;
-                window.alert(status.textContent);
+                showNotification(`Error al cargar la configuración: ${detail}`, 'error');
             } finally {
                 configurationFileInput.value = '';
             }
@@ -9421,19 +9779,12 @@ Pero si quieres fuerza y cantar con pasión,
             }
             const rawSettings = await response.json();
             applyConfigurationImport(validateConfigurationImport(rawSettings));
-            document.getElementById('presetThemeStatus').textContent = `Tema ${themeNumber} aplicado correctamente.`;
         }
 
         document.querySelectorAll('[data-theme-number]').forEach((button) => {
-            button.addEventListener('click', async () => {
+            button.addEventListener('click', () => {
                 const themeNumber = Number(button.dataset.themeNumber);
-                const status = document.getElementById('presetThemeStatus');
-                try {
-                    await loadPresetTheme(themeNumber);
-                } catch (error) {
-                    const detail = error instanceof Error ? error.message : String(error);
-                    status.textContent = `Error al cargar el tema ${themeNumber}: ${detail}`;
-                }
+                showPresetThemeModal(themeNumber, button);
             });
         });
 
@@ -9660,8 +10011,6 @@ Pero si quieres fuerza y cantar con pasión,
         }
 
         async function importDroppedJsonFile(file) {
-            const configurationStatus = document.getElementById('configurationTransferStatus');
-            const songStatus = document.getElementById('songTransferStatus');
             try {
                 let data;
                 try {
@@ -9673,7 +10022,7 @@ Pero si quieres fuerza y cantar con pasión,
 
                 if (data && typeof data === 'object' && data.tipo === 'cancion-karaoke') {
                     applySongImport(validateSongImport(data));
-                    songStatus.textContent = 'Canción cargada correctamente. Recuerda cargar su audio por separado.';
+                    showNotification('Canción cargada correctamente. Recuerda cargar su audio por separado.');
                     return;
                 }
 
@@ -9682,17 +10031,14 @@ Pero si quieres fuerza y cantar con pasión,
                     && Object.prototype.hasOwnProperty.call(data, 'panelLetra')
                     && Object.prototype.hasOwnProperty.call(data, 'panelAudio')) {
                     applyConfigurationImport(validateConfigurationImport(data));
-                    configurationStatus.textContent = 'Configuración cargada correctamente.';
+                    showNotification('Configuración cargada correctamente.');
                     return;
                 }
 
                 throw new Error('El archivo no coincide con el formato de configuración ni con el formato de canción.');
             } catch (error) {
                 const detail = error instanceof Error ? error.message : String(error);
-                const message = `Error al cargar el JSON: ${detail}`;
-                configurationStatus.textContent = message;
-                songStatus.textContent = message;
-                window.alert(message);
+                showNotification(`Error al cargar el JSON: ${detail}`, 'error');
             }
         }
 
@@ -9704,7 +10050,7 @@ Pero si quieres fuerza y cantar con pasión,
             downloadLink.download = 'cancion-karaoke.json';
             downloadLink.click();
             setTimeout(() => URL.revokeObjectURL(fileUrl), 0);
-            document.getElementById('songTransferStatus').textContent = 'Canción guardada en cancion-karaoke.json.';
+            showNotification('Canción guardada en cancion-karaoke.json.');
         });
 
         const songFileInput = document.getElementById('songFileInput');
@@ -9712,14 +10058,12 @@ Pero si quieres fuerza y cantar con pasión,
         songFileInput.addEventListener('change', async () => {
             const file = songFileInput.files?.[0];
             if (!file) return;
-            const status = document.getElementById('songTransferStatus');
             try {
                 await importSongFile(file);
-                status.textContent = 'Canción cargada correctamente. Recuerda cargar su audio por separado.';
+                showNotification('Canción cargada correctamente. Recuerda cargar su audio por separado.');
             } catch (error) {
                 const detail = error instanceof Error ? error.message : String(error);
-                status.textContent = `Error al cargar la canción: ${detail}`;
-                window.alert(status.textContent);
+                showNotification(`Error al cargar la canción: ${detail}`, 'error');
             } finally {
                 songFileInput.value = '';
             }
@@ -9747,7 +10091,7 @@ Pero si quieres fuerza y cantar con pasión,
         setInterfaceVisibility(isInterfaceVisible);
         loadPresetTheme(2).catch((error) => {
             const detail = error instanceof Error ? error.message : String(error);
-            document.getElementById('presetThemeStatus').textContent = `Error al cargar el tema predeterminado: ${detail}`;
+            showNotification(`Error al cargar el Tema 2 predeterminado: ${detail}`, 'error');
         });
         requestAnimationFrame(() => {
             updatePlayerLayoutScale();
