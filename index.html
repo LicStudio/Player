@@ -3909,7 +3909,7 @@
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>
             </button>
             <span id="letterBoxManualDivider" class="player-toolbar-divider" aria-hidden="true"></span>
-            <button id="letterBoxNextParagraphBtn" type="button" class="player-toolbar-btn hidden" title="Avanzar al siguiente párrafo en este punto" aria-label="Avanzar al siguiente párrafo en este punto">
+            <button id="letterBoxNextParagraphBtn" type="button" class="player-toolbar-btn hidden" title="Avanzar al siguiente renglón en este punto" aria-label="Avanzar al siguiente renglón en este punto">
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v15"></path><path d="m6 13 6 6 6-6"></path></svg>
             </button>
             <span id="letterBoxUndoDivider" class="player-toolbar-divider hidden" aria-hidden="true"></span>
@@ -7475,6 +7475,54 @@ Pero si quieres fuerza y cantar con pasión,
             updateLetterBoxTextViewportScale();
         }
 
+        function getLetterBoxTextGroups(lyrics) {
+            const sourceLines = ['', ...lyrics.split(/\r?\n/), ''].map((text, index) => {
+                const joinsNext = />\s*$/.test(text);
+                return {
+                    text: joinsNext ? text.replace(/>\s*$/, '').trimEnd() : text,
+                    sourceIndex: index - 1,
+                    joinsNext
+                };
+            });
+            const standaloneTagPattern = /^\s*\[[^\]]+\]\s*$/;
+            const groups = [];
+
+            for (let index = 0; index < sourceLines.length; index += 1) {
+                const isBoundaryBlank = index === 0 || index === sourceLines.length - 1;
+                if (!sourceLines[index].text.trim() && !isBoundaryBlank) continue;
+
+                const groupLines = [sourceLines[index]];
+                let lastIndex = index;
+                while (true) {
+                    const lastLine = groupLines[groupLines.length - 1];
+                    if (lastLine.joinsNext && lastIndex < sourceLines.length - 2) {
+                        lastIndex += 1;
+                        groupLines.push(sourceLines[lastIndex]);
+                        continue;
+                    }
+
+                    if (!standaloneTagPattern.test(lastLine.text)) break;
+                    let nextContentIndex = lastIndex + 1;
+                    while (nextContentIndex < sourceLines.length && !sourceLines[nextContentIndex].text.trim()) {
+                        nextContentIndex += 1;
+                    }
+                    if (nextContentIndex >= sourceLines.length - 1
+                        || standaloneTagPattern.test(sourceLines[nextContentIndex].text)) {
+                        break;
+                    }
+                    for (let blankIndex = lastIndex + 1; blankIndex < nextContentIndex; blankIndex += 1) {
+                        groupLines.push(sourceLines[blankIndex]);
+                    }
+                    groupLines.push(sourceLines[nextContentIndex]);
+                    lastIndex = nextContentIndex;
+                }
+
+                groups.push({ lines: groupLines, isBoundaryBlank });
+                index = lastIndex;
+            }
+            return groups;
+        }
+
         function renderLetterBoxText() {
             if (!letterBoxText) return;
             letterBoxText.replaceChildren();
@@ -7485,8 +7533,7 @@ Pero si quieres fuerza y cantar con pasión,
 
             if (letterBoxTextState.value.trim().length) {
                 const fragment = document.createDocumentFragment();
-                const sourceLines = ['', ...letterBoxTextState.value.split(/\r?\n/), ''];
-                const standaloneTagPattern = /^\s*\[[^\]]+\]\s*$/;
+                const groups = getLetterBoxTextGroups(letterBoxTextState.value);
                 const justifyContent = letterBoxTextState.align === 'left'
                     ? 'flex-start'
                     : letterBoxTextState.align === 'right' ? 'flex-end' : 'center';
@@ -7494,32 +7541,15 @@ Pero si quieres fuerza y cantar con pasión,
                     ? 'left center'
                     : letterBoxTextState.align === 'right' ? 'right center' : 'center center';
 
-                for (let index = 0; index < sourceLines.length; index += 1) {
-                    const isBoundaryBlank = index === 0 || index === sourceLines.length - 1;
-                    if (!sourceLines[index].trim() && !isBoundaryBlank) continue;
-
-                    const groupLines = [{ text: sourceLines[index], sourceIndex: index - 1 }];
-                    if (standaloneTagPattern.test(sourceLines[index])) {
-                        let nextContentIndex = index + 1;
-                        while (nextContentIndex < sourceLines.length && !sourceLines[nextContentIndex].trim()) {
-                            nextContentIndex += 1;
-                        }
-                        if (nextContentIndex < sourceLines.length
-                            && !standaloneTagPattern.test(sourceLines[nextContentIndex])) {
-                            for (let blankIndex = index + 1; blankIndex < nextContentIndex; blankIndex += 1) {
-                                groupLines.push({ text: '', sourceIndex: blankIndex - 1 });
-                            }
-                            groupLines.push({ text: sourceLines[nextContentIndex], sourceIndex: nextContentIndex - 1 });
-                            index = nextContentIndex;
-                        }
-                    }
-
+                groups.forEach(({ lines: groupLines, isBoundaryBlank }) => {
                     const group = document.createElement('div');
                     group.className = 'letter-box-group';
                     group.dataset.groupIndex = String(letterBoxGroupElements.length);
                     group.dataset.firstSourceIndex = String(groupLines[0].sourceIndex);
                     group.dataset.lastSourceIndex = String(groupLines[groupLines.length - 1].sourceIndex);
-                    if (isBoundaryBlank) group.dataset.boundary = index === 0 ? 'intro' : 'outro';
+                    if (isBoundaryBlank) {
+                        group.dataset.boundary = groupLines[0].sourceIndex < 0 ? 'intro' : 'outro';
+                    }
                     group.style.setProperty('--letter-line-transform-origin', transformOrigin);
 
                     groupLines.forEach(({ text: lineText }) => {
@@ -7535,7 +7565,7 @@ Pero si quieres fuerza y cantar con pasión,
 
                     fragment.appendChild(group);
                     letterBoxGroupElements.push(group);
-                }
+                });
                 letterBoxText.appendChild(fragment);
             }
 
@@ -7798,7 +7828,7 @@ Pero si quieres fuerza y cantar con pasión,
             letterBoxAutoModeBtn.dataset.tooltip = label;
             letterBoxAutoModeBtn.setAttribute('aria-label', label);
             letterBoxNextParagraphBtn.classList.toggle('hidden', !currentAudioFile || isLetterBoxAutoMode);
-            letterBoxUndoCutBtn.classList.toggle('hidden', !currentAudioFile);
+            letterBoxUndoCutBtn.classList.toggle('hidden', !currentAudioFile || isLetterBoxAutoMode);
             letterBoxUndoDivider.classList.toggle('hidden', !currentAudioFile || isLetterBoxAutoMode);
             letterBoxManualDivider.classList.toggle('hidden', !currentAudioFile || isLetterBoxAutoMode);
         }
@@ -9826,26 +9856,7 @@ Pero si quieres fuerza y cantar con pasión,
 
         function countSongLetterGroups(lyrics) {
             if (!lyrics.trim()) return 0;
-            const sourceLines = ['', ...lyrics.split(/\r?\n/), ''];
-            const standaloneTagPattern = /^\s*\[[^\]]+\]\s*$/;
-            let groupCount = 0;
-
-            for (let index = 0; index < sourceLines.length; index += 1) {
-                const isBoundaryBlank = index === 0 || index === sourceLines.length - 1;
-                if (!sourceLines[index].trim() && !isBoundaryBlank) continue;
-                groupCount += 1;
-
-                if (!standaloneTagPattern.test(sourceLines[index])) continue;
-                let nextContentIndex = index + 1;
-                while (nextContentIndex < sourceLines.length && !sourceLines[nextContentIndex].trim()) {
-                    nextContentIndex += 1;
-                }
-                if (nextContentIndex < sourceLines.length
-                    && !standaloneTagPattern.test(sourceLines[nextContentIndex])) {
-                    index = nextContentIndex;
-                }
-            }
-            return groupCount;
+            return getLetterBoxTextGroups(lyrics).length;
         }
 
         function validateSongImport(value) {
