@@ -1,3 +1,5 @@
+<img src="screenshots/tips.png" alt="Cómo usar algunos botones" width="500"> <img src="screenshots/1.png" alt="Ejemplo 1" width="500"> <img src="screenshots/2.png" alt="Ejemplo 2" width="500"> <img src="screenshots/3.png" alt="Ejemplo 3" width="500">
+
 # RecK v1.0 - Full Release
 
 Esta actualización presenta la primera versión completa de RecK. Aunque incluye las funcionalidades principales de la aplicación, no representa la versión final del proyecto, que continuará evolucionando con futuras mejoras y nuevas características.
