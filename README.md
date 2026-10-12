@@ -1,4 +1,4 @@
-<img src="screenshots/tips.png" alt="Cómo usar algunos botones" width="200"> <img src="screenshots/1.png" alt="Ejemplo 1" width="200"> <img src="screenshots/2.png" alt="Ejemplo 2" width="200"> <img src="screenshots/3.png" alt="Ejemplo 3" width="80">
+<img src="screenshots/tips.png" alt="Cómo usar algunos botones" width="200"> <img src="screenshots/1.png" alt="Ejemplo 1" width="200"> <img src="screenshots/2.png" alt="Ejemplo 2" width="200"> <img src="screenshots/3.png" alt="Ejemplo 3" width="72">
 
 # RecK v1.0 - Full Release
 
